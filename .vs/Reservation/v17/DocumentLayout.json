@@ -1,0 +1,44 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Github\\Reservation\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|d:\\github\\reservation\\reservation\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Form1.cs [Design]",
+              "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Form1.cs",
+              "RelativeDocumentMoniker": "Reservation\\Form1.cs",
+              "ToolTip": "D:\\Github\\Reservation\\Reservation\\Form1.cs [Design]",
+              "RelativeToolTip": "Reservation\\Form1.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-17T14:53:53.224Z",
+              "EditorCaption": " [Design]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
