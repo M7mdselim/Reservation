@@ -1,0 +1,205 @@
+-- 1. Customer Table
+CREATE TABLE Customer (
+    CustomerID INT IDENTITY PRIMARY KEY,
+    Name NVARCHAR(100) NOT NULL,
+    PhoneNumber NVARCHAR(15) NOT NULL UNIQUE
+);
+
+-- 2. Restaurant Table
+CREATE TABLE Restaurant (
+    RestaurantID INT IDENTITY PRIMARY KEY,
+    Name NVARCHAR(100) NOT NULL,
+    FullCapacity INT NOT NULL CHECK (FullCapacity > 0)  -- Constant full capacity for each restaurant
+);
+
+-- 3. RestaurantDailyCapacity Table (Tracks remaining capacity for each day)
+CREATE TABLE RestaurantDailyCapacity (
+    RestaurantID INT NOT NULL FOREIGN KEY REFERENCES Restaurant(RestaurantID),
+    Date DATE NOT NULL,  -- Date for the capacity tracking
+    RemainingCapacity INT NOT NULL,  -- Remaining capacity for that day
+    PRIMARY KEY (RestaurantID, Date)
+);
+
+-- 4. Menu Table
+CREATE TABLE Menu (
+    MenuItemID INT IDENTITY PRIMARY KEY,
+    ItemName NVARCHAR(100) NOT NULL,
+    ItemPrice DECIMAL(10, 2) NOT NULL CHECK (ItemPrice > 0)
+);
+
+-- 5. Reservations Table
+CREATE TABLE Reservations (
+    ReservationID INT IDENTITY PRIMARY KEY,
+	CustomerID INT NOT NULL FOREIGN KEY REFERENCES Customer(CustomerID),
+    RestaurantID INT NOT NULL FOREIGN KEY REFERENCES Restaurant(RestaurantID),
+    ReservationDate DATE NOT NULL,
+    NumberOfGuests INT NOT NULL CHECK (NumberOfGuests > 0),
+    TotalPrice DECIMAL(10, 2) NULL;
+);
+
+-- 7. OrderDetails Table
+CREATE TABLE OrderDetails (
+    OrderDetailID INT IDENTITY PRIMARY KEY,
+    ReservationID INT NOT NULL FOREIGN KEY REFERENCES Reservations(ReservationID),
+    MenuItemID INT NOT NULL FOREIGN KEY REFERENCES Menu(MenuItemID),
+    Quantity INT NOT NULL CHECK (Quantity > 0),
+    ItemPrice DECIMAL(10, 2) NOT NULL CHECK (ItemPrice > 0),
+    SubTotal AS (Quantity * ItemPrice) PERSISTED
+);
+
+-- 8. Payments Table
+CREATE TABLE Payments (
+    PaymentID INT IDENTITY PRIMARY KEY,
+    CustomerID INT NOT NULL FOREIGN KEY REFERENCES Customer(CustomerID),
+    ReservationID INT NOT NULL FOREIGN KEY REFERENCES Reservations(ReservationID),
+    TotalAmount DECIMAL(10, 2) NOT NULL,
+    PaidAmount DECIMAL(10, 2) NOT NULL,
+    RemainingAmount AS (TotalAmount - PaidAmount) PERSISTED
+);
+
+
+
+-- Trigger for handling updates to RemainingCapacity after reservation insertions
+CREATE TRIGGER UpdateRemainingCapacityOnInsert
+ON Reservations
+AFTER INSERT
+AS
+BEGIN
+    UPDATE RestaurantDailyCapacity
+    SET RemainingCapacity = RemainingCapacity - (
+        SELECT SUM(NumberOfGuests)
+        FROM INSERTED
+        WHERE INSERTED.RestaurantID = RestaurantDailyCapacity.RestaurantID
+          AND INSERTED.ReservationDate = RestaurantDailyCapacity.Date
+    )
+    WHERE RestaurantDailyCapacity.RestaurantID IN (SELECT RestaurantID FROM INSERTED)
+      AND RestaurantDailyCapacity.Date IN (SELECT ReservationDate FROM INSERTED);
+END;
+
+-- Trigger for handling updates to RemainingCapacity after reservation deletions
+CREATE TRIGGER UpdateRemainingCapacityOnDelete
+ON Reservations
+AFTER DELETE
+AS
+BEGIN
+    UPDATE RestaurantDailyCapacity
+    SET RemainingCapacity = RemainingCapacity + (
+        SELECT SUM(NumberOfGuests)
+        FROM DELETED
+        WHERE DELETED.RestaurantID = RestaurantDailyCapacity.RestaurantID
+          AND DELETED.ReservationDate = RestaurantDailyCapacity.Date
+    )
+    WHERE RestaurantDailyCapacity.RestaurantID IN (SELECT RestaurantID FROM DELETED)
+      AND RestaurantDailyCapacity.Date IN (SELECT ReservationDate FROM DELETED);
+END;
+
+-- Trigger for initializing RemainingCapacity when a new restaurant is added
+CREATE TRIGGER InitializeRemainingCapacity
+ON Restaurant
+AFTER INSERT
+AS
+BEGIN
+    DECLARE @RestaurantID INT = (SELECT RestaurantID FROM INSERTED);
+    DECLARE @Date DATE = '2024-01-01';
+    DECLARE @EndDate DATE = '2024-12-31';
+
+    WHILE @Date <= @EndDate
+    BEGIN
+        INSERT INTO RestaurantDailyCapacity (RestaurantID, Date, RemainingCapacity)
+        VALUES (@RestaurantID, @Date, (SELECT FullCapacity FROM Restaurant WHERE RestaurantID = @RestaurantID));
+
+        SET @Date = DATEADD(DAY, 1, @Date);
+    END;
+END;
+
+
+
+
+-- Trigger for handling updates to TotalPrice in Reservations when OrderDetails are modified
+CREATE TRIGGER UpdateTotalPriceOnOrderDetailsChange
+ON OrderDetails
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    -- Update TotalPrice for the affected ReservationID(s)
+    UPDATE Reservations
+    SET TotalPrice = (
+        SELECT SUM(SubTotal)
+        FROM OrderDetails
+        WHERE OrderDetails.ReservationID = Reservations.ReservationID
+    )
+    FROM Reservations
+    INNER JOIN INSERTED ON Reservations.ReservationID = INSERTED.ReservationID
+    -- Handle delete case
+    INNER JOIN DELETED ON Reservations.ReservationID = DELETED.ReservationID
+    WHERE INSERTED.ReservationID IS NOT NULL OR DELETED.ReservationID IS NOT NULL;
+END;
+
+
+
+-- Trigger for automatically updating the TotalAmount in Reservations table
+CREATE TRIGGER UpdateTotalAmountOnOrderDetailsChange
+ON OrderDetails
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    -- Update the TotalAmount in the Reservations table
+    UPDATE Reservations
+    SET TotalPrice = (
+        SELECT SUM(Quantity * ItemPrice)
+        FROM OrderDetails
+        WHERE ReservationID = Reservations.ReservationID
+    )
+    WHERE ReservationID IN (
+        SELECT ReservationID
+        FROM INSERTED
+        UNION
+        SELECT ReservationID
+        FROM DELETED
+    );
+END;
+
+
+
+..................................................................
+-- Insert Customer
+INSERT INTO Customer (Name, PhoneNumber)
+VALUES ('John Doe', '123-456-7890');
+
+DECLARE @CustomerID INT = SCOPE_IDENTITY();  -- Get CustomerID
+
+-- Insert Restaurant
+INSERT INTO Restaurant (Name, FullCapacity)
+VALUES ('The Gourmet Place', 100);
+
+DECLARE @RestaurantID INT = SCOPE_IDENTITY();  -- Get RestaurantID
+
+-- Insert Reservation
+DECLARE @ReservationDate DATE = '2024-12-17';
+DECLARE @NumberOfGuests INT = 4;
+
+INSERT INTO Reservations (CustomerID, RestaurantID, ReservationDate, NumberOfGuests)
+VALUES (1, 1, '2024-12-17', 30);
+
+DECLARE @ReservationID INT = SCOPE_IDENTITY();  -- Get ReservationID
+
+-- Insert Order Details (Menu Items)
+DECLARE @MenuItemID1 INT = (SELECT MenuItemID FROM Menu WHERE ItemName = 'Steak');
+DECLARE @MenuItemID2 INT = (SELECT MenuItemID FROM Menu WHERE ItemName = 'Salad');
+
+-- Insert first order detail (Steak)
+INSERT INTO OrderDetails (ReservationID, MenuItemID, Quantity, ItemPrice)
+VALUES (11, 1, 2, 25.00);  -- 2 Steaks
+
+-- Insert second order detail (Salad)
+INSERT INTO OrderDetails (ReservationID, MenuItemID, Quantity, ItemPrice)
+VALUES (11, 2, 2, 10.00);  -- 2 Salads
+
+-- Insert Payment
+DECLARE @TotalAmount DECIMAL(10, 2) = (SELECT SUM(Quantity * ItemPrice) FROM OrderDetails WHERE ReservationID = 11);
+DECLARE @PaidAmount DECIMAL(10, 2) = 50.00;  -- Assume customer paid 50.00
+
+INSERT INTO Payments (CustomerID, ReservationID, TotalAmount, PaidAmount)
+VALUES (1, 11, 70, 50);
+
+

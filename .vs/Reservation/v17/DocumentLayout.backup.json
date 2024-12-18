@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "D:\\Github\\Reservation\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|d:\\github\\reservation\\reservation\\home.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\home.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|d:\\github\\reservation\\reservation\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
@@ -27,6 +31,18 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "Home.cs [Design]",
+              "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Home.cs",
+              "RelativeDocumentMoniker": "Reservation\\Home.cs",
+              "ToolTip": "D:\\Github\\Reservation\\Reservation\\Home.cs [Design]",
+              "RelativeToolTip": "Reservation\\Home.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-17T14:55:37.237Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "Form1.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Form1.cs",
               "RelativeDocumentMoniker": "Reservation\\Form1.cs",
