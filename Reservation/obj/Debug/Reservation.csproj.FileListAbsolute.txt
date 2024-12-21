@@ -1,0 +1,13 @@
+D:\Github\Reservation\Reservation\obj\Debug\Reservation.csproj.AssemblyReference.cache
+D:\Github\Reservation\Reservation\obj\Debug\Reservation.Home.resources
+D:\Github\Reservation\Reservation\obj\Debug\Reservation.Properties.Resources.resources
+D:\Github\Reservation\Reservation\obj\Debug\Reservation.csproj.GenerateResource.cache
+D:\Github\Reservation\Reservation\obj\Debug\Reservation.csproj.CoreCompileInputs.cache
+D:\Github\Reservation\Reservation\bin\Debug\Reservation.exe.config
+D:\Github\Reservation\Reservation\bin\Debug\Reservation.exe
+D:\Github\Reservation\Reservation\bin\Debug\Reservation.pdb
+D:\Github\Reservation\Reservation\bin\Debug\Krypton.Toolkit.dll
+D:\Github\Reservation\Reservation\bin\Debug\Krypton.Toolkit.xml
+D:\Github\Reservation\Reservation\obj\Debug\Reservat.F9C48C63.Up2Date
+D:\Github\Reservation\Reservation\obj\Debug\Reservation.exe
+D:\Github\Reservation\Reservation\obj\Debug\Reservation.pdb
