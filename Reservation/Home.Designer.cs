@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.minusbtn = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.exit = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -39,10 +40,11 @@
             this.greet_user = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.deletebtn = new System.Windows.Forms.Button();
             this.totalPriceLabel = new System.Windows.Forms.Label();
             this.menuitemspanel = new System.Windows.Forms.Panel();
             this.reservationnumberlabel = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.paidamount = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
             this.printnpaybtn = new System.Windows.Forms.Button();
             this.reservationidtxt = new System.Windows.Forms.TextBox();
@@ -68,7 +70,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.Customernametxt = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.deletebtn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -79,6 +80,7 @@
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.minusbtn);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.exit);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -86,6 +88,20 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1100, 35);
             this.panel1.TabIndex = 0;
+            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            // 
+            // minusbtn
+            // 
+            this.minusbtn.AutoSize = true;
+            this.minusbtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.minusbtn.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.minusbtn.ForeColor = System.Drawing.Color.White;
+            this.minusbtn.Location = new System.Drawing.Point(1040, -5);
+            this.minusbtn.Name = "minusbtn";
+            this.minusbtn.Size = new System.Drawing.Size(25, 25);
+            this.minusbtn.TabIndex = 2;
+            this.minusbtn.Text = "_";
+            this.minusbtn.Click += new System.EventHandler(this.minusbtn_Click);
             // 
             // label2
             // 
@@ -196,9 +212,9 @@
             this.greet_user.ForeColor = System.Drawing.Color.White;
             this.greet_user.Location = new System.Drawing.Point(26, 124);
             this.greet_user.Name = "greet_user";
-            this.greet_user.Size = new System.Drawing.Size(115, 19);
+            this.greet_user.Size = new System.Drawing.Size(127, 19);
             this.greet_user.TabIndex = 1;
-            this.greet_user.Text = "Welcome, User";
+            this.greet_user.Text = "Welcome, SELIM";
             // 
             // pictureBox1
             // 
@@ -215,7 +231,7 @@
             this.panel3.Controls.Add(this.totalPriceLabel);
             this.panel3.Controls.Add(this.menuitemspanel);
             this.panel3.Controls.Add(this.reservationnumberlabel);
-            this.panel3.Controls.Add(this.textBox1);
+            this.panel3.Controls.Add(this.paidamount);
             this.panel3.Controls.Add(this.label13);
             this.panel3.Controls.Add(this.printnpaybtn);
             this.panel3.Controls.Add(this.reservationidtxt);
@@ -247,6 +263,24 @@
             this.panel3.Size = new System.Drawing.Size(931, 565);
             this.panel3.TabIndex = 2;
             // 
+            // deletebtn
+            // 
+            this.deletebtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.deletebtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.deletebtn.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.deletebtn.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.deletebtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.deletebtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.deletebtn.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.deletebtn.ForeColor = System.Drawing.Color.White;
+            this.deletebtn.Location = new System.Drawing.Point(301, 385);
+            this.deletebtn.Name = "deletebtn";
+            this.deletebtn.Size = new System.Drawing.Size(114, 36);
+            this.deletebtn.TabIndex = 34;
+            this.deletebtn.Text = "مسح";
+            this.deletebtn.UseVisualStyleBackColor = false;
+            this.deletebtn.Click += new System.EventHandler(this.deletebtn_Click);
+            // 
             // totalPriceLabel
             // 
             this.totalPriceLabel.AutoSize = true;
@@ -276,15 +310,16 @@
             this.reservationnumberlabel.Text = " ";
             this.reservationnumberlabel.Click += new System.EventHandler(this.reservationnumberlabel_Click);
             // 
-            // textBox1
+            // paidamount
             // 
-            this.textBox1.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(437, 458);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(79, 25);
-            this.textBox1.TabIndex = 32;
-            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.paidamount.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.paidamount.Location = new System.Drawing.Point(437, 458);
+            this.paidamount.Multiline = true;
+            this.paidamount.Name = "paidamount";
+            this.paidamount.Size = new System.Drawing.Size(79, 25);
+            this.paidamount.TabIndex = 32;
+            this.paidamount.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.paidamount.TextChanged += new System.EventHandler(this.paidamount_TextChanged);
             // 
             // label13
             // 
@@ -313,6 +348,7 @@
             this.printnpaybtn.TabIndex = 30;
             this.printnpaybtn.Text = "طباعه ودفع";
             this.printnpaybtn.UseVisualStyleBackColor = false;
+            this.printnpaybtn.Click += new System.EventHandler(this.printnpaybtn_Click_1);
             // 
             // reservationidtxt
             // 
@@ -577,24 +613,6 @@
             this.label3.TabIndex = 4;
             this.label3.Text = "الاسم";
             // 
-            // deletebtn
-            // 
-            this.deletebtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
-            this.deletebtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.deletebtn.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
-            this.deletebtn.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
-            this.deletebtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
-            this.deletebtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.deletebtn.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.deletebtn.ForeColor = System.Drawing.Color.White;
-            this.deletebtn.Location = new System.Drawing.Point(301, 385);
-            this.deletebtn.Name = "deletebtn";
-            this.deletebtn.Size = new System.Drawing.Size(114, 36);
-            this.deletebtn.TabIndex = 34;
-            this.deletebtn.Text = "مسح";
-            this.deletebtn.UseVisualStyleBackColor = false;
-            this.deletebtn.Click += new System.EventHandler(this.deletebtn_Click);
-            // 
             // Home
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -604,9 +622,13 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.ImeMode = System.Windows.Forms.ImeMode.On;
             this.Name = "Home";
+            this.ShowIcon = false;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MainForm";
+            this.Load += new System.EventHandler(this.Home_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -656,10 +678,11 @@
         private System.Windows.Forms.TextBox reservationidtxt;
         private System.Windows.Forms.Button printnpaybtn;
         private System.Windows.Forms.Panel menuitemspanel;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox paidamount;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label reservationnumberlabel;
         private System.Windows.Forms.Label totalPriceLabel;
         private System.Windows.Forms.Button deletebtn;
+        private System.Windows.Forms.Label minusbtn;
     }
 }

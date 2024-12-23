@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,11 @@ namespace Reservation
 {
     public partial class Home : Form
     {
+
+
+        private float _initialFormWidth;
+        private float _initialFormHeight;
+        private ControlInfo[] _controlsInfo;
         public Home()
         {
             InitializeComponent();
@@ -20,6 +26,86 @@ namespace Reservation
             PopulateMenuItems();
             reservationdateandtime.Value = DateTime.Now;
             Resturantnamecombo.Enabled = false; // Disable combobox until a date is selected
+
+
+            _initialFormWidth = this.Width;
+            _initialFormHeight = this.Height;
+            // Store initial size and location of all controls
+            _controlsInfo = new ControlInfo[this.Controls.Count];
+            for (int i = 0; i < this.Controls.Count; i++)
+            {
+                Control c = this.Controls[i];
+                _controlsInfo[i] = new ControlInfo(c.Left, c.Top, c.Width, c.Height, c.Font.Size);
+            }
+
+            // Set event handler for form resize
+            this.Resize += Home_Resize;
+        }
+
+
+        private bool _isResizing = false;
+
+        private void Home_Resize(object sender, EventArgs e)
+        {
+            if (_isResizing) return;
+
+            _isResizing = true;
+            try
+            {
+                float widthRatio = this.Width / _initialFormWidth;
+                float heightRatio = this.Height / _initialFormHeight;
+                ResizeControls(this.Controls, widthRatio, heightRatio);
+            }
+            finally
+            {
+                _isResizing = false;
+            }
+        }
+
+
+        private void ResizeControls(Control.ControlCollection controls, float widthRatio, float heightRatio)
+        {
+            foreach (Control control in controls)
+            {
+
+                if (control is Panel panel)
+                {
+                    // Recursively adjust panel's child controls
+                    ResizeControls(panel.Controls, widthRatio, heightRatio);
+                }
+                else
+                {
+                    // Adjust control dimensions
+                    var controlInfo = Array.Find(_controlsInfo, c => c.Left == control.Left && c.Top == control.Top);
+                    if (controlInfo != null)
+                    {
+                        control.Left = (int)(controlInfo.Left * widthRatio);
+                        control.Top = (int)(controlInfo.Top * heightRatio);
+                        control.Width = (int)(controlInfo.Width * widthRatio);
+                        control.Height = (int)(controlInfo.Height * heightRatio);
+                        control.Font = new Font(control.Font.FontFamily, controlInfo.FontSize * Math.Min(widthRatio, heightRatio));
+                    }
+                }
+            }
+        }
+
+
+        private class ControlInfo
+        {
+            public int Left { get; set; }
+            public int Top { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public float FontSize { get; set; }
+
+            public ControlInfo(int left, int top, int width, int height, float fontSize)
+            {
+                Left = left;
+                Top = top;
+                Width = width;
+                Height = height;
+                FontSize = fontSize;
+            }
         }
 
         private void exit_Click(object sender, EventArgs e)
@@ -159,6 +245,7 @@ namespace Reservation
             reservationdateandtime.Enabled = false;
             Resturantnamecombo.Enabled = false;
             capacitytxt.Enabled = false;
+            Reservationdatabtn.Enabled = false; 
         }
 
         private void Reservationdatabtn_Click(object sender, EventArgs e)
@@ -273,6 +360,7 @@ namespace Reservation
 
 
                             LockReservationFields();
+                            LockCustomerFields();
                         }
                         else
                         {
@@ -412,33 +500,43 @@ namespace Reservation
             
         }
 
-       
 
-        
+        public class Item
+        {
+            public string ItemName { get; set; }
+            public int Quantity { get; set; }
+            public decimal ItemPrice { get; set; }
+            public decimal ItemTotalPrice { get; set; }
+        }
+
+        private List<Item> addedItems = new List<Item>();
+        private decimal totalPrice = 0.0m;
+
+
         // Define a variable to store the total price
-        private decimal totalPrice = 0;
+
 
         private void additembtn_Click(object sender, EventArgs e)
         {
-            // Get the selected item from ComboBox
             string selectedItem = itemmenucombo.SelectedItem.ToString();
-
-            // Get the quantity from the TextBox
             if (int.TryParse(quantitytxt.Text, out int quantity) && quantity > 0)
             {
                 try
                 {
-                    // Fetch the price of the selected item from the Menu table
                     decimal itemPrice = GetItemPrice(selectedItem);
-
-                    // Calculate the total price for this item
                     decimal itemTotalPrice = itemPrice * quantity;
                     totalPrice += itemTotalPrice;
 
-                    // Add the item to the panel
-                    AddItemToPanel(selectedItem, quantity, itemPrice, itemTotalPrice);
+                    Item newItem = new Item
+                    {
+                        ItemName = selectedItem,
+                        Quantity = quantity,
+                        ItemPrice = itemPrice,
+                        ItemTotalPrice = itemTotalPrice
+                    };
+                    addedItems.Add(newItem);
 
-                    // Update the total price label
+                    AddItemToPanel(selectedItem, quantity, itemPrice, itemTotalPrice);
                     totalPriceLabel.Text = $"Total Price: {totalPrice:C}";
                 }
                 catch (Exception ex)
@@ -451,6 +549,7 @@ namespace Reservation
                 MessageBox.Show("Please enter a valid quantity.", "Invalid Quantity", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
 
         // Method to fetch the price of the selected item from the Menu table
         private decimal GetItemPrice(string itemName)
@@ -644,7 +743,6 @@ namespace Reservation
 
 
 
-
         private void deletebtn_Click(object sender, EventArgs e)
         {
             if (selectedItemLabel != null)
@@ -662,8 +760,7 @@ namespace Reservation
                 var quantityLabel = (Label)menuitemspanel.Controls[selectedIndex + 1];
                 var priceLabel = (Label)menuitemspanel.Controls[selectedIndex + 2];
 
-                // Retrieve the raw price from the Tag property     
-
+                // Retrieve the raw price from the Tag property
                 if (priceLabel.Tag is decimal itemTotalPrice)
                 {
                     totalPrice -= itemTotalPrice;
@@ -685,14 +782,37 @@ namespace Reservation
 
                 // Adjust positions of remaining rows
                 AdjustRowPositions();
+
+                // Now delete from the addedItems list (the correct name for your array/list)
+                string itemName = itemNameLabel.Text;
+                int itemIndexToDelete = -1;
+
+                // Assuming addedItems is a List<Item> (from your provided code)
+                for (int i = 0; i < addedItems.Count; i++)
+                {
+                    if (addedItems[i].ItemName == itemName)
+                    {
+                        itemIndexToDelete = i;
+                        break;
+                    }
+                }
+
+                if (itemIndexToDelete >= 0)
+                {
+                    // Remove the item from the list
+                    addedItems.RemoveAt(itemIndexToDelete);
+                    Debug.WriteLine($"Item '{itemName}' removed from addedItems list.");
+                }
+                else
+                {
+                    MessageBox.Show($"Item '{itemName}' not found in addedItems list.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
             else
             {
                 MessageBox.Show("Please select a row to delete.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-
-
 
 
 
@@ -708,7 +828,289 @@ namespace Reservation
 
         }
 
+        private void Home_Load(object sender, EventArgs e)
+        {
+
+        }
+
+
+
+
+
+
+
+        private int GetMenuItemId(string itemName)
+        {
+            using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                string query = "SELECT MenuItemID FROM Menu WHERE ItemName = @ItemName";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@ItemName", itemName);
+
+                conn.Open();
+                object result = cmd.ExecuteScalar();
+                conn.Close();
+
+                if (result != null && int.TryParse(result.ToString(), out int menuItemId))
+                {
+                    return menuItemId;
+                }
+                else
+                {
+                    throw new Exception($"Menu item '{itemName}' not found in the database.");
+                }
+            }
+        }
+
+
+
+
+
+
+
        
+
+
+
+
+        private void InsertPayment(int customerId, int reservationId, decimal totalAmount, decimal paidAmount)
+        {
+            using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                string query = @"
+            INSERT INTO Payments (CustomerID, ReservationID, TotalAmount, PaidAmount)
+            VALUES (@CustomerID, @ReservationID, @TotalAmount, @PaidAmount)";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@CustomerID", customerId);
+                cmd.Parameters.AddWithValue("@ReservationID", reservationId);
+                cmd.Parameters.AddWithValue("@TotalAmount", totalAmount);
+                cmd.Parameters.AddWithValue("@PaidAmount", paidAmount);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+        }
+
+
+
+
+
+
+
+        private int GetCustomerId()
+        {
+            // Get the customer name and phone number from the textboxes
+            string customerName = Customernametxt.Text;
+            string phoneNumber = Phonenumbertxt.Text;
+
+            // Initialize the connection string (adjust this to your database configuration)
+            string connectionString = DatabaseConfig.connectionString;
+
+            // SQL query to get CustomerID based on the provided name and phone number
+            string query = "SELECT customerid FROM Customer WHERE Name = @Name AND PhoneNumber = @PhoneNumber";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    // Open the database connection
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        // Add parameters to the SQL query to avoid SQL injection
+                        command.Parameters.AddWithValue("@Name", customerName);
+                        command.Parameters.AddWithValue("@PhoneNumber", phoneNumber);
+
+                        // Execute the query and get the result
+                        object result = command.ExecuteScalar();
+
+                        // Check if a result is returned
+                        if (result != null)
+                        {
+                            // Return the CustomerID (assumes ID is an int)
+                            return Convert.ToInt32(result);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Customer not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return -1; // Or handle as appropriate
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return -1; // Or handle as appropriate
+                }
+            }
+        }
+
+
+
+
+        private void printnpaybtn_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                string totalPriceText = totalPriceLabel.Text.Replace("Total Price:", "").Replace("£", "").Replace("$", "").Trim();
+                if (!decimal.TryParse(totalPriceText, out decimal totalAmount))
+                {
+                    MessageBox.Show($"Failed to parse Total Price '{totalPriceLabel.Text}'. Ensure the format is correct.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!decimal.TryParse(paidamount.Text, out decimal paidAmount))
+                {
+                    MessageBox.Show($"Failed to parse Paid Amount '{paidamount.Text}'. Ensure the input is correct.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!int.TryParse(reservationidtxt.Text, out int reservationId))
+                {
+                    MessageBox.Show($"Failed to parse Reservation ID '{reservationidtxt.Text}'. Ensure the input is a valid number.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Insert payment into Payments table
+                string paymentQuery = "INSERT INTO Payments (CustomerID, ReservationID, TotalAmount, PaidAmount) VALUES (@CustomerID, @ReservationID, @TotalAmount, @PaidAmount)";
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+                    using (SqlCommand paymentCommand = new SqlCommand(paymentQuery, connection))
+                    {
+                        paymentCommand.Parameters.AddWithValue("@CustomerID", GetCustomerId()); // Assume customerId is retrieved elsewhere
+                        paymentCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                        paymentCommand.Parameters.AddWithValue("@TotalAmount", totalAmount);
+                        paymentCommand.Parameters.AddWithValue("@PaidAmount", paidAmount);
+                        paymentCommand.ExecuteNonQuery();
+                    }
+
+                    // Now, insert each item from addedItems into OrderDetails
+                    foreach (var item in addedItems)
+                    {
+                        int menuItemId = GetMenuItemIdByName(item.ItemName); // Retrieve MenuItemId based on item name
+                        decimal subtotal = item.ItemPrice * item.Quantity;
+
+                        string orderDetailsQuery = "INSERT INTO OrderDetails (ReservationID, MenuItemID, Quantity, ItemPrice) " +
+                                                   "VALUES (@ReservationID, @MenuItemID, @Quantity, @ItemPrice)";
+                        using (SqlCommand orderDetailsCommand = new SqlCommand(orderDetailsQuery, connection))
+                        {
+                            orderDetailsCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                            orderDetailsCommand.Parameters.AddWithValue("@MenuItemID", menuItemId);
+                            orderDetailsCommand.Parameters.AddWithValue("@Quantity", item.Quantity);
+                            orderDetailsCommand.Parameters.AddWithValue("@ItemPrice", item.ItemPrice);
+                            
+                            orderDetailsCommand.ExecuteNonQuery();
+                        }
+                    }
+
+                    MessageBox.Show("Order details and payment saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+
+
+
+        private int GetMenuItemIdByName(string itemName)
+        {
+            int menuItemId = -1;
+            string query = "SELECT MenuItemID FROM Menu WHERE ItemName = @ItemName";
+            using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ItemName", itemName);
+                    object result = command.ExecuteScalar();
+                    if (result != null)
+                    {
+                        menuItemId = Convert.ToInt32(result);
+                    }
+                }
+            }
+            return menuItemId;
+        }
+
+
+        private void InsertOrderDetails(int reservationId, int menuItemId, int quantity, decimal itemPrice, decimal subtotal)
+        {
+            Debug.WriteLine($"Inserting order details: ReservationID={reservationId}, MenuItemID={menuItemId}, Quantity={quantity}, ItemPrice={itemPrice}, Subtotal={subtotal}");
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+                    Debug.WriteLine("Connection opened for OrderDetails insert.");
+
+                    string insertQuery = "INSERT INTO OrderDetails (ReservationID, MenuItemID, Quantity, ItemPrice, Subtotal) VALUES (@ReservationID, @MenuItemID, @Quantity, @ItemPrice, @Subtotal)";
+                    using (SqlCommand command = new SqlCommand(insertQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@ReservationID", reservationId);
+                        command.Parameters.AddWithValue("@MenuItemID", menuItemId);
+                        command.Parameters.AddWithValue("@Quantity", quantity);
+                        command.Parameters.AddWithValue("@ItemPrice", itemPrice);
+                        command.Parameters.AddWithValue("@Subtotal", subtotal);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+                        Debug.WriteLine($"Rows affected by OrderDetails insert: {rowsAffected}");
+
+                        if (rowsAffected > 0)
+                        {
+                            Debug.WriteLine("Order details inserted successfully.");
+                        }
+                        else
+                        {
+                            Debug.WriteLine("Order details insertion failed.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in InsertOrderDetails: {ex.Message}");
+            }
+        }
+
+        private void paidamount_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void squarebtn_Click(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                this.WindowState = FormWindowState.Normal; // Restore the form to its normal size
+            }
+            else
+            {
+                this.WindowState = FormWindowState.Maximized; // Maximize the form
+            }
+
+            // Trigger the resize logic to adjust controls
+            Home_Resize(sender, e);
+        }
+
+
+        private void minusbtn_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized; // Minimize the form to the taskbar
+        }
+
     }
 
     public class ComboboxItem
