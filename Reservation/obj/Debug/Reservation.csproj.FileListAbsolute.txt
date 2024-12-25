@@ -11,3 +11,4 @@ D:\Github\Reservation\Reservation\bin\Debug\Krypton.Toolkit.xml
 D:\Github\Reservation\Reservation\obj\Debug\Reservat.F9C48C63.Up2Date
 D:\Github\Reservation\Reservation\obj\Debug\Reservation.exe
 D:\Github\Reservation\Reservation\obj\Debug\Reservation.pdb
+D:\Github\Reservation\Reservation\obj\Debug\Reservation.Addorders.resources

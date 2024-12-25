@@ -79,7 +79,6 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
-            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel1.Controls.Add(this.minusbtn);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.exit);
@@ -94,11 +93,11 @@
             // 
             this.minusbtn.AutoSize = true;
             this.minusbtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.minusbtn.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.minusbtn.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.minusbtn.ForeColor = System.Drawing.Color.White;
-            this.minusbtn.Location = new System.Drawing.Point(1040, -5);
+            this.minusbtn.Location = new System.Drawing.Point(1048, -2);
             this.minusbtn.Name = "minusbtn";
-            this.minusbtn.Size = new System.Drawing.Size(25, 25);
+            this.minusbtn.Size = new System.Drawing.Size(20, 23);
             this.minusbtn.TabIndex = 2;
             this.minusbtn.Text = "_";
             this.minusbtn.Click += new System.EventHandler(this.minusbtn_Click);
@@ -262,6 +261,7 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(931, 565);
             this.panel3.TabIndex = 2;
+            this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.panel3_Paint);
             // 
             // deletebtn
             // 
@@ -624,7 +624,6 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.ImeMode = System.Windows.Forms.ImeMode.On;
             this.Name = "Home";
-            this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MainForm";

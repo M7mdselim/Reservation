@@ -12,21 +12,17 @@ using System.Windows.Forms;
 
 namespace Reservation
 {
-    public partial class Home : Form
+    public partial class Addorders : Form
     {
-
-
         private float _initialFormWidth;
         private float _initialFormHeight;
         private ControlInfo[] _controlsInfo;
-        public Home()
+        public Addorders()
         {
             InitializeComponent();
 
             PopulateMenuItems();
-            reservationdateandtime.Value = DateTime.Now;
-            Resturantnamecombo.Enabled = false; // Disable combobox until a date is selected
-
+           
 
             _initialFormWidth = this.Width;
             _initialFormHeight = this.Height;
@@ -40,6 +36,11 @@ namespace Reservation
 
             // Set event handler for form resize
             this.Resize += Home_Resize;
+            ReservationGridView.CellDoubleClick += ReservationGridView_CellDoubleClick;
+            this.ReservationGridView.CellFormatting += new DataGridViewCellFormattingEventHandler(this.ReservationGridView_CellFormatting);
+
+
+
         }
 
 
@@ -120,31 +121,31 @@ namespace Reservation
 
             if (check == DialogResult.Yes)
             {
-              
+
             }
         }
 
         private void dashboard_btn_Click(object sender, EventArgs e)
         {
-            
 
-           
+
+
 
         }
 
         private void addEmployee_btn_Click(object sender, EventArgs e)
         {
-            
 
-           
+
+
 
         }
 
         private void salary_btn_Click(object sender, EventArgs e)
         {
-           
 
-            
+
+
 
         }
 
@@ -162,309 +163,24 @@ namespace Reservation
             Customernametxt.Enabled = false;
             Phonenumbertxt.Enabled = false;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        private void addnewcustomerbtn_Click(object sender, EventArgs e)
-        {
-            string customerName = Customernametxt.Text.Trim();
-            string phoneNumber = Phonenumbertxt.Text.Trim();
-
-            // Validate inputs
-            if (string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(phoneNumber))
-            {
-                MessageBox.Show("Please fill in both Customer Name and Phone Number.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
-                {
-                    connection.Open();
-
-                    // Check if the customer name or phone number already exists in the database
-                    string checkQuery = "SELECT COUNT(*) FROM Customer WHERE Name = @Name OR PhoneNumber = @PhoneNumber";
-                    using (SqlCommand checkCommand = new SqlCommand(checkQuery, connection))
-                    {
-                        checkCommand.Parameters.AddWithValue("@Name", customerName);
-                        checkCommand.Parameters.AddWithValue("@PhoneNumber", phoneNumber);
-
-                        int customerCount = (int)checkCommand.ExecuteScalar(); // Returns the count of matching rows
-
-                        if (customerCount > 0)
-                        {
-                            // Customer already exists
-                            MessageBox.Show("A customer with this name or phone number already exists.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return; // Prevent insertion
-                        }
-                    }
-
-                    // If customer doesn't exist, proceed with adding the new customer
-                    string insertQuery = "INSERT INTO Customer (Name, PhoneNumber) VALUES (@Name, @PhoneNumber)";
-                    using (SqlCommand insertCommand = new SqlCommand(insertQuery, connection))
-                    {
-                        insertCommand.Parameters.AddWithValue("@Name", customerName);
-                        insertCommand.Parameters.AddWithValue("@PhoneNumber", phoneNumber);
-
-                        int rowsAffected = insertCommand.ExecuteNonQuery();
-                        if (rowsAffected > 0)
-                        {
-                            MessageBox.Show("Customer added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            LockCustomerFields();    // Make them readonly
-                        }
-                        else
-                        {
-                            MessageBox.Show("Failed to add customer.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-
+        
         private void reservationnumberlabel_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void reservationdateandtime_ValueChanged(object sender, EventArgs e)
-        {
-            LoadAvailableRestaurants();
-        }
-
-        private void Resturantnamecombo_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (Resturantnamecombo.SelectedIndex != -1)
-            {
-                // Get the selected item
-                ComboboxItem selectedItem = (ComboboxItem)Resturantnamecombo.SelectedItem;
-
-                // Get the RestaurantID from the selected item
-                int selectedRestaurantId = selectedItem.Value;
-
-                // Print the Restaurant ID (for debugging purposes)
-                Console.WriteLine("Selected RestaurantID: " + selectedRestaurantId);
-
-                // Do whatever you need with the selectedRestaurantId (e.g., store it, make queries, etc.)
-            }
-        }
+      
 
 
-        private void capacitytxt_TextChanged(object sender, EventArgs e)
-        {
-
-        }
+      
 
 
 
-        private void LockReservationFields()
-        {
-            reservationdateandtime.Enabled = false;
-            Resturantnamecombo.Enabled = false;
-            capacitytxt.Enabled = false;
-            Reservationdatabtn.Enabled = false; 
-        }
-
-        private void Reservationdatabtn_Click(object sender, EventArgs e)
-        { 
-            // Validate input fields
-            if (string.IsNullOrWhiteSpace(capacitytxt.Text) || Resturantnamecombo.SelectedIndex == -1 || reservationdateandtime.Value == null
-                || string.IsNullOrWhiteSpace(Customernametxt.Text) || string.IsNullOrWhiteSpace(Phonenumbertxt.Text))
-            {
-                MessageBox.Show("Please fill in all the fields.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Validate requested capacity
-            if (!int.TryParse(capacitytxt.Text, out int requestedCapacity) || requestedCapacity <= 0)
-            {
-                MessageBox.Show("Capacity must be a positive number.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            string selectedRestaurantName = Resturantnamecombo.SelectedItem.ToString();
-            string customerName = Customernametxt.Text;
-            string phoneNumber = Phonenumbertxt.Text;
-            DateTime selectedDate = reservationdateandtime.Value.Date;
-
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
-                {
-                    connection.Open();
-
-                    // Get RestaurantID
-                    string getRestaurantIdQuery = "SELECT RestaurantID FROM Restaurant WHERE Name = @RestaurantName";
-                    int restaurantId = 0;
-                    using (SqlCommand cmd = new SqlCommand(getRestaurantIdQuery, connection))
-                    {
-                        cmd.Parameters.AddWithValue("@RestaurantName", selectedRestaurantName);
-                        object result = cmd.ExecuteScalar();
-                        if (result != null)
-                            restaurantId = Convert.ToInt32(result);
-                        else
-                        {
-                            MessageBox.Show("Restaurant not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-                    }
-
-                    // Get CustomerID
-                    string getCustomerIdQuery = "SELECT CustomerID FROM Customer WHERE Name = @CustomerName AND PhoneNumber = @PhoneNumber";
-                    int customerId = 0;
-                    using (SqlCommand cmd = new SqlCommand(getCustomerIdQuery, connection))
-                    {
-                        cmd.Parameters.AddWithValue("@CustomerName", customerName);
-                        cmd.Parameters.AddWithValue("@PhoneNumber", phoneNumber);
-                        object result = cmd.ExecuteScalar();
-                        if (result != null)
-                            customerId = Convert.ToInt32(result);
-                        else
-                        {
-                            MessageBox.Show("Customer not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-                    }
-
-                    // Check remaining capacity
-                    string checkCapacityQuery = @"
-            SELECT RemainingCapacity 
-            FROM RestaurantDailyCapacity 
-            WHERE RestaurantID = @RestaurantID AND Date = @Date";
-                    int remainingCapacity = 0;
-                    using (SqlCommand cmd = new SqlCommand(checkCapacityQuery, connection))
-                    {
-                        cmd.Parameters.AddWithValue("@RestaurantID", restaurantId);
-                        cmd.Parameters.AddWithValue("@Date", selectedDate);
-                        object result = cmd.ExecuteScalar();
-                        if (result != null)
-                            remainingCapacity = Convert.ToInt32(result);
-                        else
-                        {
-                            MessageBox.Show("No capacity record found for the selected restaurant and date.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-                    }
-
-                    if (remainingCapacity < requestedCapacity)
-                    {
-                        MessageBox.Show($"Insufficient capacity. Only {remainingCapacity} seats are available.", "Capacity Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-
-                    // Insert reservation and get the ReservationID
-                    string insertReservationQuery = @"
-            INSERT INTO Reservations (CustomerID, RestaurantID, ReservationDate, [NumberOfGuests])
-            VALUES (@CustomerID, @RestaurantID, @Date, @Capacity);
-            SELECT SCOPE_IDENTITY();";
-                    int reservationId = 0;
-                    using (SqlCommand cmd = new SqlCommand(insertReservationQuery, connection))
-                    {
-                        cmd.Parameters.AddWithValue("@CustomerID", customerId);
-                        cmd.Parameters.AddWithValue("@RestaurantID", restaurantId);
-                        cmd.Parameters.AddWithValue("@Date", selectedDate);
-                        cmd.Parameters.AddWithValue("@Capacity", requestedCapacity);
-                        object result = cmd.ExecuteScalar();
-                        if (result != null)
-                        {
-                            reservationId = Convert.ToInt32(result);
-                            MessageBox.Show("Reservation successfully saved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                            // Update the reservationnumberlabel
-                            reservationnumberlabel.Text = $"Reservation number is = {reservationId}";
-                            reservationnumberlabel.ForeColor = Color.Red;
-                            reservationidtxt.Text = reservationId.ToString(); // Update TextBox
-
-
-                            LockReservationFields();
-                            LockCustomerFields();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Failed to save the reservation.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+     
 
 
 
-
-        private void LoadAvailableRestaurants()
-        {
-            // Clear existing items
-            Resturantnamecombo.Items.Clear();
-
-            // Load data from the database
-            DateTime selectedDate = reservationdateandtime.Value.Date;
-
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
-                {
-                    connection.Open();
-                    string query = @"
-                SELECT r.RestaurantID, r.Name
-                FROM Restaurant r
-                INNER JOIN RestaurantDailyCapacity rd ON r.RestaurantID = rd.RestaurantID
-                WHERE rd.Date = @SelectedDate AND rd.RemainingCapacity > 10";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@SelectedDate", selectedDate);
-
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            // Loop through all available restaurants and add to ComboBox
-                            while (reader.Read())
-                            {
-                                ComboboxItem item = new ComboboxItem
-                                {
-                                    Text = reader["Name"].ToString(),  // Restaurant Name
-                                    Value = Convert.ToInt32(reader["RestaurantID"])  // Restaurant ID
-                                };
-                                Resturantnamecombo.Items.Add(item);  // Add the item to ComboBox
-                            }
-                        }
-                    }
-                }
-
-                // Enable the ComboBox if we have any restaurants
-                Resturantnamecombo.Enabled = Resturantnamecombo.Items.Count > 0;
-
-                if (Resturantnamecombo.Items.Count == 0)
-                {
-                    MessageBox.Show("No restaurants with sufficient capacity available for the selected date.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+       
 
 
         private int GetSelectedCustomerId()
@@ -475,13 +191,7 @@ namespace Reservation
             return 1; // Replace with actual customer selection logic
         }
 
-        private void ClearReservationFields()
-        {
-            reservationdateandtime.Value = DateTime.Now;
-            Resturantnamecombo.SelectedIndex = -1;
-            capacitytxt.Clear();
-        }
-
+      
 
 
 
@@ -532,7 +242,7 @@ namespace Reservation
         {
             // Handle selection change if necessary
             string selectedItem = itemmenucombo.SelectedItem.ToString();
-            
+
         }
 
 
@@ -667,7 +377,7 @@ namespace Reservation
 
             Label priceLabel = new Label
             {
-                Text = $"{"   "+itemTotalPrice}",
+                Text = $"{"   " + itemTotalPrice}",
                 Width = columnWidthPrice,
                 Height = rowHeight,
                 Location = new Point(quantityLabel.Location.X + columnWidthQuantity + padding, lastRowYPosition),
@@ -903,7 +613,7 @@ namespace Reservation
 
 
 
-       
+
 
 
 
@@ -1036,7 +746,7 @@ namespace Reservation
                             orderDetailsCommand.Parameters.AddWithValue("@MenuItemID", menuItemId);
                             orderDetailsCommand.Parameters.AddWithValue("@Quantity", item.Quantity);
                             orderDetailsCommand.Parameters.AddWithValue("@ItemPrice", item.ItemPrice);
-                            
+
                             orderDetailsCommand.ExecuteNonQuery();
                         }
                     }
@@ -1146,23 +856,287 @@ namespace Reservation
             this.WindowState = FormWindowState.Minimized; // Minimize the form to the taskbar
         }
 
+        private void ReservationGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                // Get the selected customer ID (modify this line based on how you capture customer ID)
+                int customerId = GetCustomerId(); // Replace with the actual method to get CustomerID
+
+                // Validate customer ID
+                if (customerId <= 0) // Check if it's a valid positive ID
+                {
+                    MessageBox.Show("Please select a valid customer.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+
+                    // Query to fetch reservation IDs for the specified customer ID
+                    string query = "SELECT ReservationID, ReservationDate, AmountPaid FROM Reservations WHERE CustomerID = @CustomerID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@CustomerID", customerId);
+
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        {
+                            DataTable reservationsTable = new DataTable();
+                            adapter.Fill(reservationsTable);
+
+                            // Bind the results to the DataGridView
+                            ReservationGridView.DataSource = reservationsTable;
+
+                            // Optionally customize column headers
+                            if (ReservationGridView.Columns.Contains("ReservationID"))
+                                ReservationGridView.Columns["ReservationID"].HeaderText = "Reservation ID";
+
+                            if (ReservationGridView.Columns.Contains("ReservationDate"))
+                                ReservationGridView.Columns["ReservationDate"].HeaderText = "Reservation Date";
+
+                            if (ReservationGridView.Columns.Contains("AmountPaid"))
+                                ReservationGridView.Columns["AmountPaid"].HeaderText = "Amount Paid";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void Fetchdatabtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Ensure a valid customer ID is selected
+                int customerId = GetCustomerId(); // Adjust this method to match how you retrieve CustomerID in your application
+
+                if (customerId <= 0) // Check if the CustomerID is valid
+                {
+                    MessageBox.Show("Please select a valid customer.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+
+                    // Query to fetch reservation data for the selected customer
+                    string query = "SELECT ReservationID, ReservationDate , NumberOfGuests FROM Reservations WHERE CustomerID = @CustomerID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@CustomerID", customerId);
+
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        {
+                            DataTable reservationsTable = new DataTable();
+                            adapter.Fill(reservationsTable);
+
+                            // Bind the results to the DataGridView
+                            ReservationGridView.DataSource = reservationsTable;
+
+                            // Optionally customize column headers
+                            ReservationGridView.Columns["ReservationID"].HeaderText = "ID";
+                            ReservationGridView.Columns["ReservationDate"].HeaderText = "Reservation Date";
+                            ReservationGridView.Columns["NumberOfGuests"].HeaderText = "NumberOfGuests";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+        private void ReservationGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            try
+            {
+                // Check if the row is not in the header
+                if (e.RowIndex >= 0)
+                {
+                    // Get the ReservationID from the clicked row
+                    int reservationId = Convert.ToInt32(ReservationGridView.Rows[e.RowIndex].Cells["ReservationID"].Value);
+
+                    // Check if this ReservationID has no order details
+                    bool hasNoOrderDetails = CheckIfReservationHasNoOrderDetails(reservationId);
+
+                    // If there are no order details for the ReservationID, highlight the row yellow
+                    if (hasNoOrderDetails)
+                    {
+                        ReservationGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Yellow; // Highlight with yellow color
+                    }
+                    else
+                    {
+                        // Reset the background color if order details exist
+                        ReservationGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.White; // Default background color
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private bool CheckIfReservationHasNoOrderDetails(int reservationId)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+
+                    // Query to check if there are no order details for the given ReservationID
+                    string query = "SELECT COUNT(*) FROM OrderDetails WHERE ReservationID = @ReservationID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@ReservationID", reservationId);
+
+                        // Execute the query and check the count of order details
+                        int orderCount = (int)command.ExecuteScalar();
+
+                        return orderCount == 0; // If count is 0, there are no order details
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while checking order details: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false; // Return false in case of error
+            }
+        }
+
+
+        private decimal GetRemainingAmount(int reservationId)
+        {
+            decimal remainingAmount = 0;
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+
+                    // Query to fetch the remaining amount from Payments table
+                    string query = "SELECT RemainingAmount FROM Payments WHERE ReservationID = @ReservationID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@ReservationID", reservationId);
+
+                        // Execute the query and fetch the RemainingAmount
+                        object result = command.ExecuteScalar();
+
+                        if (result != DBNull.Value)
+                        {
+                            remainingAmount = Convert.ToDecimal(result);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while fetching remaining amount: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return remainingAmount;
+        }
+
+
+        private void ReservationGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                // Ensure the click is on a valid row and not on headers
+                if (e.RowIndex >= 0)
+                {
+                    // Get the ReservationID from the clicked row
+                    int reservationId = Convert.ToInt32(ReservationGridView.Rows[e.RowIndex].Cells["ReservationID"].Value);
+
+                    using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                    {
+                        connection.Open();
+
+                        // Query to fetch order details with ItemName and ItemPrice for the selected ReservationID
+                        string query = @"SELECT od.ReservationID, m.ItemName, od.Quantity, m.ItemPrice
+                                 FROM OrderDetails od
+                                 INNER JOIN Menu m ON od.MenuItemID = m.MenuItemID
+                                 WHERE od.ReservationID = @ReservationID";
+
+                        using (SqlCommand command = new SqlCommand(query, connection))
+                        {
+                            command.Parameters.AddWithValue("@ReservationID", reservationId);
+
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                if (reader.HasRows)
+                                {
+                                    string details = "Order Details:\n";
+                                    decimal totalAmount = 0; // Variable to store total amount of the order
+
+                                    // Read the order details
+                                    while (reader.Read())
+                                    {
+                                        decimal itemAmount = Convert.ToDecimal(reader["ItemPrice"]) * Convert.ToInt32(reader["Quantity"]);
+                                        totalAmount += itemAmount; // Add the item amount to the total
+
+                                        details += 
+                                                   $"Item Name: {reader["ItemName"]}, " +
+                                                   $"Quantity: {reader["Quantity"]}, " +
+                                                   $"Item Price: {reader["ItemPrice"]}, " +
+                                                   $"Price: {itemAmount:C}\n";
+                                    }
+
+                                    reader.Close();  // Close the reader before executing the next query
+
+                                    // Now fetch the total paid for the reservation from the Payments table
+                                    string totalPaidQuery = "SELECT SUM(PaidAmount) FROM Payments WHERE ReservationID = @ReservationID";
+                                    using (SqlCommand paidCommand = new SqlCommand(totalPaidQuery, connection))
+                                    {
+                                        paidCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                                        var totalPaid = paidCommand.ExecuteScalar();
+                                        decimal amountPaid = totalPaid != DBNull.Value ? Convert.ToDecimal(totalPaid) : 0;
+
+                                        details += $"\nTotal Amount for this order: {totalAmount:C}\n";
+                                        details += $"PaidAmount: {amountPaid:C}";
+
+                                        MessageBox.Show(details, "Order Details", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    }
+                                }
+                                else
+                                {
+                                    MessageBox.Show("No order details found for this reservation.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+        }
+
+
+
         private void panel3_Paint(object sender, PaintEventArgs e)
         {
 
         }
     }
 
-    public class ComboboxItem
-    {
-        public string Text { get; set; }
-        public int Value { get; set; }
-
-        public override string ToString()
-        {
-            return Text;
-        }
-    }
 }
-    
+
 
 

@@ -51,6 +51,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Addorders.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Addorders.Designer.cs">
+      <DependentUpon>Addorders.cs</DependentUpon>
+    </Compile>
     <Compile Include="DatabaseConfig.cs" />
     <Compile Include="Home.cs">
       <SubType>Form</SubType>
@@ -60,6 +66,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Addorders.resx">
+      <DependentUpon>Addorders.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Home.resx">
       <DependentUpon>Home.cs</DependentUpon>
     </EmbeddedResource>
