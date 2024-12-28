@@ -57,6 +57,12 @@
     <Compile Include="Addorders.Designer.cs">
       <DependentUpon>Addorders.cs</DependentUpon>
     </Compile>
+    <Compile Include="AddPayment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddPayment.Designer.cs">
+      <DependentUpon>AddPayment.cs</DependentUpon>
+    </Compile>
     <Compile Include="DatabaseConfig.cs" />
     <Compile Include="Home.cs">
       <SubType>Form</SubType>
@@ -66,8 +72,17 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReservationsReport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReservationsReport.Designer.cs">
+      <DependentUpon>ReservationsReport.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Addorders.resx">
       <DependentUpon>Addorders.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddPayment.resx">
+      <DependentUpon>AddPayment.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Home.resx">
       <DependentUpon>Home.cs</DependentUpon>
@@ -82,6 +97,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="ReservationsReport.resx">
+      <DependentUpon>ReservationsReport.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

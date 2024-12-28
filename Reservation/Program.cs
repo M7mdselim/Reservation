@@ -16,7 +16,7 @@ namespace Reservation
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Addorders());
+            Application.Run(new ReservationsReport());
         }
     }
 }

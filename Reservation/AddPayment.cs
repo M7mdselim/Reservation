@@ -1,0 +1,1285 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Reservation
+{
+    public partial class AddPayment : Form
+    {
+        private float _initialFormWidth;
+        private float _initialFormHeight;
+        private ControlInfo[] _controlsInfo;
+        public AddPayment()
+        {
+            InitializeComponent();
+
+         
+
+
+            _initialFormWidth = this.Width;
+            _initialFormHeight = this.Height;
+            // Store initial size and location of all controls
+            _controlsInfo = new ControlInfo[this.Controls.Count];
+            for (int i = 0; i < this.Controls.Count; i++)
+            {
+                Control c = this.Controls[i];
+                _controlsInfo[i] = new ControlInfo(c.Left, c.Top, c.Width, c.Height, c.Font.Size);
+            }
+
+            // Set event handler for form resize
+            this.Resize += Home_Resize;
+            ReservationGridView.CellDoubleClick += ReservationGridView_CellDoubleClick;
+            this.ReservationGridView.CellFormatting += new DataGridViewCellFormattingEventHandler(this.ReservationGridView_CellFormatting);
+          
+
+            // Event handlers
+            ConfigureNameAutoComplete();
+
+            nametxt.TextChanged += nametxt_TextChanged;
+            nametxt.Leave += nametxt_Leave;
+
+
+
+            Phonenumbertxt.MaxLength = 11; // Ensure no more than 11 characters
+
+            Phonenumbertxt.KeyPress += Phonenumbertxt_KeyPress;
+            Phonenumbertxt.TextChanged += Phonenumbertxt_TextChanged;
+            Phonenumbertxt.Leave += Phonenumbertxt_Leave;
+            ConfigureAutoComplete();
+
+
+        }
+
+
+        private bool _isResizing = false;
+
+        private void Home_Resize(object sender, EventArgs e)
+        {
+            if (_isResizing) return;
+
+            _isResizing = true;
+            try
+            {
+                float widthRatio = this.Width / _initialFormWidth;
+                float heightRatio = this.Height / _initialFormHeight;
+                ResizeControls(this.Controls, widthRatio, heightRatio);
+            }
+            finally
+            {
+                _isResizing = false;
+            }
+        }
+
+
+        private void ResizeControls(Control.ControlCollection controls, float widthRatio, float heightRatio)
+        {
+            foreach (Control control in controls)
+            {
+
+                if (control is Panel panel)
+                {
+                    // Recursively adjust panel's child controls
+                    ResizeControls(panel.Controls, widthRatio, heightRatio);
+                }
+                else
+                {
+                    // Adjust control dimensions
+                    var controlInfo = Array.Find(_controlsInfo, c => c.Left == control.Left && c.Top == control.Top);
+                    if (controlInfo != null)
+                    {
+                        control.Left = (int)(controlInfo.Left * widthRatio);
+                        control.Top = (int)(controlInfo.Top * heightRatio);
+                        control.Width = (int)(controlInfo.Width * widthRatio);
+                        control.Height = (int)(controlInfo.Height * heightRatio);
+                        control.Font = new Font(control.Font.FontFamily, controlInfo.FontSize * Math.Min(widthRatio, heightRatio));
+                    }
+                }
+            }
+        }
+
+
+        private class ControlInfo
+        {
+            public int Left { get; set; }
+            public int Top { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public float FontSize { get; set; }
+
+            public ControlInfo(int left, int top, int width, int height, float fontSize)
+            {
+                Left = left;
+                Top = top;
+                Width = width;
+                Height = height;
+                FontSize = fontSize;
+            }
+        }
+
+        private void exit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void logout_btn_Click(object sender, EventArgs e)
+        {
+            DialogResult check = MessageBox.Show("Are you sure you want to logout?"
+                , "Confirmation Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (check == DialogResult.Yes)
+            {
+
+            }
+        }
+
+        private void dashboard_btn_Click(object sender, EventArgs e)
+        {
+            Home home = new Home();
+            this.Hide();
+            home.ShowDialog();
+            this.Close();
+
+
+
+
+        }
+
+        private void addEmployee_btn_Click(object sender, EventArgs e)
+        {
+
+
+
+
+        }
+
+        private void salary_btn_Click(object sender, EventArgs e)
+        {
+
+
+
+
+        }
+
+        private void Customernametxt_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Phonenumbertxt_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void LockCustomerFields()
+        {
+            nametxt.Enabled = false;
+            Phonenumbertxt.Enabled = false;
+        }
+
+        private void reservationnumberlabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        private int GetSelectedCustomerId()
+        {
+            // Logic to fetch the selected customer ID
+            // This can be implemented by providing a way to select a customer in the form
+            // Placeholder logic below:
+            return 1; // Replace with actual customer selection logic
+        }
+
+
+
+
+
+
+
+       
+
+
+
+
+
+      
+
+
+        public class Item
+        {
+            public string ItemName { get; set; }
+            public int Quantity { get; set; }
+            public decimal ItemPrice { get; set; }
+            public decimal ItemTotalPrice { get; set; }
+        }
+
+        private List<Item> addedItems = new List<Item>();
+        private decimal totalPrice = 0.0m;
+
+
+        // Define a variable to store the total price
+
+
+      
+
+
+        // Method to fetch the price of the selected item from the Menu table
+        private decimal GetItemPrice(string itemName)
+        {
+            decimal itemPrice = 0;
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+
+                    string query = "SELECT ItemPrice FROM Menu WHERE ItemName = @ItemName";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@ItemName", itemName);
+
+                        // Execute the query and get the price
+                        object result = command.ExecuteScalar();
+                        if (result != null)
+                        {
+                            itemPrice = Convert.ToDecimal(result);
+                        }
+                        else
+                        {
+                            throw new Exception("Item not found.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error retrieving item price: " + ex.Message);
+            }
+
+            return itemPrice;
+        }
+
+        // Method to add the selected item to the panel
+        private Label selectedItemLabel = null;  // To store the selected row
+
+        
+      
+        // Event handler when a row is clicked
+     
+
+
+
+        private void printnpaybtn_Click(object sender, EventArgs e)
+        {
+            // Logic for printing or paying (this can be implemented later)
+            MessageBox.Show("Print and Pay functionality goes here.", "Print and Pay", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+
+        private void menuitemspanel_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void Home_Load(object sender, EventArgs e)
+        {
+
+        }
+
+
+
+
+
+
+
+        private int GetMenuItemId(string itemName)
+        {
+            using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                string query = "SELECT MenuItemID FROM Menu WHERE ItemName = @ItemName";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@ItemName", itemName);
+
+                conn.Open();
+                object result = cmd.ExecuteScalar();
+                conn.Close();
+
+                if (result != null && int.TryParse(result.ToString(), out int menuItemId))
+                {
+                    return menuItemId;
+                }
+                else
+                {
+                    throw new Exception($"Menu item '{itemName}' not found in the database.");
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        private void InsertPayment(int customerId, int reservationId, decimal totalAmount, decimal paidAmount)
+        {
+            using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                string query = @"
+            INSERT INTO Payments (CustomerID, ReservationID, TotalAmount, PaidAmount)
+            VALUES (@CustomerID, @ReservationID, @TotalAmount, @PaidAmount)";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@CustomerID", customerId);
+                cmd.Parameters.AddWithValue("@ReservationID", reservationId);
+                cmd.Parameters.AddWithValue("@TotalAmount", totalAmount);
+                cmd.Parameters.AddWithValue("@PaidAmount", paidAmount);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+        }
+
+
+
+
+
+
+
+        private int GetCustomerId()
+        {
+            // Get the customer name and phone number from the textboxes
+            string customerName = nametxt.Text;
+            string phoneNumber = Phonenumbertxt.Text;
+
+            // Initialize the connection string (adjust this to your database configuration)
+            string connectionString = DatabaseConfig.connectionString;
+
+            // SQL query to get CustomerID based on the provided name and phone number
+            string query = "SELECT customerid FROM Customer WHERE Name = @Name AND PhoneNumber = @PhoneNumber";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    // Open the database connection
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        // Add parameters to the SQL query to avoid SQL injection
+                        command.Parameters.AddWithValue("@Name", customerName);
+                        command.Parameters.AddWithValue("@PhoneNumber", phoneNumber);
+
+                        // Execute the query and get the result
+                        object result = command.ExecuteScalar();
+
+                        // Check if a result is returned
+                        if (result != null)
+                        {
+                            // Return the CustomerID (assumes ID is an int)
+                            return Convert.ToInt32(result);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Customer not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return -1; // Or handle as appropriate
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return -1; // Or handle as appropriate
+                }
+            }
+        }
+
+
+
+        private void printnpaybtn_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                // Parse Paid Amount
+                if (!decimal.TryParse(paidamount.Text, out decimal paidAmount))
+                {
+                    MessageBox.Show($"Failed to parse Paid Amount '{paidamount.Text}'. Ensure the input is correct.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Parse Reservation ID
+                if (!int.TryParse(reservationidtxt.Text, out int reservationId))
+                {
+                    MessageBox.Show($"Failed to parse Reservation ID '{reservationidtxt.Text}'. Ensure the input is a valid number.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                int customerId = GetCustomerId(); // Assume GetCustomerId() retrieves the current customer ID
+                if (customerId <= 0)
+                {
+                    MessageBox.Show("Invalid Customer ID. Please ensure a valid customer is selected.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Step 1: Check if the CustomerID associated with the ReservationID matches the current CustomerID
+                string checkCustomerQuery = "SELECT CustomerID FROM Reservations WHERE ReservationID = @ReservationID";
+                int reservationCustomerId = -1;
+
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+                    using (SqlCommand checkCommand = new SqlCommand(checkCustomerQuery, connection))
+                    {
+                        checkCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+
+                        var result = checkCommand.ExecuteScalar();
+                        if (result != null)
+                        {
+                            reservationCustomerId = Convert.ToInt32(result);
+                        }
+                    }
+                }
+
+                // Step 2: If CustomerID doesn't match, show a warning and return
+                if (customerId != reservationCustomerId)
+                {
+                    MessageBox.Show("The customer ID does not match the one associated with the reservation. Please verify the customer.", "Customer Mismatch", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Step 3: Proceed with payment update if CustomerID matches
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+
+                    // Check if a payment record exists for the given ReservationID and CustomerID
+                    string checkQuery = "SELECT PaidAmount FROM Payments WHERE ReservationID = @ReservationID AND CustomerID = @CustomerID";
+                    using (SqlCommand checkCommand = new SqlCommand(checkQuery, connection))
+                    {
+                        checkCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                        checkCommand.Parameters.AddWithValue("@CustomerID", customerId);
+
+                        object existingPaidAmountObj = checkCommand.ExecuteScalar();
+                        decimal existingPaidAmount = existingPaidAmountObj != null ? Convert.ToDecimal(existingPaidAmountObj) : 0;
+
+                        if (existingPaidAmountObj != null)
+                        {
+                            // Update the existing payment record by adding the new paid amount
+                            string updateQuery = "UPDATE Payments SET PaidAmount = PaidAmount + @PaidAmount WHERE ReservationID = @ReservationID AND CustomerID = @CustomerID";
+                            using (SqlCommand updateCommand = new SqlCommand(updateQuery, connection))
+                            {
+                                updateCommand.Parameters.AddWithValue("@PaidAmount", paidAmount);
+                                updateCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                                updateCommand.Parameters.AddWithValue("@CustomerID", customerId);
+                                updateCommand.ExecuteNonQuery();
+                            }
+                        }
+                        else
+                        {
+                            // If no record exists, you can handle the insert as needed
+                            string insertQuery = "INSERT INTO Payments (CustomerID, ReservationID, PaidAmount) VALUES (@CustomerID, @ReservationID, @PaidAmount)";
+                            using (SqlCommand insertCommand = new SqlCommand(insertQuery, connection))
+                            {
+                                insertCommand.Parameters.AddWithValue("@PaidAmount", paidAmount);
+                                insertCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                                insertCommand.Parameters.AddWithValue("@CustomerID", customerId);
+                                insertCommand.ExecuteNonQuery();
+                            }
+                        }
+                    }
+
+                    // Insert order details into OrderDetails table
+                    foreach (var item in addedItems)
+                    {
+                        int menuItemId = GetMenuItemIdByName(item.ItemName); // Retrieve MenuItemId based on item name
+                        string orderDetailsQuery = "INSERT INTO OrderDetails (ReservationID, MenuItemID, Quantity, ItemPrice) " +
+                                                   "VALUES (@ReservationID, @MenuItemID, @Quantity, @ItemPrice)";
+                        using (SqlCommand orderDetailsCommand = new SqlCommand(orderDetailsQuery, connection))
+                        {
+                            orderDetailsCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                            orderDetailsCommand.Parameters.AddWithValue("@MenuItemID", menuItemId);
+                            orderDetailsCommand.Parameters.AddWithValue("@Quantity", item.Quantity);
+                            orderDetailsCommand.Parameters.AddWithValue("@ItemPrice", item.ItemPrice);
+                            orderDetailsCommand.ExecuteNonQuery();
+                        }
+                    }
+
+                    MessageBox.Show("Payment updated and order details saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+
+
+
+
+        private int GetMenuItemIdByName(string itemName)
+        {
+            int menuItemId = -1;
+            string query = "SELECT MenuItemID FROM Menu WHERE ItemName = @ItemName";
+            using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ItemName", itemName);
+                    object result = command.ExecuteScalar();
+                    if (result != null)
+                    {
+                        menuItemId = Convert.ToInt32(result);
+                    }
+                }
+            }
+            return menuItemId;
+        }
+
+
+        private void InsertOrderDetails(int reservationId, int menuItemId, int quantity, decimal itemPrice, decimal subtotal)
+        {
+            Debug.WriteLine($"Inserting order details: ReservationID={reservationId}, MenuItemID={menuItemId}, Quantity={quantity}, ItemPrice={itemPrice}, Subtotal={subtotal}");
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+                    Debug.WriteLine("Connection opened for OrderDetails insert.");
+
+                    string insertQuery = "INSERT INTO OrderDetails (ReservationID, MenuItemID, Quantity, ItemPrice, Subtotal) VALUES (@ReservationID, @MenuItemID, @Quantity, @ItemPrice, @Subtotal)";
+                    using (SqlCommand command = new SqlCommand(insertQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@ReservationID", reservationId);
+                        command.Parameters.AddWithValue("@MenuItemID", menuItemId);
+                        command.Parameters.AddWithValue("@Quantity", quantity);
+                        command.Parameters.AddWithValue("@ItemPrice", itemPrice);
+                        command.Parameters.AddWithValue("@Subtotal", subtotal);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+                        Debug.WriteLine($"Rows affected by OrderDetails insert: {rowsAffected}");
+
+                        if (rowsAffected > 0)
+                        {
+                            Debug.WriteLine("Order details inserted successfully.");
+                        }
+                        else
+                        {
+                            Debug.WriteLine("Order details insertion failed.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in InsertOrderDetails: {ex.Message}");
+            }
+        }
+
+        private void paidamount_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+      
+
+
+        private void minusbtn_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized; // Minimize the form to the taskbar
+        }
+
+        private void ReservationGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                // Get the selected customer ID (modify this line based on how you capture customer ID)
+                int customerId = GetCustomerId(); // Replace with the actual method to get CustomerID
+
+                // Validate customer ID
+                if (customerId <= 0) // Check if it's a valid positive ID
+                {
+                    MessageBox.Show("Please select a valid customer.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+
+                    // Query to fetch reservation IDs for the specified customer ID
+                    string query = "SELECT ReservationID, ReservationDate, AmountPaid FROM Reservations WHERE CustomerID = @CustomerID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@CustomerID", customerId);
+
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        {
+                            DataTable reservationsTable = new DataTable();
+                            adapter.Fill(reservationsTable);
+
+                            // Bind the results to the DataGridView
+                            ReservationGridView.DataSource = reservationsTable;
+
+                            // Optionally customize column headers
+                            if (ReservationGridView.Columns.Contains("ReservationID"))
+                                ReservationGridView.Columns["ReservationID"].HeaderText = "Reservation ID";
+
+                            if (ReservationGridView.Columns.Contains("ReservationDate"))
+                                ReservationGridView.Columns["ReservationDate"].HeaderText = "Reservation Date";
+
+                            if (ReservationGridView.Columns.Contains("AmountPaid"))
+                                ReservationGridView.Columns["AmountPaid"].HeaderText = "Amount Paid";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+              
+            }
+        }
+
+
+
+        private void Getdata() {
+
+            try
+            {
+                // Ensure a valid customer ID is selected
+                int customerId = GetCustomerId(); // Adjust this method to match how you retrieve CustomerID in your application
+
+                if (customerId <= 0) // Check if the CustomerID is valid
+                {
+                    MessageBox.Show("Please select a valid customer.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+
+                    // Query to fetch payment data for the selected customer
+                    string query = "SELECT  ReservationID,TotalAmount,  PaidAmount, RemainingAmount FROM Payments WHERE CustomerID = @CustomerID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@CustomerID", customerId);
+
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        {
+                            DataTable paymentsTable = new DataTable();
+                            adapter.Fill(paymentsTable);
+
+                            // Bind the results to the DataGridView
+                            ReservationGridView.DataSource = paymentsTable;
+
+                            // Customize column headers
+                            //   ReservationGridView.Columns["PaymentID"].HeaderText = "Payment ID";
+                            ReservationGridView.Columns["ReservationID"].HeaderText = "ReservationID";
+                            ReservationGridView.Columns["PaidAmount"].HeaderText = "PaidAmount";
+                            ReservationGridView.Columns["RemainingAmount"].HeaderText = "Remaining Amount";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+
+        }
+
+
+
+
+        private void Fetchdatabtn_Click(object sender, EventArgs e)
+        {
+         
+        }
+
+        private void ReservationGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            try
+            {
+                // Ensure formatting is applied to rows only (skip header rows)
+                if (e.RowIndex >= 0)
+                {
+                    // Check if the RemainingAmount column exists in the grid
+                    if (ReservationGridView.Columns.Contains("RemainingAmount"))
+                    {
+                        // Get the value of RemainingAmount for the current row
+                        var remainingAmountValue = ReservationGridView.Rows[e.RowIndex].Cells["RemainingAmount"].Value;
+
+                        if (remainingAmountValue != null && decimal.TryParse(remainingAmountValue.ToString(), out decimal remainingAmount))
+                        {
+                            // Highlight rows with RemainingAmount > 0
+                            if (remainingAmount > 0)
+                            {
+                                ReservationGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Yellow;
+                            }
+                            else
+                            {
+                                // Reset to default color for rows with RemainingAmount <= 0
+                                ReservationGridView.Rows[e.RowIndex].DefaultCellStyle.BackColor = ReservationGridView.DefaultCellStyle.BackColor;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during cell formatting: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+
+
+        private bool CheckIfReservationHasNoOrderDetails(int reservationId)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+
+                    // Query to check if there are no order details for the given ReservationID
+                    string query = "SELECT COUNT(*) FROM OrderDetails WHERE ReservationID = @ReservationID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@ReservationID", reservationId);
+
+                        // Execute the query and check the count of order details
+                        int orderCount = (int)command.ExecuteScalar();
+
+                        return orderCount == 0; // If count is 0, there are no order details
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while checking order details: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false; // Return false in case of error
+            }
+        }
+
+
+        private decimal GetRemainingAmount(int reservationId)
+        {
+            decimal remainingAmount = 0;
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                {
+                    connection.Open();
+
+                    // Query to fetch the remaining amount from Payments table
+                    string query = "SELECT RemainingAmount FROM Payments WHERE ReservationID = @ReservationID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@ReservationID", reservationId);
+
+                        // Execute the query and fetch the RemainingAmount
+                        object result = command.ExecuteScalar();
+
+                        if (result != DBNull.Value)
+                        {
+                            remainingAmount = Convert.ToDecimal(result);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while fetching remaining amount: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return remainingAmount;
+        }
+
+
+        private void ReservationGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                // Ensure the click is on a valid row and not on headers
+                if (e.RowIndex >= 0)
+                {
+                    // Get the ReservationID from the clicked row
+                    int reservationId = Convert.ToInt32(ReservationGridView.Rows[e.RowIndex].Cells["ReservationID"].Value);
+
+                    using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                    {
+                        connection.Open();
+
+                        // Query to fetch order details with ItemName and ItemPrice for the selected ReservationID
+                        string query = @"SELECT od.ReservationID, m.ItemName, od.Quantity, m.ItemPrice
+                                 FROM OrderDetails od
+                                 INNER JOIN Menu m ON od.MenuItemID = m.MenuItemID
+                                 WHERE od.ReservationID = @ReservationID";
+
+                        using (SqlCommand command = new SqlCommand(query, connection))
+                        {
+                            command.Parameters.AddWithValue("@ReservationID", reservationId);
+
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                if (reader.HasRows)
+                                {
+                                    string details = "Order Details:\n";
+                                    decimal totalAmount = 0; // Variable to store total amount of the order
+
+                                    // Read the order details
+                                    while (reader.Read())
+                                    {
+                                        decimal itemAmount = Convert.ToDecimal(reader["ItemPrice"]) * Convert.ToInt32(reader["Quantity"]);
+                                        totalAmount += itemAmount; // Add the item amount to the total
+
+                                        details +=
+                                                   $"Item Name: {reader["ItemName"]}, " +
+                                                   $"Quantity: {reader["Quantity"]}, " +
+                                                   $"Item Price: {reader["ItemPrice"]}, " +
+                                                   $"Price: {itemAmount:C}\n";
+                                    }
+
+                                    reader.Close();  // Close the reader before executing the next query
+
+                                    // Now fetch the total paid for the reservation from the Payments table
+                                    string totalPaidQuery = "SELECT SUM(PaidAmount) FROM Payments WHERE ReservationID = @ReservationID";
+                                    using (SqlCommand paidCommand = new SqlCommand(totalPaidQuery, connection))
+                                    {
+                                        paidCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                                        var totalPaid = paidCommand.ExecuteScalar();
+                                        decimal amountPaid = totalPaid != DBNull.Value ? Convert.ToDecimal(totalPaid) : 0;
+
+                                        details += $"\nTotal Amount for this order: {totalAmount:C}\n";
+                                        details += $"PaidAmount: {amountPaid:C}";
+
+                                        MessageBox.Show(details, "Order Details", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    }
+                                }
+                                else
+                                {
+                                    MessageBox.Show("No order details found for this reservation.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            }
+        }
+
+
+
+        private void panel3_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Addorders addorders = new Addorders();  
+            this.Hide();
+            addorders.ShowDialog();
+            this.Close();   
+        }
+
+
+
+        private string NormalizeArabicText(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return text;
+
+            return text
+                .Replace('أ', 'ا')  // Normalize 'أ' to 'ا'
+                .Replace('إ', 'ا')  // Normalize 'إ' to 'ا'
+                .Replace('آ', 'ا')  // Normalize 'آ' to 'ا'
+                .Replace('ى', 'ي')  // Normalize 'ى' to 'ي'
+                .Replace('ؤ', 'و')  // Normalize 'ؤ' to 'و'
+                .Replace('ئ', 'ي')  // Normalize 'ئ' to 'ي'
+                .Replace('ة', 'ه'); // Normalize 'ة' to 'ه'
+        }
+
+        private string ReverseNormalizeArabicText(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return text;
+
+            return text
+                .Replace('ا', 'أ')  // Reverse normalize 'ا' to 'أ'
+                .Replace('ا', 'إ')  // Reverse normalize 'ا' to 'إ'
+                .Replace('ا', 'آ')  // Reverse normalize 'ا' to 'آ'
+                .Replace('ي', 'ى')  // Reverse normalize 'ي' to 'ى'
+                .Replace('ي', 'ئ')  // Reverse normalize 'ي' to 'ئ'
+                .Replace('ه', 'ة')  // Reverse normalize 'ه' to 'ة'
+                .Replace('و', 'ؤ'); // Reverse normalize 'و' to 'ؤ'
+        }
+
+
+
+
+        private void ConfigureNameAutoComplete()
+        {
+            AutoCompleteStringCollection autoCompleteCollection = new AutoCompleteStringCollection();
+            string query = "SELECT Name FROM Customer";
+
+            using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    try
+                    {
+                        connection.Open();
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string name = reader.GetString(0);
+                                // Add both normalized and reverse-normalized versions to the collection
+                                autoCompleteCollection.Add(NormalizeArabicText(name));
+                                autoCompleteCollection.Add(ReverseNormalizeArabicText(name));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("An error occurred: " + ex.Message);
+                    }
+                }
+            }
+
+            nametxt.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            nametxt.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            nametxt.AutoCompleteCustomSource = autoCompleteCollection;
+
+            nametxt.KeyDown += Nametxt_KeyDown;
+        }
+
+
+        private async void Nametxt_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Check if the Enter key was pressed
+            if (e.KeyCode == Keys.Enter)
+            {
+                // Avoid processing when the suggestions are not visible
+                if (nametxt.AutoCompleteMode != AutoCompleteMode.None)
+                {
+                    e.SuppressKeyPress = true; // Prevent the default behavior of the Enter key
+                    await SearchUserByNameAsync(nametxt.Text);
+                }
+            }
+        }
+        private async void Nametxt_TextChanged(object sender, EventArgs e)
+        {
+            if (nametxt.AutoCompleteMode == AutoCompleteMode.None)
+            {
+                await SearchUserByNameAsync(nametxt.Text);
+            }
+        }
+
+
+
+        // Handle the TextChanged event to dynamically update suggestions
+
+
+
+
+
+
+
+        private async void nametxt_TextChanged(object sender, EventArgs e)
+        {
+
+
+        }
+
+        private async void nametxt_Leave(object sender, EventArgs e)
+        {
+
+            await SearchUserByNameAsync(nametxt.Text);
+           
+
+
+        }
+
+        private async Task SearchUserByNameAsync(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+
+                return;
+            }
+
+            // Normalize the input name
+            string normalizedInput = NormalizeArabicText(name);
+            Debug.WriteLine($"Normalized Input: {normalizedInput}");
+
+            string query = @"
+            SELECT CustomerID, Phonenumber, Name
+            FROM Customer 
+            WHERE Name LIKE '%' + @Name + '%' OR dbo.NormalizeArabicText(Name) LIKE '%' + dbo.NormalizeArabicText(@Name) + '%'
+";
+
+            using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    // Pass the normalized input to the query
+                    command.Parameters.AddWithValue("@Name", normalizedInput);
+
+                    Debug.WriteLine($"Query: {query}");
+                    Debug.WriteLine($"Parameter @Name: {normalizedInput}");
+
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                string id = reader["CustomerId"]?.ToString() ?? "N/A";
+                                string mobileNumber = reader["Phonenumber"]?.ToString() ?? "N/A";
+                                string names = reader["Name"]?.ToString() ?? "N/A";
+
+
+                                if (InvokeRequired)
+                                {
+                                    Invoke(new Action(() =>
+                                    {
+
+                                        Phonenumbertxt.Text = mobileNumber;
+                                        nametxt.Text = names;
+
+                                    }));
+                                }
+                                else
+                                {
+
+                                    Phonenumbertxt.Text = mobileNumber;
+                                    nametxt.Text = names;
+
+                                }
+
+                                LockCustomerFields();
+                            }
+                            else
+                            {
+                                Debug.WriteLine("No user found with the given name.");
+
+                            }
+                        }
+                    }
+                    catch (SqlException ex)
+                    {
+                        MessageBox.Show("A SQL error occurred: " + ex.Message);
+                        Debug.WriteLine($"SQL Exception: {ex.Message}");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("An error occurred: " + ex.Message);
+                        Debug.WriteLine($"Exception: {ex.Message}");
+                    }
+                }
+            }
+        }
+
+
+
+        private void quantitytxt_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private async void Phonenumbertxt_Leave(object sender, EventArgs e)
+        {
+            await SearchUserAsync(Phonenumbertxt.Text);
+            Getdata();
+          
+        }
+
+        private async void Phonenumbertxt_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Check if the Enter key was pressed
+            if (e.KeyCode == Keys.Enter)
+            {
+                // Avoid processing when the suggestions are not visible
+                if (Phonenumbertxt.AutoCompleteMode != AutoCompleteMode.None)
+                {
+                    e.SuppressKeyPress = true; // Prevent the default behavior of the Enter key
+                    await SearchUserAsync(Phonenumbertxt.Text);
+                    Getdata();
+                }
+            }
+        }
+
+
+        private void ConfigureAutoComplete()
+        {
+            AutoCompleteStringCollection autoCompleteCollection = new AutoCompleteStringCollection();
+            string query = "SELECT Phonenumber FROM Customer";
+
+            using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    try
+                    {
+                        connection.Open();
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string mobileNumber = reader.GetString(0);
+                                autoCompleteCollection.Add(mobileNumber);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("An error occurred: " + ex.Message);
+                    }
+                }
+            }
+
+            Phonenumbertxt.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            Phonenumbertxt.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            Phonenumbertxt.AutoCompleteCustomSource = autoCompleteCollection;
+
+            Phonenumbertxt.KeyDown += Phonenumbertxt_KeyDown;
+        }
+
+
+        private async Task SearchUserAsync(string mobileNumber)
+        {
+            if (string.IsNullOrWhiteSpace(mobileNumber))
+            {
+                //  ResetUserFields();
+                return;
+            }
+
+            string query = "SELECT TOP 1 Customerid, Name FROM Customer WHERE Phonenumber = @MobileNumber";
+
+            using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@MobileNumber", mobileNumber);
+
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+
+                                nametxt.Text = reader.GetString(1);
+
+
+
+                            }
+                            else
+                            {
+                                // ResetUserFields();
+                            }
+
+                            LockCustomerFields();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("An error occurred: " + ex.Message);
+                    }
+                }
+            }
+        }
+
+        private void Phonenumbertxt_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            ResetForm();
+        }
+
+
+        private void ResetForm()
+        {
+
+
+            nametxt.Clear();
+            Fetchdatabtn.Enabled = true;
+            nametxt.Enabled = true;
+            Phonenumbertxt.Enabled = true;
+
+            ReservationGridView.DataSource = null; // Removes the data source
+
+
+            Phonenumbertxt.Clear();
+
+            paidamount.Clear();
+            reservationnumberlabel.Text = "";
+            reservationidtxt.Text = "";
+            totalPrice = 0;
+         
+
+
+
+
+        }
+
+      
+    }
+
+}
+
+
+

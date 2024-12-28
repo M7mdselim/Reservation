@@ -29,7 +29,9 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.minusbtn = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.exit = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -37,12 +39,8 @@
             this.dashboard_btn = new System.Windows.Forms.Button();
             this.greet_user = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.minusbtn = new System.Windows.Forms.Label();
-            this.exit = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.Customernametxt = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.Phonenumbertxt = new System.Windows.Forms.TextBox();
             this.Fetchdatabtn = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
@@ -63,6 +61,9 @@
             this.deletebtn = new System.Windows.Forms.Button();
             this.ReservationGridView = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.nametxt = new System.Windows.Forms.TextBox();
+            this.Phonenumbertxt = new System.Windows.Forms.TextBox();
+            this.button3 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -84,6 +85,19 @@
             this.panel1.TabIndex = 0;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
+            // minusbtn
+            // 
+            this.minusbtn.AutoSize = true;
+            this.minusbtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.minusbtn.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.minusbtn.ForeColor = System.Drawing.Color.White;
+            this.minusbtn.Location = new System.Drawing.Point(1048, -2);
+            this.minusbtn.Name = "minusbtn";
+            this.minusbtn.Size = new System.Drawing.Size(20, 23);
+            this.minusbtn.TabIndex = 2;
+            this.minusbtn.Text = "_";
+            this.minusbtn.Click += new System.EventHandler(this.minusbtn_Click);
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -94,6 +108,19 @@
             this.label2.Size = new System.Drawing.Size(89, 16);
             this.label2.TabIndex = 1;
             this.label2.Text = "حجوزات رمضان";
+            // 
+            // exit
+            // 
+            this.exit.AutoSize = true;
+            this.exit.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.exit.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.exit.ForeColor = System.Drawing.Color.White;
+            this.exit.Location = new System.Drawing.Point(1079, 8);
+            this.exit.Name = "exit";
+            this.exit.Size = new System.Drawing.Size(15, 16);
+            this.exit.TabIndex = 0;
+            this.exit.Text = "X";
+            this.exit.Click += new System.EventHandler(this.exit_Click);
             // 
             // panel2
             // 
@@ -126,6 +153,7 @@
             this.button2.TabIndex = 8;
             this.button2.Text = "المدفوعات";
             this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
@@ -193,32 +221,6 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
-            // minusbtn
-            // 
-            this.minusbtn.AutoSize = true;
-            this.minusbtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.minusbtn.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.minusbtn.ForeColor = System.Drawing.Color.White;
-            this.minusbtn.Location = new System.Drawing.Point(1048, -2);
-            this.minusbtn.Name = "minusbtn";
-            this.minusbtn.Size = new System.Drawing.Size(20, 23);
-            this.minusbtn.TabIndex = 2;
-            this.minusbtn.Text = "_";
-            this.minusbtn.Click += new System.EventHandler(this.minusbtn_Click);
-            // 
-            // exit
-            // 
-            this.exit.AutoSize = true;
-            this.exit.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.exit.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.exit.ForeColor = System.Drawing.Color.White;
-            this.exit.Location = new System.Drawing.Point(1079, 8);
-            this.exit.Name = "exit";
-            this.exit.Size = new System.Drawing.Size(15, 16);
-            this.exit.TabIndex = 0;
-            this.exit.Text = "X";
-            this.exit.Click += new System.EventHandler(this.exit_Click);
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -229,17 +231,6 @@
             this.label3.TabIndex = 4;
             this.label3.Text = "الاسم";
             // 
-            // Customernametxt
-            // 
-            this.Customernametxt.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Customernametxt.Location = new System.Drawing.Point(464, 20);
-            this.Customernametxt.Multiline = true;
-            this.Customernametxt.Name = "Customernametxt";
-            this.Customernametxt.Size = new System.Drawing.Size(403, 30);
-            this.Customernametxt.TabIndex = 5;
-            this.Customernametxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.Customernametxt.TextChanged += new System.EventHandler(this.Customernametxt_TextChanged);
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -249,17 +240,6 @@
             this.label1.Size = new System.Drawing.Size(93, 24);
             this.label1.TabIndex = 6;
             this.label1.Text = "رقم التليفون";
-            // 
-            // Phonenumbertxt
-            // 
-            this.Phonenumbertxt.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Phonenumbertxt.Location = new System.Drawing.Point(33, 20);
-            this.Phonenumbertxt.Multiline = true;
-            this.Phonenumbertxt.Name = "Phonenumbertxt";
-            this.Phonenumbertxt.Size = new System.Drawing.Size(248, 30);
-            this.Phonenumbertxt.TabIndex = 7;
-            this.Phonenumbertxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.Phonenumbertxt.TextChanged += new System.EventHandler(this.Phonenumbertxt_TextChanged);
             // 
             // Fetchdatabtn
             // 
@@ -487,6 +467,9 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.button3);
+            this.panel3.Controls.Add(this.Phonenumbertxt);
+            this.panel3.Controls.Add(this.nametxt);
             this.panel3.Controls.Add(this.ReservationGridView);
             this.panel3.Controls.Add(this.deletebtn);
             this.panel3.Controls.Add(this.totalPriceLabel);
@@ -506,9 +489,7 @@
             this.panel3.Controls.Add(this.panel5);
             this.panel3.Controls.Add(this.panel4);
             this.panel3.Controls.Add(this.Fetchdatabtn);
-            this.panel3.Controls.Add(this.Phonenumbertxt);
             this.panel3.Controls.Add(this.label1);
-            this.panel3.Controls.Add(this.Customernametxt);
             this.panel3.Controls.Add(this.label3);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(169, 35);
@@ -516,6 +497,43 @@
             this.panel3.Size = new System.Drawing.Size(931, 565);
             this.panel3.TabIndex = 2;
             this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.panel3_Paint);
+            // 
+            // nametxt
+            // 
+            this.nametxt.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
+            this.nametxt.Location = new System.Drawing.Point(505, 22);
+            this.nametxt.Name = "nametxt";
+            this.nametxt.Size = new System.Drawing.Size(357, 26);
+            this.nametxt.TabIndex = 39;
+            this.nametxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // Phonenumbertxt
+            // 
+            this.Phonenumbertxt.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
+            this.Phonenumbertxt.Location = new System.Drawing.Point(47, 21);
+            this.Phonenumbertxt.Name = "Phonenumbertxt";
+            this.Phonenumbertxt.Size = new System.Drawing.Size(244, 26);
+            this.Phonenumbertxt.TabIndex = 40;
+            this.Phonenumbertxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.Phonenumbertxt.TextChanged += new System.EventHandler(this.Phonenumbertxt_TextChanged);
+            // 
+            // button3
+            // 
+            this.button3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.button3.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button3.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button3.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button3.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button3.ForeColor = System.Drawing.Color.DarkRed;
+            this.button3.Location = new System.Drawing.Point(6, 100);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(85, 32);
+            this.button3.TabIndex = 41;
+            this.button3.Text = "مسح كل";
+            this.button3.UseVisualStyleBackColor = false;
+            this.button3.Click += new System.EventHandler(this.button3_Click_1);
             // 
             // Addorders
             // 
@@ -559,9 +577,7 @@
         private System.Windows.Forms.Label minusbtn;
         private System.Windows.Forms.Label exit;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox Customernametxt;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox Phonenumbertxt;
         private System.Windows.Forms.Button Fetchdatabtn;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Panel panel5;
@@ -582,5 +598,8 @@
         private System.Windows.Forms.Button deletebtn;
         private System.Windows.Forms.DataGridView ReservationGridView;
         private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.TextBox nametxt;
+        private System.Windows.Forms.TextBox Phonenumbertxt;
+        private System.Windows.Forms.Button button3;
     }
 }

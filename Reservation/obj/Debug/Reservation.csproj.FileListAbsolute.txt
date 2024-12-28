@@ -12,3 +12,5 @@ D:\Github\Reservation\Reservation\obj\Debug\Reservat.F9C48C63.Up2Date
 D:\Github\Reservation\Reservation\obj\Debug\Reservation.exe
 D:\Github\Reservation\Reservation\obj\Debug\Reservation.pdb
 D:\Github\Reservation\Reservation\obj\Debug\Reservation.Addorders.resources
+D:\Github\Reservation\Reservation\obj\Debug\Reservation.AddPayment.resources
+D:\Github\Reservation\Reservation\obj\Debug\Reservation.ReservationsReport.resources
