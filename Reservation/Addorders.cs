@@ -816,6 +816,20 @@ namespace Reservation
                         paymentCommand.ExecuteNonQuery();
                     }
 
+
+
+                    // Insert the paid amount into DailyPayments
+                    string dailyInsertQuery = "INSERT INTO DailyPayments (CustomerID, ReservationID, PaidAmount , Paymentdate) VALUES (@CustomerID, @ReservationID, @PaidAmount , GETDATE())";
+                    using (SqlCommand dailyInsertCommand = new SqlCommand(dailyInsertQuery, connection))
+                    {
+                        dailyInsertCommand.Parameters.AddWithValue("@PaidAmount", paidAmount);
+
+                        dailyInsertCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                        dailyInsertCommand.Parameters.AddWithValue("@CustomerID", customerId);
+
+                        dailyInsertCommand.ExecuteNonQuery();
+                    }
+
                     // Now, insert each item from addedItems into OrderDetails
                     foreach (var item in addedItems)
                     {
@@ -1591,7 +1605,21 @@ namespace Reservation
             ResetForm();
         }
 
-        
+        private void button4_Click(object sender, EventArgs e)
+        {
+            ReservationsReport reservationsReport = new ReservationsReport();
+            this.Hide();
+            reservationsReport.ShowDialog();
+            this.Close();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            SpotCheck spotCheck = new SpotCheck();
+            this.Hide();
+            spotCheck.ShowDialog();
+            this.Close();
+        }
     }
 
 

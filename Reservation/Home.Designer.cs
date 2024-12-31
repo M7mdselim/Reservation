@@ -29,16 +29,17 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.minusbtn = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.exit = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.dashboard_btn = new System.Windows.Forms.Button();
             this.greet_user = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.button3 = new System.Windows.Forms.Button();
             this.Phonenumbertxt = new System.Windows.Forms.TextBox();
             this.nametxt = new System.Windows.Forms.TextBox();
             this.DatenTimetxt = new System.Windows.Forms.TextBox();
@@ -71,9 +72,10 @@
             this.addnewcustomerbtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.cashiernamelabel = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.RemainingCapacitylabel = new System.Windows.Forms.Label();
+            this.button6 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -83,28 +85,14 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
-            this.panel1.Controls.Add(this.minusbtn);
+            this.panel1.Controls.Add(this.button6);
             this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.exit);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1100, 35);
             this.panel1.TabIndex = 0;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
-            // 
-            // minusbtn
-            // 
-            this.minusbtn.AutoSize = true;
-            this.minusbtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.minusbtn.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.minusbtn.ForeColor = System.Drawing.Color.White;
-            this.minusbtn.Location = new System.Drawing.Point(1048, -2);
-            this.minusbtn.Name = "minusbtn";
-            this.minusbtn.Size = new System.Drawing.Size(20, 23);
-            this.minusbtn.TabIndex = 2;
-            this.minusbtn.Text = "_";
-            this.minusbtn.Click += new System.EventHandler(this.minusbtn_Click);
             // 
             // label2
             // 
@@ -117,22 +105,11 @@
             this.label2.TabIndex = 1;
             this.label2.Text = "حجوزات رمضان";
             // 
-            // exit
-            // 
-            this.exit.AutoSize = true;
-            this.exit.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.exit.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.exit.ForeColor = System.Drawing.Color.White;
-            this.exit.Location = new System.Drawing.Point(1079, 8);
-            this.exit.Name = "exit";
-            this.exit.Size = new System.Drawing.Size(15, 16);
-            this.exit.TabIndex = 0;
-            this.exit.Text = "X";
-            this.exit.Click += new System.EventHandler(this.exit_Click);
-            // 
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.panel2.Controls.Add(this.cashiernamelabel);
+            this.panel2.Controls.Add(this.button5);
             this.panel2.Controls.Add(this.button4);
             this.panel2.Controls.Add(this.button2);
             this.panel2.Controls.Add(this.button1);
@@ -145,6 +122,42 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(169, 565);
             this.panel2.TabIndex = 1;
+            // 
+            // button5
+            // 
+            this.button5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.button5.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button5.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button5.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button5.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button5.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button5.ForeColor = System.Drawing.Color.White;
+            this.button5.Location = new System.Drawing.Point(13, 408);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(140, 40);
+            this.button5.TabIndex = 10;
+            this.button5.Text = "Spot Check";
+            this.button5.UseVisualStyleBackColor = false;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // button4
+            // 
+            this.button4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.button4.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button4.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button4.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button4.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button4.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button4.ForeColor = System.Drawing.Color.White;
+            this.button4.Location = new System.Drawing.Point(12, 347);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(140, 40);
+            this.button4.TabIndex = 9;
+            this.button4.Text = "حجوزات اليوم";
+            this.button4.UseVisualStyleBackColor = false;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button2
             // 
@@ -216,14 +229,15 @@
             this.greet_user.AutoSize = true;
             this.greet_user.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.greet_user.ForeColor = System.Drawing.Color.White;
-            this.greet_user.Location = new System.Drawing.Point(26, 124);
+            this.greet_user.Location = new System.Drawing.Point(16, 124);
             this.greet_user.Name = "greet_user";
-            this.greet_user.Size = new System.Drawing.Size(127, 19);
+            this.greet_user.Size = new System.Drawing.Size(78, 19);
             this.greet_user.TabIndex = 1;
-            this.greet_user.Text = "Welcome, SELIM";
+            this.greet_user.Text = "Welcome,";
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.RemainingCapacitylabel);
             this.panel3.Controls.Add(this.button3);
             this.panel3.Controls.Add(this.Phonenumbertxt);
             this.panel3.Controls.Add(this.nametxt);
@@ -263,6 +277,24 @@
             this.panel3.Size = new System.Drawing.Size(931, 565);
             this.panel3.TabIndex = 2;
             this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.panel3_Paint);
+            // 
+            // button3
+            // 
+            this.button3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.button3.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button3.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button3.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button3.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button3.ForeColor = System.Drawing.Color.DarkRed;
+            this.button3.Location = new System.Drawing.Point(6, 100);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(85, 32);
+            this.button3.TabIndex = 40;
+            this.button3.Text = "مسح كل";
+            this.button3.UseVisualStyleBackColor = false;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // Phonenumbertxt
             // 
@@ -638,41 +670,16 @@
             this.label3.TabIndex = 4;
             this.label3.Text = "الاسم";
             // 
-            // button3
+            // cashiernamelabel
             // 
-            this.button3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
-            this.button3.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button3.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
-            this.button3.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
-            this.button3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
-            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button3.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.ForeColor = System.Drawing.Color.DarkRed;
-            this.button3.Location = new System.Drawing.Point(6, 100);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(85, 32);
-            this.button3.TabIndex = 40;
-            this.button3.Text = "مسح كل";
-            this.button3.UseVisualStyleBackColor = false;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button4
-            // 
-            this.button4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
-            this.button4.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button4.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
-            this.button4.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
-            this.button4.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
-            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button4.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button4.ForeColor = System.Drawing.Color.White;
-            this.button4.Location = new System.Drawing.Point(13, 381);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(140, 40);
-            this.button4.TabIndex = 9;
-            this.button4.Text = "حجوزات اليوم";
-            this.button4.UseVisualStyleBackColor = false;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.cashiernamelabel.AutoSize = true;
+            this.cashiernamelabel.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cashiernamelabel.ForeColor = System.Drawing.Color.White;
+            this.cashiernamelabel.Location = new System.Drawing.Point(90, 124);
+            this.cashiernamelabel.Name = "cashiernamelabel";
+            this.cashiernamelabel.Size = new System.Drawing.Size(48, 19);
+            this.cashiernamelabel.TabIndex = 11;
+            this.cashiernamelabel.Text = "Selim";
             // 
             // pictureBox1
             // 
@@ -683,6 +690,34 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
+            // RemainingCapacitylabel
+            // 
+            this.RemainingCapacitylabel.AutoSize = true;
+            this.RemainingCapacitylabel.Location = new System.Drawing.Point(602, 455);
+            this.RemainingCapacitylabel.Name = "RemainingCapacitylabel";
+            this.RemainingCapacitylabel.Size = new System.Drawing.Size(107, 13);
+            this.RemainingCapacitylabel.TabIndex = 41;
+            this.RemainingCapacitylabel.Text = " Avaliable at moment";
+            this.RemainingCapacitylabel.Click += new System.EventHandler(this.RemainingCapacitylabel_Click);
+            // 
+            // button6
+            // 
+            this.button6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.button6.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button6.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button6.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button6.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button6.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button6.ForeColor = System.Drawing.Color.Coral;
+            this.button6.Location = new System.Drawing.Point(974, 0);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(126, 35);
+            this.button6.TabIndex = 12;
+            this.button6.Text = "Administartion";
+            this.button6.UseVisualStyleBackColor = false;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
             // Home
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -691,7 +726,6 @@
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.ImeMode = System.Windows.Forms.ImeMode.On;
             this.Name = "Home";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
@@ -712,7 +746,6 @@
         #endregion
 
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label exit;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.PictureBox pictureBox1;
@@ -750,12 +783,15 @@
         private System.Windows.Forms.Label reservationnumberlabel;
         private System.Windows.Forms.Label totalPriceLabel;
         private System.Windows.Forms.Button deletebtn;
-        private System.Windows.Forms.Label minusbtn;
         private System.Windows.Forms.TextBox DatenTimetxt;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox nametxt;
         private System.Windows.Forms.TextBox Phonenumbertxt;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Label cashiernamelabel;
+        private System.Windows.Forms.Label RemainingCapacitylabel;
+        private System.Windows.Forms.Button button6;
     }
 }

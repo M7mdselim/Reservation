@@ -64,11 +64,23 @@
       <DependentUpon>AddPayment.cs</DependentUpon>
     </Compile>
     <Compile Include="DatabaseConfig.cs" />
+    <Compile Include="Editorder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editorder.Designer.cs">
+      <DependentUpon>Editorder.cs</DependentUpon>
+    </Compile>
     <Compile Include="Home.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Home.Designer.cs">
       <DependentUpon>Home.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Login.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Login.Designer.cs">
+      <DependentUpon>Login.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -78,14 +90,26 @@
     <Compile Include="ReservationsReport.Designer.cs">
       <DependentUpon>ReservationsReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="SpotCheck.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SpotCheck.Designer.cs">
+      <DependentUpon>SpotCheck.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Addorders.resx">
       <DependentUpon>Addorders.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="AddPayment.resx">
       <DependentUpon>AddPayment.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Editorder.resx">
+      <DependentUpon>Editorder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Home.resx">
       <DependentUpon>Home.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Login.resx">
+      <DependentUpon>Login.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -99,6 +123,9 @@
     </Compile>
     <EmbeddedResource Include="ReservationsReport.resx">
       <DependentUpon>ReservationsReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SpotCheck.resx">
+      <DependentUpon>SpotCheck.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

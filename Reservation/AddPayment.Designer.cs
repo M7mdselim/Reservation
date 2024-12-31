@@ -37,7 +37,6 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.dashboard_btn = new System.Windows.Forms.Button();
-            this.greet_user = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -53,9 +52,13 @@
             this.reservationnumberlabel = new System.Windows.Forms.Label();
             this.ReservationGridView = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.nametxt = new System.Windows.Forms.TextBox();
-            this.Phonenumbertxt = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
+            this.Phonenumbertxt = new System.Windows.Forms.TextBox();
+            this.nametxt = new System.Windows.Forms.TextBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.cashiernamelabel = new System.Windows.Forms.Label();
+            this.greet_user = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -117,11 +120,14 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.panel2.Controls.Add(this.cashiernamelabel);
+            this.panel2.Controls.Add(this.greet_user);
+            this.panel2.Controls.Add(this.button5);
+            this.panel2.Controls.Add(this.button4);
             this.panel2.Controls.Add(this.button2);
             this.panel2.Controls.Add(this.button1);
             this.panel2.Controls.Add(this.label4);
             this.panel2.Controls.Add(this.dashboard_btn);
-            this.panel2.Controls.Add(this.greet_user);
             this.panel2.Controls.Add(this.pictureBox1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel2.Location = new System.Drawing.Point(0, 35);
@@ -192,17 +198,6 @@
             this.dashboard_btn.Text = "حجز";
             this.dashboard_btn.UseVisualStyleBackColor = false;
             this.dashboard_btn.Click += new System.EventHandler(this.dashboard_btn_Click);
-            // 
-            // greet_user
-            // 
-            this.greet_user.AutoSize = true;
-            this.greet_user.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.greet_user.ForeColor = System.Drawing.Color.White;
-            this.greet_user.Location = new System.Drawing.Point(26, 124);
-            this.greet_user.Name = "greet_user";
-            this.greet_user.Size = new System.Drawing.Size(127, 19);
-            this.greet_user.TabIndex = 1;
-            this.greet_user.Text = "Welcome, SELIM";
             // 
             // pictureBox1
             // 
@@ -385,24 +380,6 @@
             this.panel3.TabIndex = 2;
             this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.panel3_Paint);
             // 
-            // nametxt
-            // 
-            this.nametxt.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
-            this.nametxt.Location = new System.Drawing.Point(510, 20);
-            this.nametxt.Name = "nametxt";
-            this.nametxt.Size = new System.Drawing.Size(357, 26);
-            this.nametxt.TabIndex = 40;
-            this.nametxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // Phonenumbertxt
-            // 
-            this.Phonenumbertxt.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
-            this.Phonenumbertxt.Location = new System.Drawing.Point(47, 20);
-            this.Phonenumbertxt.Name = "Phonenumbertxt";
-            this.Phonenumbertxt.Size = new System.Drawing.Size(244, 26);
-            this.Phonenumbertxt.TabIndex = 41;
-            this.Phonenumbertxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
             // button3
             // 
             this.button3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
@@ -420,6 +397,82 @@
             this.button3.Text = "مسح كل";
             this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // Phonenumbertxt
+            // 
+            this.Phonenumbertxt.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
+            this.Phonenumbertxt.Location = new System.Drawing.Point(47, 20);
+            this.Phonenumbertxt.Name = "Phonenumbertxt";
+            this.Phonenumbertxt.Size = new System.Drawing.Size(244, 26);
+            this.Phonenumbertxt.TabIndex = 41;
+            this.Phonenumbertxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // nametxt
+            // 
+            this.nametxt.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
+            this.nametxt.Location = new System.Drawing.Point(510, 20);
+            this.nametxt.Name = "nametxt";
+            this.nametxt.Size = new System.Drawing.Size(357, 26);
+            this.nametxt.TabIndex = 40;
+            this.nametxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // button5
+            // 
+            this.button5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.button5.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button5.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button5.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button5.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button5.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button5.ForeColor = System.Drawing.Color.White;
+            this.button5.Location = new System.Drawing.Point(14, 408);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(140, 40);
+            this.button5.TabIndex = 12;
+            this.button5.Text = "Spot Check";
+            this.button5.UseVisualStyleBackColor = false;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // button4
+            // 
+            this.button4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.button4.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button4.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button4.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button4.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button4.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button4.ForeColor = System.Drawing.Color.White;
+            this.button4.Location = new System.Drawing.Point(13, 347);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(140, 40);
+            this.button4.TabIndex = 11;
+            this.button4.Text = "حجوزات اليوم";
+            this.button4.UseVisualStyleBackColor = false;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // cashiernamelabel
+            // 
+            this.cashiernamelabel.AutoSize = true;
+            this.cashiernamelabel.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cashiernamelabel.ForeColor = System.Drawing.Color.White;
+            this.cashiernamelabel.Location = new System.Drawing.Point(93, 124);
+            this.cashiernamelabel.Name = "cashiernamelabel";
+            this.cashiernamelabel.Size = new System.Drawing.Size(48, 19);
+            this.cashiernamelabel.TabIndex = 14;
+            this.cashiernamelabel.Text = "Selim";
+            // 
+            // greet_user
+            // 
+            this.greet_user.AutoSize = true;
+            this.greet_user.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.greet_user.ForeColor = System.Drawing.Color.White;
+            this.greet_user.Location = new System.Drawing.Point(19, 124);
+            this.greet_user.Name = "greet_user";
+            this.greet_user.Size = new System.Drawing.Size(78, 19);
+            this.greet_user.TabIndex = 13;
+            this.greet_user.Text = "Welcome,";
             // 
             // AddPayment
             // 
@@ -455,7 +508,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label greet_user;
         private System.Windows.Forms.Button dashboard_btn;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button button2;
@@ -479,5 +531,9 @@
         private System.Windows.Forms.TextBox nametxt;
         private System.Windows.Forms.TextBox Phonenumbertxt;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label cashiernamelabel;
+        private System.Windows.Forms.Label greet_user;
     }
 }

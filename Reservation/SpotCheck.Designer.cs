@@ -1,6 +1,6 @@
 ﻿namespace Reservation
 {
-    partial class ReservationsReport
+    partial class SpotCheck
     {
         /// <summary>
         /// Required designer variable.
@@ -130,13 +130,13 @@
             this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button5.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button5.ForeColor = System.Drawing.Color.White;
-            this.button5.Location = new System.Drawing.Point(12, 409);
+            this.button5.Location = new System.Drawing.Point(14, 408);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(140, 40);
             this.button5.TabIndex = 12;
             this.button5.Text = "Spot Check";
             this.button5.UseVisualStyleBackColor = false;
-            this.button5.Click += new System.EventHandler(this.button5_Click_1);
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button4
             // 
@@ -148,7 +148,7 @@
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button4.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button4.ForeColor = System.Drawing.Color.White;
-            this.button4.Location = new System.Drawing.Point(11, 348);
+            this.button4.Location = new System.Drawing.Point(13, 347);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(140, 40);
             this.button4.TabIndex = 11;
@@ -262,13 +262,14 @@
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(200, 20);
             this.dateTimePicker1.TabIndex = 10;
+            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
             // 
             // cashiernamelabel
             // 
             this.cashiernamelabel.AutoSize = true;
             this.cashiernamelabel.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cashiernamelabel.ForeColor = System.Drawing.Color.White;
-            this.cashiernamelabel.Location = new System.Drawing.Point(93, 123);
+            this.cashiernamelabel.Location = new System.Drawing.Point(94, 123);
             this.cashiernamelabel.Name = "cashiernamelabel";
             this.cashiernamelabel.Size = new System.Drawing.Size(48, 19);
             this.cashiernamelabel.TabIndex = 14;
@@ -279,13 +280,13 @@
             this.greet_user.AutoSize = true;
             this.greet_user.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.greet_user.ForeColor = System.Drawing.Color.White;
-            this.greet_user.Location = new System.Drawing.Point(19, 123);
+            this.greet_user.Location = new System.Drawing.Point(20, 123);
             this.greet_user.Name = "greet_user";
             this.greet_user.Size = new System.Drawing.Size(78, 19);
             this.greet_user.TabIndex = 13;
             this.greet_user.Text = "Welcome,";
             // 
-            // ReservationsReport
+            // SpotCheck
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -297,7 +298,7 @@
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.ImeMode = System.Windows.Forms.ImeMode.On;
-            this.Name = "ReservationsReport";
+            this.Name = "SpotCheck";
             this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

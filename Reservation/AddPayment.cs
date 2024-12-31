@@ -515,6 +515,17 @@ namespace Reservation
                         }
                     }
 
+                    // Insert the paid amount into DailyPayments
+                    string dailyInsertQuery = "INSERT INTO DailyPayments (CustomerID, ReservationID, PaidAmount , Paymentdate) VALUES (@CustomerID, @ReservationID, @PaidAmount , GETDATE())";
+                    using (SqlCommand dailyInsertCommand = new SqlCommand(dailyInsertQuery, connection))
+                    {
+                        dailyInsertCommand.Parameters.AddWithValue("@PaidAmount", paidAmount);
+                       
+                        dailyInsertCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                        dailyInsertCommand.Parameters.AddWithValue("@CustomerID", customerId);
+
+                        dailyInsertCommand.ExecuteNonQuery();
+                    }
                     // Insert order details into OrderDetails table
                     foreach (var item in addedItems)
                     {
@@ -530,8 +541,7 @@ namespace Reservation
                             orderDetailsCommand.ExecuteNonQuery();
                         }
                     }
-
-                    MessageBox.Show("Payment updated and order details saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Payment updated and daily payment recorded successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
@@ -539,6 +549,7 @@ namespace Reservation
                 MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
 
 
@@ -1276,7 +1287,21 @@ namespace Reservation
 
         }
 
-      
+        private void button4_Click(object sender, EventArgs e)
+        {
+            ReservationsReport reservationsReport = new ReservationsReport();
+            this.Hide();
+            reservationsReport.ShowDialog();
+            this.Close();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            SpotCheck spotCheck = new SpotCheck();
+            this.Hide();
+            spotCheck.ShowDialog();
+            this.Close();
+        }
     }
 
 }

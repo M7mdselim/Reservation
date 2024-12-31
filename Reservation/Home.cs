@@ -386,7 +386,7 @@ namespace Reservation
                         }
                     }
 
-                    if (remainingCapacity < requestedCapacity)
+                    if (remainingCapacity < requestedCapacity+10)
                     {
                         MessageBox.Show($"Insufficient capacity. Only {remainingCapacity} seats are available.", "Capacity Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
@@ -444,6 +444,9 @@ namespace Reservation
             // Clear existing items
             Resturantnamecombo.Items.Clear();
 
+            // Variable to hold the restaurant list to show in the label
+            string restaurantInfo = "";
+
             // Load data from the database
             DateTime selectedDate = reservationdateandtime.Value.Date;
 
@@ -453,10 +456,10 @@ namespace Reservation
                 {
                     connection.Open();
                     string query = @"
-                SELECT r.RestaurantID, r.Name
-                FROM Restaurant r
-                INNER JOIN RestaurantDailyCapacity rd ON r.RestaurantID = rd.RestaurantID
-                WHERE rd.Date = @SelectedDate AND rd.RemainingCapacity > 10";
+            SELECT r.RestaurantID, r.Name, rd.RemainingCapacity
+            FROM Restaurant r
+            INNER JOIN RestaurantDailyCapacity rd ON r.RestaurantID = rd.RestaurantID
+            WHERE rd.Date = @SelectedDate AND rd.RemainingCapacity > 10";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -470,9 +473,13 @@ namespace Reservation
                                 ComboboxItem item = new ComboboxItem
                                 {
                                     Text = reader["Name"].ToString(),  // Restaurant Name
-                                    Value = Convert.ToInt32(reader["RestaurantID"])  // Restaurant ID
+                                    Value = Convert.ToInt32(reader["RestaurantID"]),  // Restaurant ID
+                                    RemainingCapacity = Convert.ToInt32(reader["RemainingCapacity"])  // Remaining Capacity
                                 };
                                 Resturantnamecombo.Items.Add(item);  // Add the item to ComboBox
+
+                                // Append the restaurant name and remaining capacity to the label string
+                                restaurantInfo += $"{item.Text}: {item.RemainingCapacity} capacity available\n";
                             }
                         }
                     }
@@ -485,12 +492,18 @@ namespace Reservation
                 {
                     MessageBox.Show("No restaurants with sufficient capacity available for the selected date.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
+                else
+                {
+                    // Update the label with the restaurant info
+                    RemainingCapacitylabel.Text = restaurantInfo;
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
 
         private int GetSelectedCustomerId()
@@ -895,6 +908,9 @@ namespace Reservation
 
             quantitytxt.Text = "1";
             ConfigureNameAutoComplete();
+
+
+
         }
 
 
@@ -1155,6 +1171,21 @@ namespace Reservation
 
                         paymentCommand.ExecuteNonQuery();
                     }
+
+
+                    // Insert the paid amount into DailyPayments
+                    string dailyInsertQuery = "INSERT INTO DailyPayments (CustomerID, ReservationID, PaidAmount , Paymentdate) VALUES (@CustomerID, @ReservationID, @PaidAmount , GETDATE())";
+                    using (SqlCommand dailyInsertCommand = new SqlCommand(dailyInsertQuery, connection))
+                    {
+                        dailyInsertCommand.Parameters.AddWithValue("@PaidAmount", paidAmount);
+
+                        dailyInsertCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                        dailyInsertCommand.Parameters.AddWithValue("@CustomerID", GetCustomerId());
+
+                        dailyInsertCommand.ExecuteNonQuery();
+                    }
+
+
 
                     // Now, insert each item from addedItems into OrderDetails
                     foreach (var item in addedItems)
@@ -1695,6 +1726,24 @@ namespace Reservation
             reservationsReport.ShowDialog();
             this.Close();
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            SpotCheck spotCheck = new SpotCheck();
+            this.Hide();
+            spotCheck.ShowDialog();
+            this.Close();   
+        }
+
+        private void RemainingCapacitylabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
 
@@ -1732,13 +1781,11 @@ namespace Reservation
     {
         public string Text { get; set; }
         public int Value { get; set; }
-
-        public override string ToString()
-        {
-            return Text;
-        }
+        public int RemainingCapacity { get; set; }  // Store the remaining capacity
+        public override string ToString() => Text;
     }
+
 }
-    
+
 
 

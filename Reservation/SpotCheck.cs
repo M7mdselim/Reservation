@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -12,12 +11,12 @@ using System.Windows.Forms;
 
 namespace Reservation
 {
-    public partial class ReservationsReport : Form
+    public partial class SpotCheck : Form
     {
         private float _initialFormWidth;
         private float _initialFormHeight;
         private ControlInfo[] _controlsInfo;
-        public ReservationsReport()
+        public SpotCheck()
         {
             InitializeComponent();
 
@@ -36,7 +35,7 @@ namespace Reservation
 
             // Set event handler for form resize
             this.Resize += Home_Resize;
-            
+
 
 
         }
@@ -135,7 +134,6 @@ namespace Reservation
 
         }
 
-      
 
 
 
@@ -149,7 +147,6 @@ namespace Reservation
 
 
 
-        
 
 
 
@@ -163,7 +160,9 @@ namespace Reservation
 
 
 
-      
+
+
+
 
 
         // Define a variable to store the total price
@@ -173,7 +172,7 @@ namespace Reservation
 
 
         // Method to fetch the price of the selected item from the Menu table
-       
+
 
 
         // Event handler when a row is clicked
@@ -181,7 +180,7 @@ namespace Reservation
 
 
 
-   
+
 
         private void menuitemspanel_Paint(object sender, PaintEventArgs e)
         {
@@ -199,7 +198,6 @@ namespace Reservation
 
 
 
-      
 
 
 
@@ -210,25 +208,26 @@ namespace Reservation
 
 
 
-     
-
-
-
-
-
-     
-
-
-      
 
 
 
 
 
 
-        
 
-       
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         private void paidamount_TextChanged(object sender, EventArgs e)
         {
@@ -248,11 +247,11 @@ namespace Reservation
             this.WindowState = FormWindowState.Minimized; // Minimize the form to the taskbar
         }
 
-       
 
 
 
-       
+
+
 
 
 
@@ -267,13 +266,13 @@ namespace Reservation
             try
             {
                 // Database connection string (update with your actual connection details)
-               
+
 
                 // Get the selected date from the DateTimePicker
                 DateTime selectedDate = dateTimePicker1.Value.Date;
 
                 // SQL query to fetch data filtered by ReservationDate
-                string query = "SELECT * FROM View_ReservationsDetails WHERE ReservationDate = @ReservationDate";
+                string query = "SELECT * FROM Vw_DailyPaymentsSummary WHERE CAST(Paymentdate AS DATE) = @Paymentdate";
 
                 // Create a connection to the database
                 using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
@@ -285,7 +284,7 @@ namespace Reservation
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         // Add the parameter for the selected date
-                        command.Parameters.AddWithValue("@ReservationDate", selectedDate);
+                        command.Parameters.AddWithValue("@Paymentdate", selectedDate);
 
                         // Create a data adapter
                         using (SqlDataAdapter adapter = new SqlDataAdapter(command))
@@ -309,28 +308,28 @@ namespace Reservation
             }
         }
 
-       
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
 
-       
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            ReservationsReport reservationsReport = new ReservationsReport();
+            this.Hide();
+            reservationsReport.ShowDialog();
+            this.Close();
+        }
 
         private void button2_Click(object sender, EventArgs e)
         {
             AddPayment addPayment = new AddPayment();
             this.Hide();
-            addPayment.ShowDialog();    
-            this.Close();   
-        }
-
-        private void button5_Click_1(object sender, EventArgs e)
-        {
-            SpotCheck spotCheck = new SpotCheck();
-            this.Hide();
-            spotCheck.ShowDialog();
+            addPayment.ShowDialog();
             this.Close();
-
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void button5_Click(object sender, EventArgs e)
         {
 
         }
