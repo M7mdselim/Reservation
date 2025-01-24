@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,10 +21,13 @@ namespace Reservation
     {
 
 
+
         private float _initialFormWidth;
         private float _initialFormHeight;
         private ControlInfo[] _controlsInfo;
-        public Home()
+
+        private string _username;
+        public Home(string username)
         {
             InitializeComponent();
 
@@ -32,8 +36,38 @@ namespace Reservation
             Resturantnamecombo.Enabled = false; // Disable combobox until a date is selected
 
             nametxt.TextChanged += new EventHandler(nametxt_TextChanged);
+           
+           
+
+            // Set event handler for form resize
+          
+
+
+            // Configure autocomplete for the name TextBox
+            ConfigureNameAutoComplete();
+
+            // Event handlers
+            ConfigureNameAutoComplete();
+
+            nametxt.TextChanged += nametxt_TextChanged;
+            nametxt.Leave += nametxt_Leave;
+
+
+
+            Phonenumbertxt.MaxLength = 11; // Ensure no more than 11 characters
+
+            Phonenumbertxt.KeyPress += Phonenumbertxt_KeyPress;
+            Phonenumbertxt.TextChanged += Phonenumbertxt_TextChanged;
+            Phonenumbertxt.Leave += Phonenumbertxt_Leave;
+            ConfigureAutoComplete();
+            _username = username;
+
+
+
+
             _initialFormWidth = this.Width;
             _initialFormHeight = this.Height;
+
             // Store initial size and location of all controls
             _controlsInfo = new ControlInfo[this.Controls.Count];
             for (int i = 0; i < this.Controls.Count; i++)
@@ -45,74 +79,33 @@ namespace Reservation
             // Set event handler for form resize
             this.Resize += Home_Resize;
 
-
-            // Configure autocomplete for the name TextBox
-            ConfigureNameAutoComplete();
-
-            // Event handlers
-            ConfigureNameAutoComplete();
-           
-            nametxt.TextChanged += nametxt_TextChanged;
-            nametxt.Leave += nametxt_Leave;
-
-
-
-            Phonenumbertxt.MaxLength = 11; // Ensure no more than 11 characters
-
-            Phonenumbertxt.KeyPress += Phonenumbertxt_KeyPress;
-            Phonenumbertxt.TextChanged += Phonenumbertxt_TextChanged;
-            Phonenumbertxt.Leave += Phonenumbertxt_Leave ;
-            ConfigureAutoComplete();
         }
 
         private System.Threading.Timer clockTimer;
 
-        private bool _isResizing = false;
-
         private void Home_Resize(object sender, EventArgs e)
         {
-            if (_isResizing) return;
-
-            _isResizing = true;
-            try
-            {
-                float widthRatio = this.Width / _initialFormWidth;
-                float heightRatio = this.Height / _initialFormHeight;
-                ResizeControls(this.Controls, widthRatio, heightRatio);
-            }
-            finally
-            {
-                _isResizing = false;
-            }
+            float widthRatio = this.Width / _initialFormWidth;
+            float heightRatio = this.Height / _initialFormHeight;
+            ResizeControls(this.Controls, widthRatio, heightRatio);
         }
-
 
         private void ResizeControls(Control.ControlCollection controls, float widthRatio, float heightRatio)
         {
-            foreach (Control control in controls)
+            for (int i = 0; i < controls.Count; i++)
             {
+                Control control = controls[i];
+                ControlInfo controlInfo = _controlsInfo[i];
 
-                if (control is Panel panel)
-                {
-                    // Recursively adjust panel's child controls
-                    ResizeControls(panel.Controls, widthRatio, heightRatio);
-                }
-                else
-                {
-                    // Adjust control dimensions
-                    var controlInfo = Array.Find(_controlsInfo, c => c.Left == control.Left && c.Top == control.Top);
-                    if (controlInfo != null)
-                    {
-                        control.Left = (int)(controlInfo.Left * widthRatio);
-                        control.Top = (int)(controlInfo.Top * heightRatio);
-                        control.Width = (int)(controlInfo.Width * widthRatio);
-                        control.Height = (int)(controlInfo.Height * heightRatio);
-                        control.Font = new Font(control.Font.FontFamily, controlInfo.FontSize * Math.Min(widthRatio, heightRatio));
-                    }
-                }
+                control.Left = (int)(controlInfo.Left * widthRatio);
+                control.Top = (int)(controlInfo.Top * heightRatio);
+                control.Width = (int)(controlInfo.Width * widthRatio);
+                control.Height = (int)(controlInfo.Height * heightRatio);
+
+                // Adjust font size
+                control.Font = new Font(control.Font.FontFamily, controlInfo.FontSize * Math.Min(widthRatio, heightRatio));
             }
         }
-
 
         private class ControlInfo
         {
@@ -131,6 +124,13 @@ namespace Reservation
                 FontSize = fontSize;
             }
         }
+
+
+
+
+
+
+
 
         private void exit_Click(object sender, EventArgs e)
         {
@@ -303,11 +303,13 @@ namespace Reservation
             Resturantnamecombo.Enabled = false;
             capacitytxt.Enabled = false;
             Reservationdatabtn.Enabled = false; 
+            importanttxt.Enabled = false;
+            addnewcustomerbtn.Enabled = false;
         }
 
         private void Reservationdatabtn_Click(object sender, EventArgs e)
         {
-            // Validate input fields
+         // Validate input fields
             if (string.IsNullOrWhiteSpace(capacitytxt.Text) || Resturantnamecombo.SelectedIndex == -1 || reservationdateandtime.Value == null
                 || string.IsNullOrWhiteSpace(nametxt.Text) || string.IsNullOrWhiteSpace(Phonenumbertxt.Text))
             {
@@ -394,8 +396,8 @@ namespace Reservation
 
                     // Insert reservation and get the ReservationID
                     string insertReservationQuery = @"
-                INSERT INTO Reservations (CustomerID, RestaurantID, ReservationDate, [NumberOfGuests], DateSubmitted)
-                VALUES (@CustomerID, @RestaurantID, @Date, @Capacity, @DateSubmitted);
+                INSERT INTO Reservations (CustomerID, RestaurantID, ReservationDate, [NumberOfGuests], DateSubmitted , Cashiername)
+                VALUES (@CustomerID, @RestaurantID, @Date, @Capacity, @DateSubmitted , @Cashiername);
                 SELECT SCOPE_IDENTITY();";
                     int reservationId = 0;
                     using (SqlCommand cmd = new SqlCommand(insertReservationQuery, connection))
@@ -404,6 +406,7 @@ namespace Reservation
                         cmd.Parameters.AddWithValue("@RestaurantID", restaurantId);
                         cmd.Parameters.AddWithValue("@Date", selectedDate);
                         cmd.Parameters.AddWithValue("@Capacity", requestedCapacity);
+                        cmd.Parameters.AddWithValue("@Cashiername", _username);
 
                         // Add the DateSubmitted parameter from DatenTimetxt
                         cmd.Parameters.AddWithValue("@DateSubmitted", DateTime.Parse(DatenTimetxt.Text));
@@ -426,6 +429,16 @@ namespace Reservation
                         {
                             MessageBox.Show("Failed to save the reservation.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
+                    }
+
+
+                    // Update Notes in Reservation
+                    string updateImportantquery = "UPDATE Reservations SET important = @important WHERE ReservationID = @ReservationID";
+                    using (SqlCommand updateNotesCommand = new SqlCommand(updateImportantquery, connection))
+                    {
+                        updateNotesCommand.Parameters.AddWithValue("@important", importanttxt.Text.Trim());
+                        updateNotesCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                        updateNotesCommand.ExecuteNonQuery();
                     }
                 }
             }
@@ -904,17 +917,25 @@ namespace Reservation
 
         private void Home_Load(object sender, EventArgs e)
         {
-            clockTimer = new System.Threading.Timer(UpdateDateTime, null, 0, 1000); // 1 second interval
+
+            
+        
+
+        clockTimer = new System.Threading.Timer(UpdateDateTime, null, 0, 1000); // 1 second interval
 
             quantitytxt.Text = "1";
             ConfigureNameAutoComplete();
+
+
+            cashiernamelabel.Text = _username;
+
 
 
 
         }
 
 
-
+       
 
         private void UpdateDateTime(object state)
         {
@@ -1144,70 +1165,104 @@ namespace Reservation
                     return;
                 }
 
-                // Insert or update payment in the Payments table
+                // Fetch capacity from reservations table using reservationId
+                string capacity = GetCapacityFromDatabase(reservationId);
+                if (string.IsNullOrEmpty(capacity))
+                {
+                    MessageBox.Show("Failed to retrieve capacity for this reservation.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 string paymentQuery = @"
-            IF EXISTS (SELECT 1 FROM Payments WHERE CustomerID = @CustomerID AND ReservationID = @ReservationID)
-            BEGIN
-                UPDATE Payments
-                SET TotalAmount = TotalAmount + @TotalAmount, 
-                    PaidAmount = PaidAmount + @PaidAmount
-                WHERE CustomerID = @CustomerID AND ReservationID = @ReservationID
-            END
-            ELSE
-            BEGIN
-                INSERT INTO Payments (CustomerID, ReservationID, TotalAmount, PaidAmount)
-                VALUES (@CustomerID, @ReservationID, @TotalAmount, @PaidAmount)
-            END";
+        IF EXISTS (SELECT 1 FROM Payments WHERE CustomerID = @CustomerID AND ReservationID = @ReservationID)
+        BEGIN
+            UPDATE Payments
+            SET TotalAmount = TotalAmount + @TotalAmount, 
+                PaidAmount = PaidAmount + @PaidAmount
+            WHERE CustomerID = @CustomerID AND ReservationID = @ReservationID
+        END
+        ELSE
+        BEGIN
+            INSERT INTO Payments (CustomerID, ReservationID, TotalAmount, PaidAmount)
+            VALUES (@CustomerID, @ReservationID, @TotalAmount, @PaidAmount)
+        END";
 
                 using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
                 {
                     connection.Open();
+
+                    // Insert or update payment
                     using (SqlCommand paymentCommand = new SqlCommand(paymentQuery, connection))
                     {
-                        paymentCommand.Parameters.AddWithValue("@CustomerID", GetCustomerId()); // Assume customerId is retrieved elsewhere
+                        paymentCommand.Parameters.AddWithValue("@CustomerID", GetCustomerId());
                         paymentCommand.Parameters.AddWithValue("@ReservationID", reservationId);
                         paymentCommand.Parameters.AddWithValue("@TotalAmount", totalAmount);
                         paymentCommand.Parameters.AddWithValue("@PaidAmount", paidAmount);
-
                         paymentCommand.ExecuteNonQuery();
                     }
 
 
-                    // Insert the paid amount into DailyPayments
-                    string dailyInsertQuery = "INSERT INTO DailyPayments (CustomerID, ReservationID, PaidAmount , Paymentdate) VALUES (@CustomerID, @ReservationID, @PaidAmount , GETDATE())";
+                    // Update Notes in Reservation
+                    string updateNotesQuery = "UPDATE Reservations SET Notes = @Notes WHERE ReservationID = @ReservationID";
+                    using (SqlCommand updateNotesCommand = new SqlCommand(updateNotesQuery, connection))
+                    {
+                        updateNotesCommand.Parameters.AddWithValue("@Notes", notestxt.Text.Trim());
+                        updateNotesCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                        updateNotesCommand.ExecuteNonQuery();
+                    }
+
+                    // Insert into DailyPayments
+                    string dailyInsertQuery = "INSERT INTO DailyPayments (CustomerID, ReservationID, PaidAmount, PaymentDate, CashierName) VALUES (@CustomerID, @ReservationID, @PaidAmount, GETDATE(), @CashierName)";
                     using (SqlCommand dailyInsertCommand = new SqlCommand(dailyInsertQuery, connection))
                     {
                         dailyInsertCommand.Parameters.AddWithValue("@PaidAmount", paidAmount);
-
                         dailyInsertCommand.Parameters.AddWithValue("@ReservationID", reservationId);
                         dailyInsertCommand.Parameters.AddWithValue("@CustomerID", GetCustomerId());
-
+                        dailyInsertCommand.Parameters.AddWithValue("@CashierName", _username);
                         dailyInsertCommand.ExecuteNonQuery();
                     }
 
-
-
-                    // Now, insert each item from addedItems into OrderDetails
+                    // Insert into OrderDetails
                     foreach (var item in addedItems)
                     {
-                        int menuItemId = GetMenuItemIdByName(item.ItemName); // Retrieve MenuItemId based on item name
+                        int menuItemId = GetMenuItemIdByName(item.ItemName);
                         decimal subtotal = item.ItemPrice * item.Quantity;
 
-                        string orderDetailsQuery = "INSERT INTO OrderDetails (ReservationID, MenuItemID, Quantity, ItemPrice) " +
-                                                   "VALUES (@ReservationID, @MenuItemID, @Quantity, @ItemPrice)";
+                        string orderDetailsQuery = "INSERT INTO OrderDetails (ReservationID, MenuItemID, Quantity, ItemPrice, CashierName) " +
+                                                   "VALUES (@ReservationID, @MenuItemID, @Quantity, @ItemPrice, @CashierName)";
                         using (SqlCommand orderDetailsCommand = new SqlCommand(orderDetailsQuery, connection))
                         {
                             orderDetailsCommand.Parameters.AddWithValue("@ReservationID", reservationId);
                             orderDetailsCommand.Parameters.AddWithValue("@MenuItemID", menuItemId);
                             orderDetailsCommand.Parameters.AddWithValue("@Quantity", item.Quantity);
                             orderDetailsCommand.Parameters.AddWithValue("@ItemPrice", item.ItemPrice);
-
+                            orderDetailsCommand.Parameters.AddWithValue("@CashierName", _username);
                             orderDetailsCommand.ExecuteNonQuery();
                         }
                     }
 
+                    // Insert into UserLog
+                    string logQuery = "INSERT INTO UserLog (CashierName, Action, DateAndTime) VALUES (@CashierName, @Action, GETDATE())";
+                    using (SqlCommand logCommand = new SqlCommand(logQuery, connection))
+                    {
+                        string logDetails = $"Processed Reservation ID: {reservationId}, Paid Amount: {paidAmount}, Total Amount: {totalAmount} , New Reservation";
+                        logCommand.Parameters.AddWithValue("@CashierName", _username);
+                        logCommand.Parameters.AddWithValue("@Action", logDetails);
+                        logCommand.ExecuteNonQuery();
+                    }
+
+
+
+
+                   
+
+
+
+                    // Print receipt with the fetched capacity
+                    PrintReceipt(reservationId, totalAmount, paidAmount, _username, capacity);
                     MessageBox.Show("Order details and payment saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     ClearMenuItems();
+                    ResetForm();
                 }
             }
             catch (Exception ex)
@@ -1216,6 +1271,209 @@ namespace Reservation
             }
         }
 
+        private string GetCapacityFromDatabase(int reservationId)
+        {
+            string capacity = string.Empty;
+            string connectionString = DatabaseConfig.connectionString; // Replace with your actual connection string
+
+            // Query to fetch capacity from reservations table
+            string query = "SELECT NumberOfGuests FROM reservations WHERE reservationid = @reservationId";
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@reservationId", reservationId);
+                        var result = cmd.ExecuteScalar();
+                        capacity = result?.ToString(); // If result is null, capacity remains empty
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error fetching capacity: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            return capacity;
+        }
+
+
+
+
+        // Method to handle printing
+        private void PrintReceipt(int reservationId, decimal totalAmount, decimal paidAmount, string cashierName, string numberOfGuests)
+        {
+            DateTime reservationDateAndTime = reservationdateandtime.Value;
+            string formattedReservationDateAndTime = reservationDateAndTime.ToString("dd/MM/yyyy");
+
+            // Retrieve the restaurant name from the database based on reservationId
+            string restaurantName = GetRestaurantNameByReservationId(reservationId);
+
+
+            string notes = string.Empty;
+
+            // Fetch notes from the Reservations table
+            using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                connection.Open();
+                string notesQuery = "SELECT Notes FROM Reservations WHERE ReservationID = @ReservationID";
+                using (SqlCommand notesCommand = new SqlCommand(notesQuery, connection))
+                {
+                    notesCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                    var result = notesCommand.ExecuteScalar();
+                    if (result != null)
+                    {
+                        notes = result.ToString();
+                    }
+                }
+            }
+
+            PrintDocument printDocument = new PrintDocument();
+            printDocument.PrintPage += (sender, e) =>
+            {
+                float yPosition = 10; // Starting Y position
+                float rightMargin = e.PageBounds.Width - 10; // Right margin
+                float leftMargin = 10; // Left margin
+                float header = 50;
+                float lineHeight = 25; // Line height for spacing
+                Font font = new Font("Arial", 10);
+                Font boldFont = new Font("Arial", 10, FontStyle.Bold);
+                Font titleFont = new Font("Arial", 12, FontStyle.Bold);
+                StringFormat rtlFormat = new StringFormat { Alignment = StringAlignment.Far }; // Right-to-left alignment
+                StringFormat leftFormat = new StringFormat { Alignment = StringAlignment.Near }; // Left alignment
+                StringFormat centerFormat = new StringFormat { Alignment = StringAlignment.Center }; // Center alignment
+
+                // Draw the company logo
+               string logoPath = Path.Combine(Application.StartupPath, "logo.jpg"); // Replace with the actual path to the logo
+                if (System.IO.File.Exists(logoPath))
+                {
+                    Image logo = Image.FromFile(logoPath);
+                    e.Graphics.DrawImage(logo, (e.PageBounds.Width - 100) / 2, yPosition, 100, 100); // Center the logo
+                    yPosition += 110; // Adjust for logo height
+                }
+
+                // Draw the company name in the center
+                string companyName = "Royal Resort";
+                e.Graphics.DrawString(companyName, titleFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += header;
+
+                // Add the date and time
+                e.Graphics.DrawString($"تاريخ: {DateTime.Now:dd/MM/yyyy HH:mm:ss}", font, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                yPosition += lineHeight;
+
+                // Add reservation ID on the right and reservation date on the left (same line)
+                e.Graphics.DrawString($"رقم الحجز: {reservationId}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
+                e.Graphics.DrawString($"تاريخ الحجز: {formattedReservationDateAndTime}", boldFont, Brushes.Black, leftMargin, yPosition, leftFormat); // Left aligned
+                yPosition += lineHeight;
+
+                // Add customer name on the right and cashier name on the left (same line)
+                e.Graphics.DrawString($"حجز باسم: {nametxt.Text}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
+                e.Graphics.DrawString($"القائم بالحجز: {cashierName}", boldFont, Brushes.Black, leftMargin, yPosition, leftFormat); // Left aligned
+                yPosition += lineHeight;
+
+                string resturantname = $" مطعم:  {restaurantName}";
+                // Add the restaurant name under the customer name and number of guests
+                e.Graphics.DrawString(resturantname, boldFont, Brushes.Black, leftMargin, yPosition, leftFormat);
+                string numberOfGuestsText = $"عدد اشخاص: {numberOfGuests}";
+                e.Graphics.DrawString(numberOfGuestsText, boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                yPosition += lineHeight;
+
+                // Draw a separator
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
+                yPosition += 10;
+
+                // Add the order details
+                e.Graphics.DrawString(":تفاصيل الاوردر", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                yPosition += lineHeight;
+
+                foreach (var item in addedItems)
+                {
+                    // Format without currency symbols
+                    string itemDetails = $"{item.ItemName} - {item.Quantity} x {item.ItemPrice:N2}";
+                    e.Graphics.DrawString(itemDetails, font, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                    yPosition += lineHeight;
+                }
+
+
+                if (!string.IsNullOrEmpty(notes))
+                {
+                    // Draw another separator
+                    e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
+                    yPosition += 10;
+
+                    e.Graphics.DrawString(":ملحوظات", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                    yPosition += lineHeight;
+
+                    // Calculate the size of the notes string
+                    float availableWidth = e.PageBounds.Width - leftMargin - rightMargin;
+                    SizeF notesSize = e.Graphics.MeasureString(notes, font, (int)availableWidth);
+
+                    // Define a rectangle for multi-line text rendering
+                    RectangleF notesRect = new RectangleF(rightMargin, yPosition, availableWidth, notesSize.Height);
+
+                    // Render the notes text inside the rectangle
+                    e.Graphics.DrawString(notes, font, Brushes.Black, notesRect, rtlFormat);
+
+                    // Update yPosition to account for the height of the rendered text
+                    yPosition += (int)notesSize.Height;
+                }
+
+                // Draw another separator
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
+                yPosition += 10;
+
+
+
+                // Add total amount (without currency symbol)
+                e.Graphics.DrawString($"اجمالي المبلغ: {totalAmount:N2}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                yPosition += lineHeight;
+
+                // Add paid amount (without currency symbol)
+                e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:N2}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                yPosition += lineHeight;
+
+                // Draw a thank-you message
+                yPosition += 20;
+                string footerMessage = "شكرا على اختيارك دار الضيافه";
+                e.Graphics.DrawString(footerMessage, boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+
+                // Ensure the footer does not overflow the page height
+                if (yPosition + lineHeight > e.PageBounds.Height)
+                {
+                    MessageBox.Show("The receipt content exceeds the page height. Please adjust margins or content.", "Print Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+
+            try
+            {
+                printDocument.Print();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while printing: {ex.Message}", "Print Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Method to fetch the restaurant name based on reservationId
+        private string GetRestaurantNameByReservationId(int reservationId)
+        {
+            string restaurantName = string.Empty;
+            // Replace with actual database logic to fetch the restaurant name
+            using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                connection.Open();
+                string query = "SELECT Name FROM Restaurant WHERE RestaurantID = (SELECT RestaurantId FROM Reservations WHERE reservationid = @reservationId)";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@reservationId", reservationId);
+                    restaurantName = command.ExecuteScalar()?.ToString() ?? "Restaurant Name Not Found";
+                }
+            }
+            return restaurantName;
+        }
 
 
 
@@ -1284,29 +1542,26 @@ namespace Reservation
 
         private void paidamount_TextChanged(object sender, EventArgs e)
         {
-
+         
         }
+
+
+        private void paidamount_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Allow only numeric characters and control keys (e.g., backspace)
+            if (!char.IsDigit(e.KeyChar) && e.KeyChar != (char)Keys.Back)
+            {
+                e.Handled = true; // Prevent the key from being entered
+            }
+        }
+
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
         }
 
-        private void squarebtn_Click(object sender, EventArgs e)
-        {
-            if (this.WindowState == FormWindowState.Maximized)
-            {
-                this.WindowState = FormWindowState.Normal; // Restore the form to its normal size
-            }
-            else
-            {
-                this.WindowState = FormWindowState.Maximized; // Maximize the form
-            }
-
-            // Trigger the resize logic to adjust controls
-            Home_Resize(sender, e);
-        }
-
+      
 
         private void minusbtn_Click(object sender, EventArgs e)
         {
@@ -1321,7 +1576,7 @@ namespace Reservation
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Addorders addorders = new Addorders();
+            Addorders addorders = new Addorders(_username);
             this.Hide();
             addorders.ShowDialog();
             this.Close();   
@@ -1361,7 +1616,7 @@ namespace Reservation
 
         private void button2_Click(object sender, EventArgs e)
         {
-            AddPayment addPayment = new AddPayment();
+            AddPayment addPayment = new AddPayment(_username);
             this.Hide();    
             addPayment.ShowDialog();        
             this.Close();   
@@ -1380,9 +1635,8 @@ namespace Reservation
                 .Replace('أ', 'ا')  // Normalize 'أ' to 'ا'
                 .Replace('إ', 'ا')  // Normalize 'إ' to 'ا'
                 .Replace('آ', 'ا')  // Normalize 'آ' to 'ا'
-                .Replace('ى', 'ي')  // Normalize 'ى' to 'ي'
-                .Replace('ؤ', 'و')  // Normalize 'ؤ' to 'و'
-                .Replace('ئ', 'ي')  // Normalize 'ئ' to 'ي'
+               
+               
                 .Replace('ة', 'ه'); // Normalize 'ة' to 'ه'
         }
 
@@ -1395,10 +1649,9 @@ namespace Reservation
                 .Replace('ا', 'أ')  // Reverse normalize 'ا' to 'أ'
                 .Replace('ا', 'إ')  // Reverse normalize 'ا' to 'إ'
                 .Replace('ا', 'آ')  // Reverse normalize 'ا' to 'آ'
-                .Replace('ي', 'ى')  // Reverse normalize 'ي' to 'ى'
-                .Replace('ي', 'ئ')  // Reverse normalize 'ي' to 'ئ'
-                .Replace('ه', 'ة')  // Reverse normalize 'ه' to 'ة'
-                .Replace('و', 'ؤ'); // Reverse normalize 'و' to 'ؤ'
+
+                .Replace('ه', 'ة');  // Reverse normalize 'ه' to 'ة'
+               
         }
 
 
@@ -1696,6 +1949,7 @@ namespace Reservation
             Phonenumbertxt.Enabled= true;
             Resturantnamecombo.Enabled = false;
             reservationdateandtime.Enabled = true;
+            importanttxt.Enabled = true;
            
             capacitytxt.Enabled = true;
             Reservationdatabtn.Enabled = true;
@@ -1709,6 +1963,16 @@ namespace Reservation
             reservationidtxt.Text = "";
             totalPrice = 0;
             totalPriceLabel.Text = "";
+            notestxt.Text = "";
+            importanttxt.Text = "";
+
+
+
+
+
+
+
+
             // quantitytxt.Value = 1; // If it's a NumericUpDown
 
             // Clear all child controls in the menu items panel
@@ -1721,7 +1985,7 @@ namespace Reservation
 
         private void button4_Click(object sender, EventArgs e)
         {
-            ReservationsReport reservationsReport = new ReservationsReport();
+            ReservationsReport reservationsReport = new ReservationsReport(_username);
             this.Hide();
             reservationsReport.ShowDialog();
             this.Close();
@@ -1729,7 +1993,7 @@ namespace Reservation
 
         private void button5_Click(object sender, EventArgs e)
         {
-            SpotCheck spotCheck = new SpotCheck();
+            SpotCheck spotCheck = new SpotCheck(_username);
             this.Hide();
             spotCheck.ShowDialog();
             this.Close();   
@@ -1742,8 +2006,37 @@ namespace Reservation
 
         private void button6_Click(object sender, EventArgs e)
         {
-
+            Editorder editorder = new Editorder(_username);
+            this.Hide();
+            editorder.ShowDialog();
+            this.Close();
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            DailyReports dailyReports = new DailyReports(_username);
+            this.Hide();
+            dailyReports.ShowDialog();
+            this.Close();
+        }
+
+        private void backkbtn_Click(object sender, EventArgs e)
+        {
+             Navigation navigation = new Navigation(_username);
+                this.Hide();
+                navigation.ShowDialog();
+                this.Close();
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+            Login login = new Login();
+            this.Hide();
+            login.ShowDialog();
+            this.Close();
+        }
+
+       
     }
 
 

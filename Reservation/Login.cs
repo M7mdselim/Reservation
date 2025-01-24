@@ -1,59 +1,101 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
-using System.Linq;
-using System.Runtime.Remoting.Contexts;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Reservation
 {
     public partial class Login : Form
     {
+
+        private float _initialFormWidth;
+        private float _initialFormHeight;
+        private ControlInfo[] _controlsInfo;
+
+
         public Login()
         {
             InitializeComponent();
 
-
-            // Inside the Form_Load or constructor
+            // Attach KeyDown events for handling Enter key navigation
             usernametxt.KeyDown += new KeyEventHandler(usernametxt_KeyDown);
             passwordtxt.KeyDown += new KeyEventHandler(passwordtxt_KeyDown);
 
+
+
+            _initialFormWidth = this.Width;
+            _initialFormHeight = this.Height;
+
+            // Store initial size and location of all controls
+            _controlsInfo = new ControlInfo[this.Controls.Count];
+            for (int i = 0; i < this.Controls.Count; i++)
+            {
+                Control c = this.Controls[i];
+                _controlsInfo[i] = new ControlInfo(c.Left, c.Top, c.Width, c.Height, c.Font.Size);
+            }
+
+            // Set event handler for form resize
+            this.Resize += Home_Resize;
         }
 
-        private void label5_Click(object sender, EventArgs e)
+
+
+        private void Home_Resize(object sender, EventArgs e)
         {
-
+            float widthRatio = this.Width / _initialFormWidth;
+            float heightRatio = this.Height / _initialFormHeight;
+            ResizeControls(this.Controls, widthRatio, heightRatio);
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void ResizeControls(Control.ControlCollection controls, float widthRatio, float heightRatio)
         {
+            for (int i = 0; i < controls.Count; i++)
+            {
+                Control control = controls[i];
+                ControlInfo controlInfo = _controlsInfo[i];
 
+                control.Left = (int)(controlInfo.Left * widthRatio);
+                control.Top = (int)(controlInfo.Top * heightRatio);
+                control.Width = (int)(controlInfo.Width * widthRatio);
+                control.Height = (int)(controlInfo.Height * heightRatio);
+
+                // Adjust font size
+                control.Font = new Font(control.Font.FontFamily, controlInfo.FontSize * Math.Min(widthRatio, heightRatio));
+            }
         }
 
+        private class ControlInfo
+        {
+            public int Left { get; set; }
+            public int Top { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public float FontSize { get; set; }
+
+            public ControlInfo(int left, int top, int width, int height, float fontSize)
+            {
+                Left = left;
+                Top = top;
+                Width = width;
+                Height = height;
+                FontSize = fontSize;
+            }
+        }
         private void exit_Click(object sender, EventArgs e)
         {
-            Application.Exit();
-        }
-
-        private void login_signupBtn_Click(object sender, EventArgs e)
-        {
-           
+            Application.Exit(); // Exit the application
         }
 
         private void login_showPass_CheckedChanged(object sender, EventArgs e)
         {
+            // Toggle password visibility
             passwordtxt.PasswordChar = login_showPass.Checked ? '\0' : '*';
         }
 
         private void login_btn_Click(object sender, EventArgs e)
         {
-            string username = usernametxt.Text;
-            string password = passwordtxt.Text;
+            string username = usernametxt.Text.Trim();
+            string password = passwordtxt.Text.Trim();
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
@@ -67,8 +109,8 @@ namespace Reservation
                 {
                     connection.Open();
 
-                    // SQL query to check if username and password match
-                    string query = "SELECT Role FROM Cashier WHERE Username = @Username AND Password = @Password";
+                    // SQL query to validate login and retrieve user info
+                    string query = "SELECT FullName, Role FROM Cashier WHERE Username = @Username AND Password = @Password";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -76,26 +118,22 @@ namespace Reservation
                         command.Parameters.AddWithValue("@Username", username);
                         command.Parameters.AddWithValue("@Password", password);
 
-                        object result = command.ExecuteScalar(); // Get the role of the cashier if login is successful
-
-                        if (result != null)
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            int role = Convert.ToInt32(result); // Get the role from the query result
+                            if (reader.Read()) // If a matching record is found
+                            {
+                                // Set global user information
+                                GlobalUser.FullName = reader["FullName"].ToString();
+                                GlobalUser.Role = Convert.ToInt32(reader["Role"]);
 
-                            // Optionally, store the role or other info in a global variable if needed
-                            // Example: Set the logged-in cashier's role
-                           int LoggedInCashierRole = role;
-
-                            // Hide the login form and show the Home form
-                            Home home = new Home();
-                            this.Hide();
-                            home.ShowDialog();
-                            this.Close();
-                        }
-                        else
-                        {
-                            // If no matching user is found
-                            MessageBox.Show("Invalid username or password. Please try again.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                // Navigate based on the role
+                                NavigateToRoleForm();
+                            }
+                            else
+                            {
+                                // If no matching user is found
+                                MessageBox.Show("Invalid username or password. Please try again.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
                         }
                     }
                 }
@@ -103,6 +141,45 @@ namespace Reservation
             catch (Exception ex)
             {
                 MessageBox.Show($"An error occurred while validating login: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void NavigateToRoleForm()
+        {
+            // Navigate based on the user's role
+            switch (GlobalUser.Role)
+            {
+                case 1: // Role 1: Navigation
+                    Navigation navigationForm = new Navigation(GlobalUser.FullName);
+                    this.Hide();
+                    navigationForm.ShowDialog();
+                    this.Close();
+                    break;
+
+                case 2: // Role 2: Home
+                    Home homeForm = new Home(GlobalUser.FullName);
+                    this.Hide();
+                    homeForm.ShowDialog();
+                    this.Close();
+                    break;
+
+                case 3: // Role 3: Navigation
+                    Navigation navigationForm3 = new Navigation(GlobalUser.FullName);
+                    this.Hide();
+                    navigationForm3.ShowDialog();
+                    this.Close();
+                    break;
+
+                case 4: // Role 4: ReservationsReport
+                    ReservationsReport reservationsReportForm = new ReservationsReport(GlobalUser.FullName);
+                    this.Hide();
+                    reservationsReportForm.ShowDialog();
+                    this.Close();
+                    break;
+
+                default: // Unknown role
+                    MessageBox.Show("Your role is not recognized. Please contact the administrator.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
             }
         }
 
@@ -118,62 +195,13 @@ namespace Reservation
         {
             if (e.KeyCode == Keys.Enter) // Check if the Enter key is pressed
             {
-                string username = usernametxt.Text;
-                string password = passwordtxt.Text;
-
-                if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-                {
-                    MessageBox.Show("Please enter both username and password.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                try
-                {
-                    using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
-                    {
-                        connection.Open();
-
-                        // SQL query to check if username and password match
-                        string query = "SELECT Role FROM Cashier WHERE Username = @Username AND Password = @Password";
-
-                        using (SqlCommand command = new SqlCommand(query, connection))
-                        {
-                            // Add parameters to prevent SQL injection
-                            command.Parameters.AddWithValue("@Username", username);
-                            command.Parameters.AddWithValue("@Password", password);
-
-                            object result = command.ExecuteScalar(); // Get the role of the cashier if login is successful
-
-                            if (result != null)
-                            {
-                                int role = Convert.ToInt32(result); // Get the role from the query result
-
-                                // Optionally, store the role or other info in a global variable if needed
-                                int LoggedInCashierRole = role;
-
-                                // Hide the login form and show the Home form
-                                Home home = new Home();
-                                this.Hide();
-                                home.ShowDialog();
-                                this.Close();
-                            }
-                            else
-                            {
-                                // If no matching user is found
-                                MessageBox.Show("Invalid username or password. Please try again.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"An error occurred while validating login: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            } 
+                login_btn_Click(sender, e); // Trigger login logic
+            }
         }
 
+        private void Login_Load(object sender, EventArgs e)
+        {
 
-
+        }
     }
-    }
-
+}

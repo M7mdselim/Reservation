@@ -63,13 +63,44 @@
     <Compile Include="AddPayment.Designer.cs">
       <DependentUpon>AddPayment.cs</DependentUpon>
     </Compile>
+    <Compile Include="DailyReports.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DailyReports.Designer.cs">
+      <DependentUpon>DailyReports.cs</DependentUpon>
+    </Compile>
     <Compile Include="DatabaseConfig.cs" />
+    <Compile Include="DeletedReservations.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DeletedReservations.Designer.cs">
+      <DependentUpon>DeletedReservations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditCustomerData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditCustomerData.Designer.cs">
+      <DependentUpon>EditCustomerData.cs</DependentUpon>
+    </Compile>
     <Compile Include="Editorder.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Editorder.Designer.cs">
       <DependentUpon>Editorder.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditPayments.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditPayments.Designer.cs">
+      <DependentUpon>EditPayments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditReservation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditReservation.Designer.cs">
+      <DependentUpon>EditReservation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GlobalUser.cs" />
     <Compile Include="Home.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -82,6 +113,18 @@
     <Compile Include="Login.Designer.cs">
       <DependentUpon>Login.cs</DependentUpon>
     </Compile>
+    <Compile Include="MonthlyReport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MonthlyReport.Designer.cs">
+      <DependentUpon>MonthlyReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Navigation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Navigation.Designer.cs">
+      <DependentUpon>Navigation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReservationsReport.cs">
@@ -90,11 +133,23 @@
     <Compile Include="ReservationsReport.Designer.cs">
       <DependentUpon>ReservationsReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="SingleOrderEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SingleOrderEdit.Designer.cs">
+      <DependentUpon>SingleOrderEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="SpotCheck.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SpotCheck.Designer.cs">
       <DependentUpon>SpotCheck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserLog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserLog.Designer.cs">
+      <DependentUpon>UserLog.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Addorders.resx">
       <DependentUpon>Addorders.cs</DependentUpon>
@@ -102,14 +157,35 @@
     <EmbeddedResource Include="AddPayment.resx">
       <DependentUpon>AddPayment.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="DailyReports.resx">
+      <DependentUpon>DailyReports.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DeletedReservations.resx">
+      <DependentUpon>DeletedReservations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditCustomerData.resx">
+      <DependentUpon>EditCustomerData.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Editorder.resx">
       <DependentUpon>Editorder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditPayments.resx">
+      <DependentUpon>EditPayments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditReservation.resx">
+      <DependentUpon>EditReservation.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Home.resx">
       <DependentUpon>Home.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonthlyReport.resx">
+      <DependentUpon>MonthlyReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Navigation.resx">
+      <DependentUpon>Navigation.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -124,8 +200,14 @@
     <EmbeddedResource Include="ReservationsReport.resx">
       <DependentUpon>ReservationsReport.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SingleOrderEdit.resx">
+      <DependentUpon>SingleOrderEdit.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SpotCheck.resx">
       <DependentUpon>SpotCheck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserLog.resx">
+      <DependentUpon>UserLog.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -143,6 +225,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\icons8_employee_card_100px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Back-Button-Download-Transparent-PNG-Image.png" />
+    <Content Include="Resources\logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
