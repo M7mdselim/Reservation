@@ -172,11 +172,13 @@ namespace Reservation
 
         }
 
-      
+
         private void Phonenumbertxt_TextChanged(object sender, EventArgs e)
         {
-
+            // Remove non-numeric characters
+         
         }
+
         private void LockCustomerFields()
         {
             nametxt.Enabled = false;
@@ -204,10 +206,17 @@ namespace Reservation
             string customerName = nametxt.Text.Trim();
             string phoneNumber = Phonenumbertxt.Text.Trim();
 
-            // Validate inputs
+            // Validate Customer Name and Phone Number
             if (string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(phoneNumber))
             {
                 MessageBox.Show("Please fill in both Customer Name and Phone Number.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Validate Phone Number Length
+            if (phoneNumber.Length != 11 || !phoneNumber.All(char.IsDigit))
+            {
+                MessageBox.Show("رقم التليفون غير كامل", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -246,7 +255,7 @@ namespace Reservation
                         {
                             MessageBox.Show("Customer added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             addnewcustomerbtn.Enabled = false;
-                            LockCustomerFields();    // Make them readonly
+                            LockCustomerFields(); // Make fields readonly
                         }
                         else
                         {
@@ -270,6 +279,7 @@ namespace Reservation
         private void reservationdateandtime_ValueChanged(object sender, EventArgs e)
         {
             LoadAvailableRestaurants();
+            Resturantnamecombo.Text = "";   
         }
 
         private void Resturantnamecombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -309,7 +319,7 @@ namespace Reservation
 
         private void Reservationdatabtn_Click(object sender, EventArgs e)
         {
-         // Validate input fields
+            // Validate input fields
             if (string.IsNullOrWhiteSpace(capacitytxt.Text) || Resturantnamecombo.SelectedIndex == -1 || reservationdateandtime.Value == null
                 || string.IsNullOrWhiteSpace(nametxt.Text) || string.IsNullOrWhiteSpace(Phonenumbertxt.Text))
             {
@@ -334,6 +344,19 @@ namespace Reservation
                 using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
                 {
                     connection.Open();
+
+                    // Check if the reservation date is valid (not earlier than the server's current date)
+                    string checkDateQuery = "SELECT CASE WHEN @ReservationDate >= CAST(GETDATE() AS DATE) THEN 1 ELSE 0 END";
+                    using (SqlCommand cmd = new SqlCommand(checkDateQuery, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@ReservationDate", selectedDate);
+                        int isValidDate = Convert.ToInt32(cmd.ExecuteScalar());
+                        if (isValidDate == 0)
+                        {
+                            MessageBox.Show("The reservation date cannot be earlier than today.", "Invalid Date", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
 
                     // Get RestaurantID
                     string getRestaurantIdQuery = "SELECT RestaurantID FROM Restaurant WHERE Name = @RestaurantName";
@@ -388,7 +411,7 @@ namespace Reservation
                         }
                     }
 
-                    if (remainingCapacity < requestedCapacity+10)
+                    if (remainingCapacity < requestedCapacity)
                     {
                         MessageBox.Show($"Insufficient capacity. Only {remainingCapacity} seats are available.", "Capacity Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
@@ -396,8 +419,8 @@ namespace Reservation
 
                     // Insert reservation and get the ReservationID
                     string insertReservationQuery = @"
-                INSERT INTO Reservations (CustomerID, RestaurantID, ReservationDate, [NumberOfGuests], DateSubmitted , Cashiername)
-                VALUES (@CustomerID, @RestaurantID, @Date, @Capacity, @DateSubmitted , @Cashiername);
+                INSERT INTO Reservations (CustomerID, RestaurantID, ReservationDate, [NumberOfGuests], DateSubmitted, CashierName)
+                VALUES (@CustomerID, @RestaurantID, @Date, @Capacity, @DateSubmitted, @CashierName);
                 SELECT SCOPE_IDENTITY();";
                     int reservationId = 0;
                     using (SqlCommand cmd = new SqlCommand(insertReservationQuery, connection))
@@ -406,9 +429,7 @@ namespace Reservation
                         cmd.Parameters.AddWithValue("@RestaurantID", restaurantId);
                         cmd.Parameters.AddWithValue("@Date", selectedDate);
                         cmd.Parameters.AddWithValue("@Capacity", requestedCapacity);
-                        cmd.Parameters.AddWithValue("@Cashiername", _username);
-
-                        // Add the DateSubmitted parameter from DatenTimetxt
+                        cmd.Parameters.AddWithValue("@CashierName", _username);
                         cmd.Parameters.AddWithValue("@DateSubmitted", DateTime.Parse(DatenTimetxt.Text));
 
                         object result = cmd.ExecuteScalar();
@@ -417,7 +438,7 @@ namespace Reservation
                             reservationId = Convert.ToInt32(result);
                             MessageBox.Show("Reservation successfully saved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                            // Update the reservationnumberlabel
+                            // Update the reservation number label
                             reservationnumberlabel.Text = $"Reservation number is = {reservationId}";
                             reservationnumberlabel.ForeColor = Color.Red;
                             reservationidtxt.Text = reservationId.ToString(); // Update TextBox
@@ -431,10 +452,9 @@ namespace Reservation
                         }
                     }
 
-
                     // Update Notes in Reservation
-                    string updateImportantquery = "UPDATE Reservations SET important = @important WHERE ReservationID = @ReservationID";
-                    using (SqlCommand updateNotesCommand = new SqlCommand(updateImportantquery, connection))
+                    string updateImportantQuery = "UPDATE Reservations SET important = @important WHERE ReservationID = @ReservationID";
+                    using (SqlCommand updateNotesCommand = new SqlCommand(updateImportantQuery, connection))
                     {
                         updateNotesCommand.Parameters.AddWithValue("@important", importanttxt.Text.Trim());
                         updateNotesCommand.Parameters.AddWithValue("@ReservationID", reservationId);
@@ -929,6 +949,8 @@ namespace Reservation
 
             cashiernamelabel.Text = _username;
 
+            Cashradiobtn.Checked = true;    
+
 
 
 
@@ -1212,13 +1234,15 @@ namespace Reservation
                     }
 
                     // Insert into DailyPayments
-                    string dailyInsertQuery = "INSERT INTO DailyPayments (CustomerID, ReservationID, PaidAmount, PaymentDate, CashierName) VALUES (@CustomerID, @ReservationID, @PaidAmount, GETDATE(), @CashierName)";
+                    string dailyInsertQuery = "INSERT INTO DailyPayments (CustomerID, ReservationID, PaidAmount, PaymentDate, CashierName , Paymentmethod) VALUES (@CustomerID, @ReservationID, @PaidAmount, GETDATE(), @CashierName , @PaymentMethod)";
                     using (SqlCommand dailyInsertCommand = new SqlCommand(dailyInsertQuery, connection))
                     {
                         dailyInsertCommand.Parameters.AddWithValue("@PaidAmount", paidAmount);
                         dailyInsertCommand.Parameters.AddWithValue("@ReservationID", reservationId);
                         dailyInsertCommand.Parameters.AddWithValue("@CustomerID", GetCustomerId());
                         dailyInsertCommand.Parameters.AddWithValue("@CashierName", _username);
+                        dailyInsertCommand.Parameters.AddWithValue("@Paymentmethod", paymentMethod);    
+
                         dailyInsertCommand.ExecuteNonQuery();
                     }
 
@@ -1347,7 +1371,7 @@ namespace Reservation
                 StringFormat centerFormat = new StringFormat { Alignment = StringAlignment.Center }; // Center alignment
 
                 // Draw the company logo
-               string logoPath = Path.Combine(Application.StartupPath, "logo.jpg"); // Replace with the actual path to the logo
+                string logoPath = Path.Combine(Application.StartupPath, "logo.png"); // Replace with the actual path to the logo
                 if (System.IO.File.Exists(logoPath))
                 {
                     Image logo = Image.FromFile(logoPath);
@@ -1369,8 +1393,16 @@ namespace Reservation
                 e.Graphics.DrawString($"تاريخ الحجز: {formattedReservationDateAndTime}", boldFont, Brushes.Black, leftMargin, yPosition, leftFormat); // Left aligned
                 yPosition += lineHeight;
 
-                // Add customer name on the right and cashier name on the left (same line)
-                e.Graphics.DrawString($"حجز باسم: {nametxt.Text}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
+
+                // Set the maximum number of characters allowed
+                int maxNameLength = 20;
+
+                // Truncate the name if it exceeds the max length
+                string truncatedName = nametxt.Text.Length > maxNameLength
+                    ? nametxt.Text.Substring(0, maxNameLength)
+                    : nametxt.Text;
+
+                e.Graphics.DrawString($"حجز باسم: {truncatedName}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
                 e.Graphics.DrawString($"القائم بالحجز: {cashierName}", boldFont, Brushes.Black, leftMargin, yPosition, leftFormat); // Left aligned
                 yPosition += lineHeight;
 
@@ -1389,13 +1421,35 @@ namespace Reservation
                 e.Graphics.DrawString(":تفاصيل الاوردر", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
                 yPosition += lineHeight;
 
+                // Dictionary to store the total quantities for each added item
+                Dictionary<string, (decimal ItemPrice, int TotalQuantity)> addedItemTotals = new Dictionary<string, (decimal, int)>();
+
+                // Loop through added items and sum the quantities for the same item
                 foreach (var item in addedItems)
                 {
-                    // Format without currency symbols
-                    string itemDetails = $"{item.ItemName} - {item.Quantity} x {item.ItemPrice:N2}";
+                    string itemName = item.ItemName;
+                    decimal itemPrice = item.ItemPrice;
+                    int quantity = item.Quantity;
+
+                    // Check if the item already exists in the dictionary, if so, update the quantity
+                    if (addedItemTotals.ContainsKey(itemName))
+                    {
+                        addedItemTotals[itemName] = (itemPrice, addedItemTotals[itemName].TotalQuantity + quantity);
+                    }
+                    else
+                    {
+                        addedItemTotals.Add(itemName, (itemPrice, quantity));
+                    }
+                }
+
+                // Now print each added item and its total quantity
+                foreach (var item in addedItemTotals)
+                {
+                    string itemDetails = $"{item.Key} - {item.Value.TotalQuantity} x {item.Value.ItemPrice:0.##}";
                     e.Graphics.DrawString(itemDetails, font, Brushes.Black, rightMargin, yPosition, rtlFormat);
                     yPosition += lineHeight;
                 }
+
 
 
                 if (!string.IsNullOrEmpty(notes))
@@ -1880,13 +1934,14 @@ namespace Reservation
 
         private async Task SearchUserAsync(string mobileNumber)
         {
-            if (string.IsNullOrWhiteSpace(mobileNumber))
+            // Validate phone number
+            if (string.IsNullOrWhiteSpace(mobileNumber) || mobileNumber.Length != 11 || !mobileNumber.All(char.IsDigit))
             {
-              //  ResetUserFields();
+              
                 return;
             }
 
-            string query = "SELECT TOP 1 Customerid, Name FROM Customer WHERE Phonenumber = @MobileNumber";
+            string query = "SELECT TOP 1 CustomerID, Name FROM Customer WHERE PhoneNumber = @MobileNumber";
 
             using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
             {
@@ -1901,27 +1956,26 @@ namespace Reservation
                         {
                             if (await reader.ReadAsync())
                             {
-                               
+                                // Populate the fields with the retrieved data
                                 nametxt.Text = reader.GetString(1);
-                                
-
-                              
+                                LockCustomerFields();
                             }
                             else
                             {
-                               // ResetUserFields();
+                              
+                                // Optionally reset fields here
+                                // ResetUserFields();
                             }
-
-                            LockCustomerFields();
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("An error occurred: " + ex.Message);
+                        MessageBox.Show("An error occurred: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
         }
+
 
         private void Phonenumbertxt_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -2036,7 +2090,32 @@ namespace Reservation
             this.Close();
         }
 
-       
+        private void notestxt_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        // Declare a global variable to store the selected payment method
+        private string paymentMethod = "Cash"; // Default to Cash
+
+        private void Cashradiobtn_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Cashradiobtn.Checked) // Check if the Cash radio button is selected
+            {
+                paymentMethod = "Cash";
+              
+            }
+        }
+
+        private void Visaradiobtn_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Visaradiobtn.Checked) // Check if the Visa radio button is selected
+            {
+                paymentMethod = "Visa";
+            
+            }
+        }
+
     }
 
 

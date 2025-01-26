@@ -237,7 +237,7 @@ namespace Reservation
 
                                     reader.Close();  // Close the reader before executing the next query
 
-                                    // Now fetch the total paid for the reservation from the Payments table
+                                    // Fetch the total paid for the reservation from the Payments table
                                     string totalPaidQuery = "SELECT SUM(PaidAmount) FROM Payments WHERE ReservationID = @ReservationID";
                                     using (SqlCommand paidCommand = new SqlCommand(totalPaidQuery, connection))
                                     {
@@ -245,11 +245,27 @@ namespace Reservation
                                         var totalPaid = paidCommand.ExecuteScalar();
                                         decimal amountPaid = totalPaid != DBNull.Value ? Convert.ToDecimal(totalPaid) : 0;
 
-                                        details += $"\nTotal Amount for this order: {totalAmount:C}\n";
-                                        details += $"PaidAmount: {amountPaid:C}";
+                                        // Fetch the notes from the Reservations table
+                                        string notesQuery = "SELECT Notes FROM Reservations WHERE ReservationID = @ReservationID";
+                                        using (SqlCommand notesCommand = new SqlCommand(notesQuery, connection))
+                                        {
+                                            notesCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                                            var notes = notesCommand.ExecuteScalar();
 
-                                        MessageBox.Show(details, "Order Details", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                            details += $"\nTotal Amount for this order: {totalAmount:C}\n";
+                                            details += $"Paid Amount: {amountPaid:C}\n";
+
+                                            // Only add Notes if they are not null
+                                            if (notes != DBNull.Value && !string.IsNullOrWhiteSpace(notes.ToString()))
+                                            {
+                                                details += $"(ملاحظات): {notes}";
+                                            }
+
+                                            MessageBox.Show(details, "Order Details", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        }
                                     }
+
+
                                 }
                                 else
                                 {
@@ -472,6 +488,16 @@ WHERE ReservationDate = @ReservationDate;
                             // Set the DataSource of the DataGridView
                             reservationsview.DataSource = dataTable;
                         }
+                    }
+                }
+
+                // Apply conditional formatting to the "Important" column
+                foreach (DataGridViewRow row in reservationsview.Rows)
+                {
+                    if (row.Cells["اهميه"].Value != null && row.Cells["اهميه"].Value.ToString() != "")
+                    {
+                        row.Cells["اهميه"].Style.BackColor = Color.Khaki;
+                        row.Cells["اهميه"].Style.ForeColor = Color.Black;
                     }
                 }
             }
@@ -762,7 +788,7 @@ WHERE ReservationDate = @ReservationDate;
                 StringFormat centerFormat = new StringFormat { Alignment = StringAlignment.Center }; // Center alignment
 
                 // Draw the company logo
-                string logoPath = Path.Combine(Application.StartupPath, "logo.jpg");
+                string logoPath = Path.Combine(Application.StartupPath, "logo.png");
                 // Replace with the actual path to the logo
                 if (System.IO.File.Exists(logoPath))
                 {
@@ -787,8 +813,16 @@ WHERE ReservationDate = @ReservationDate;
                 e.Graphics.DrawString($"تاريخ الحجز: {formattedReservationDateAndTime}", boldFont, Brushes.Black, leftMargin, yPosition, leftAlignFormat); // Left aligned
                 yPosition += lineHeight;
 
-                // Add customer name on the right and cashier name on the left (same line)
-                e.Graphics.DrawString($"حجز باسم: {name}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
+
+                // Set the maximum number of characters allowed
+                int maxNameLength = 20;
+
+                // Truncate the name if it exceeds the max length
+                string truncatedName = name.Length > maxNameLength
+                    ? name.Substring(0, maxNameLength)
+                    : name;
+
+                e.Graphics.DrawString($"حجز باسم: {truncatedName}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
                 e.Graphics.DrawString($"القائم بالحجز: {_username}", boldFont, Brushes.Black, leftMargin, yPosition, leftAlignFormat); // Left aligned
                 yPosition += lineHeight;
 
@@ -803,11 +837,13 @@ WHERE ReservationDate = @ReservationDate;
                 e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
                 yPosition += 10;
 
-                // Add the order details (old items)
                 e.Graphics.DrawString(":تفاصيل الاوردر", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
                 yPosition += lineHeight;
 
-                // Retrieve old items and print them
+                // Dictionary to store the total quantities for each item type
+                Dictionary<string, (decimal ItemPrice, int TotalQuantity)> itemTotals = new Dictionary<string, (decimal, int)>();
+
+                // Retrieve old items (without new OrderDetailsID)
                 string oldItemsQuery = "SELECT MenuItemName, Quantity, ItemPrice FROM View_ManageReservationsDetails WHERE ReservationID = @ReservationID";
                 decimal oldTotalAmount = 0;
 
@@ -822,17 +858,34 @@ WHERE ReservationDate = @ReservationDate;
                         {
                             while (reader.Read())
                             {
-                                string menuItemName = reader["MenuItemName"] != DBNull.Value ? reader["MenuItemName"].ToString() : string.Empty;
-                                int quantity = reader["Quantity"] != DBNull.Value ? Convert.ToInt32(reader["Quantity"]) : 0;
-                                decimal itemPrice = reader["ItemPrice"] != DBNull.Value ? Convert.ToDecimal(reader["ItemPrice"]) : 0m;
+                                string itemName = reader["MenuItemName"].ToString();
+                                decimal itemPrice = Convert.ToDecimal(reader["ItemPrice"]);
+                                int quantity = Convert.ToInt32(reader["Quantity"]);
 
-                                string itemDetails = $"{menuItemName} - {quantity} x {itemPrice:0.##}";
-                                e.Graphics.DrawString(itemDetails, font, Brushes.Black, rightMargin, yPosition, rtlFormat);
-                                oldTotalAmount += itemPrice * quantity;
-                                yPosition += lineHeight;
+                                // Check if the item already exists in the dictionary, if so, update the quantity
+                                if (itemTotals.ContainsKey(itemName))
+                                {
+                                    itemTotals[itemName] = (itemPrice, itemTotals[itemName].TotalQuantity + quantity);
+                                }
+                                else
+                                {
+                                    itemTotals.Add(itemName, (itemPrice, quantity));
+                                }
                             }
                         }
                     }
+                }
+
+                // Now print each item and its total quantity
+                foreach (var item in itemTotals)
+                {
+                    string itemDetails = $"{item.Key} - {item.Value.TotalQuantity} x {item.Value.ItemPrice:0.##}";
+                    e.Graphics.DrawString(itemDetails, font, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                    yPosition += lineHeight;
+
+                    // Calculate total for the item and add it to overall total
+                    decimal itemTotal = item.Value.ItemPrice * item.Value.TotalQuantity;
+                    oldTotalAmount += itemTotal;
                 }
 
 
@@ -1012,7 +1065,7 @@ WHERE ReservationDate = @ReservationDate;
 
             rowsPerPage = (int)((e.MarginBounds.Height - e.MarginBounds.Top) / (reservationsview.RowTemplate.Height + 5));
 
-            string headerText = "تقرير يومي";
+            string headerText = "حجوزات اليوم";
             string reportDateText = $"التاريخ: {dateTimePicker1.Value.Date.ToShortDateString()}";
 
             float y = e.MarginBounds.Top - 30;
@@ -1117,6 +1170,7 @@ WHERE ReservationDate = @ReservationDate;
             {
                 restaurantFilter = "انترناشونال";
                 currentFilterText = restaurantFilter;
+
             }
             else if (filterselectioncombo.SelectedIndex == 2) // "المكان" selected
             {
@@ -1166,7 +1220,8 @@ WHERE ReservationDate = @ReservationDate;
     CustomerName, 
     CustomerPhoneNumber, 
     RestaurantName, 
-    NumberOfGuests, 
+    NumberOfGuests,
+    Important AS اهميه,
     ReservationDate, 
     DateSubmitted, 
     TotalAmount, 
@@ -1184,7 +1239,8 @@ SELECT
     'TOTAL' AS CustomerName, 
     NULL AS CustomerPhoneNumber, 
     NULL AS RestaurantName, 
-   NULL AS NumberOfGuests, 
+   SUM(NumberOfGuests) AS NumberOfGuests, 
+    Null AS Important,
     NULL AS ReservationDate, 
     NULL AS DateSubmitted, 
     NULL AS TotalAmount, 
@@ -1217,6 +1273,15 @@ GROUP BY RestaurantName;
 
                          
                         }
+                    }
+                }
+                // Apply conditional formatting to the "Important" column
+                foreach (DataGridViewRow row in reservationsview.Rows)
+                {
+                    if (row.Cells["اهميه"].Value != null && row.Cells["اهميه"].Value.ToString() != "")
+                    {
+                        row.Cells["اهميه"].Style.BackColor = Color.Khaki;
+                        row.Cells["اهميه"].Style.ForeColor = Color.Black;
                     }
                 }
             }
@@ -1297,6 +1362,24 @@ GROUP BY RestaurantName;
             NavigateToForm(4, new Addorders(_username));
 
 
+        }
+
+        private void reservationsview_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void reservationsview_Sorted(object sender, EventArgs e)
+        {
+            // Apply conditional formatting to the "Important" column
+            foreach (DataGridViewRow row in reservationsview.Rows)
+            {
+                if (row.Cells["اهميه"].Value != null && row.Cells["اهميه"].Value.ToString() != "")
+                {
+                    row.Cells["اهميه"].Style.BackColor = Color.Khaki;
+                    row.Cells["اهميه"].Style.ForeColor = Color.Black;
+                }
+            }
         }
     }
 

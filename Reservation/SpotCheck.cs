@@ -256,33 +256,67 @@ namespace Reservation
 
                 // SQL query to fetch data filtered by ReservationDate
                 string query = @"
-                        SELECT 
-                                PaymentID,
-                                Name,
-                                ReservationID,
-                                PaidAmount,
-                                PaymentDate,
-                                CustomerID,
-                                Cashiername
-                            FROM 
-                                vw_DailyPaymentsSummary
-                            WHERE 
-                                CAST(PaymentDate AS DATE) = @PaymentDate 
-                                AND Cashiername = @Username
-                            UNION ALL
-                            SELECT 
-                                NULL AS PaymentID,
-                                'Total' AS Name,
-                                NULL AS ReservationID,
-                                SUM(PaidAmount) AS PaidAmount,
-                                NULL AS PaymentDate,
-                                NULL AS CustomerID,
-                                NULL AS Cashiername
-                            FROM 
-                                vw_DailyPaymentsSummary
-                            WHERE 
-                                CAST(PaymentDate AS DATE) = @PaymentDate 
-                                AND Cashiername = @Username;
+                    SELECT 
+                    PaymentID,
+                    Name,
+                    ReservationID,
+                    PaidAmount,
+                    PaymentDate,
+                    CustomerID,
+                    Cashiername,
+                    PaymentMethod
+                FROM 
+                    vw_DailyPaymentsSummary
+                WHERE 
+                    CAST(PaymentDate AS DATE) = @PaymentDate 
+                    AND Cashiername = @Username
+                UNION ALL
+                SELECT 
+                    NULL AS PaymentID,
+                    'Total Cash' AS Name,
+                    NULL AS ReservationID,
+                    SUM(PaidAmount) AS PaidAmount,
+                    NULL AS PaymentDate,
+                    NULL AS CustomerID,
+                    NULL AS Cashiername,
+                    'Cash' AS PaymentMethod
+                FROM 
+                    vw_DailyPaymentsSummary
+                WHERE 
+                    CAST(PaymentDate AS DATE) = @PaymentDate 
+                    AND Cashiername = @Username
+                    AND PaymentMethod = 'Cash'
+                UNION ALL
+                SELECT 
+                    NULL AS PaymentID,
+                    'Total Visa' AS Name,
+                    NULL AS ReservationID,
+                    SUM(PaidAmount) AS PaidAmount,
+                    NULL AS PaymentDate,
+                    NULL AS CustomerID,
+                    NULL AS Cashiername,
+                    'Visa' AS PaymentMethod
+                FROM 
+                    vw_DailyPaymentsSummary
+                WHERE 
+                    CAST(PaymentDate AS DATE) = @PaymentDate 
+                    AND Cashiername = @Username
+                    AND PaymentMethod = 'Visa'
+                UNION ALL
+                SELECT 
+                    NULL AS PaymentID,
+                    'Subtotal' AS Name,
+                    NULL AS ReservationID,
+                    SUM(PaidAmount) AS PaidAmount,
+                    NULL AS PaymentDate,
+                    NULL AS CustomerID,
+                    NULL AS Cashiername,
+                    NULL AS PaymentMethod
+                FROM 
+                    vw_DailyPaymentsSummary
+                WHERE 
+                    CAST(PaymentDate AS DATE) = @PaymentDate 
+                    AND Cashiername = @Username;
                             ";
 
 

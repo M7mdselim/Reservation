@@ -65,6 +65,8 @@
             this.Phonenumbertxt = new System.Windows.Forms.TextBox();
             this.nametxt = new System.Windows.Forms.TextBox();
             this.button6 = new System.Windows.Forms.Button();
+            this.Cashradiobtn = new System.Windows.Forms.RadioButton();
+            this.Visaradiobtn = new System.Windows.Forms.RadioButton();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -548,11 +550,37 @@
             this.button6.UseVisualStyleBackColor = false;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
+            // Cashradiobtn
+            // 
+            this.Cashradiobtn.AutoSize = true;
+            this.Cashradiobtn.Location = new System.Drawing.Point(472, 533);
+            this.Cashradiobtn.Name = "Cashradiobtn";
+            this.Cashradiobtn.Size = new System.Drawing.Size(52, 17);
+            this.Cashradiobtn.TabIndex = 49;
+            this.Cashradiobtn.TabStop = true;
+            this.Cashradiobtn.Text = "CASH";
+            this.Cashradiobtn.UseVisualStyleBackColor = true;
+            this.Cashradiobtn.CheckedChanged += new System.EventHandler(this.Cashradiobtn_CheckedChanged);
+            // 
+            // Visaradiobtn
+            // 
+            this.Visaradiobtn.AutoSize = true;
+            this.Visaradiobtn.Location = new System.Drawing.Point(536, 534);
+            this.Visaradiobtn.Name = "Visaradiobtn";
+            this.Visaradiobtn.Size = new System.Drawing.Size(48, 17);
+            this.Visaradiobtn.TabIndex = 48;
+            this.Visaradiobtn.TabStop = true;
+            this.Visaradiobtn.Text = "VISA";
+            this.Visaradiobtn.UseVisualStyleBackColor = true;
+            this.Visaradiobtn.CheckedChanged += new System.EventHandler(this.Visaradiobtn_CheckedChanged);
+            // 
             // Addorders
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1104, 596);
+            this.Controls.Add(this.Cashradiobtn);
+            this.Controls.Add(this.Visaradiobtn);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.Phonenumbertxt);
@@ -636,5 +664,7 @@
         private System.Windows.Forms.Label greet_user;
         private System.Windows.Forms.Button backkbtn;
         private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.RadioButton Cashradiobtn;
+        private System.Windows.Forms.RadioButton Visaradiobtn;
     }
 }

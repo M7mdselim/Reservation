@@ -80,6 +80,8 @@
             this.label16 = new System.Windows.Forms.Label();
             this.notestxt = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
+            this.Visaradiobtn = new System.Windows.Forms.RadioButton();
+            this.Cashradiobtn = new System.Windows.Forms.RadioButton();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -263,7 +265,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.BackgroundImage = global::Reservation.Properties.Resources.icons8_employee_card_100px;
             this.pictureBox1.Location = new System.Drawing.Point(33, 61);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(100, 100);
@@ -691,13 +693,14 @@
             // notestxt
             // 
             this.notestxt.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.notestxt.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.notestxt.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.notestxt.Location = new System.Drawing.Point(480, 466);
             this.notestxt.Multiline = true;
             this.notestxt.Name = "notestxt";
             this.notestxt.Size = new System.Drawing.Size(174, 48);
             this.notestxt.TabIndex = 43;
             this.notestxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.notestxt.TextChanged += new System.EventHandler(this.notestxt_TextChanged);
             // 
             // label15
             // 
@@ -710,11 +713,37 @@
             this.label15.Text = "ملاحظات";
             this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // Visaradiobtn
+            // 
+            this.Visaradiobtn.AutoSize = true;
+            this.Visaradiobtn.Location = new System.Drawing.Point(542, 585);
+            this.Visaradiobtn.Name = "Visaradiobtn";
+            this.Visaradiobtn.Size = new System.Drawing.Size(48, 17);
+            this.Visaradiobtn.TabIndex = 46;
+            this.Visaradiobtn.TabStop = true;
+            this.Visaradiobtn.Text = "VISA";
+            this.Visaradiobtn.UseVisualStyleBackColor = true;
+            this.Visaradiobtn.CheckedChanged += new System.EventHandler(this.Visaradiobtn_CheckedChanged);
+            // 
+            // Cashradiobtn
+            // 
+            this.Cashradiobtn.AutoSize = true;
+            this.Cashradiobtn.Location = new System.Drawing.Point(478, 584);
+            this.Cashradiobtn.Name = "Cashradiobtn";
+            this.Cashradiobtn.Size = new System.Drawing.Size(52, 17);
+            this.Cashradiobtn.TabIndex = 47;
+            this.Cashradiobtn.TabStop = true;
+            this.Cashradiobtn.Text = "CASH";
+            this.Cashradiobtn.UseVisualStyleBackColor = true;
+            this.Cashradiobtn.CheckedChanged += new System.EventHandler(this.Cashradiobtn_CheckedChanged);
+            // 
             // Home
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1112, 625);
+            this.Controls.Add(this.Cashradiobtn);
+            this.Controls.Add(this.Visaradiobtn);
             this.Controls.Add(this.importanttxt);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.panel2);
@@ -755,6 +784,7 @@
             this.Controls.Add(this.label11);
             this.Controls.Add(this.quantitytxt);
             this.Controls.Add(this.label10);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.ImeMode = System.Windows.Forms.ImeMode.On;
             this.Name = "Home";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
@@ -824,5 +854,7 @@
         private System.Windows.Forms.TextBox importanttxt;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button backkbtn;
+        private System.Windows.Forms.RadioButton Visaradiobtn;
+        private System.Windows.Forms.RadioButton Cashradiobtn;
     }
 }

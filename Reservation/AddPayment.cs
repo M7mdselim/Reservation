@@ -308,6 +308,8 @@ namespace Reservation
         private void Home_Load(object sender, EventArgs e)
         {
             cashiernamelabel.Text = _username;
+
+            Cashradiobtn.Checked = true;
         }
 
 
@@ -531,13 +533,14 @@ namespace Reservation
                     }
 
                     // Insert the paid amount into DailyPayments
-                    string dailyInsertQuery = "INSERT INTO DailyPayments (CustomerID, ReservationID, PaidAmount , Paymentdate , Cashiername) VALUES (@CustomerID, @ReservationID, @PaidAmount , GETDATE() , @Cashiername)";
+                    string dailyInsertQuery = "INSERT INTO DailyPayments (CustomerID, ReservationID, PaidAmount , Paymentdate , Cashiername , PaymentMethod) VALUES (@CustomerID, @ReservationID, @PaidAmount , GETDATE() , @Cashiername , @PaymentMethod)";
                     using (SqlCommand dailyInsertCommand = new SqlCommand(dailyInsertQuery, connection))
                     {
                         dailyInsertCommand.Parameters.AddWithValue("@PaidAmount", paidAmount);
                         dailyInsertCommand.Parameters.AddWithValue("@ReservationID", reservationId);
                         dailyInsertCommand.Parameters.AddWithValue("@CustomerID", customerId);
                         dailyInsertCommand.Parameters.AddWithValue("@Cashiername", _username);
+                        dailyInsertCommand.Parameters.AddWithValue("@PaymentMethod", paymentMethod);
                         dailyInsertCommand.ExecuteNonQuery();
                     }
 
@@ -725,7 +728,7 @@ namespace Reservation
                 StringFormat centerFormat = new StringFormat { Alignment = StringAlignment.Center }; // Center alignment
 
                 // Draw the company logo
-               string logoPath = Path.Combine(Application.StartupPath, "logo.jpg"); // Replace with the actual path to the logo
+               string logoPath = Path.Combine(Application.StartupPath, "logo.png"); // Replace with the actual path to the logo
                 if (System.IO.File.Exists(logoPath))
                 {
                     Image logo = Image.FromFile(logoPath);
@@ -750,8 +753,15 @@ namespace Reservation
                 e.Graphics.DrawString($"تاريخ الحجز: {formattedReservationDateAndTime}", boldFont, Brushes.Black, leftMargin, yPosition, leftAlignFormat); // Left aligned
                 yPosition += lineHeight;
 
-                // Add customer name on the right and cashier name on the left (same line)
-                e.Graphics.DrawString($"حجز باسم: {nametxt.Text}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
+                // Set the maximum number of characters allowed
+                int maxNameLength = 20;
+
+                // Truncate the name if it exceeds the max length
+                string truncatedName = nametxt.Text.Length > maxNameLength
+                    ? nametxt.Text.Substring(0, maxNameLength)
+                    : nametxt.Text;
+
+                e.Graphics.DrawString($"حجز باسم: {truncatedName}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
                 e.Graphics.DrawString($"القائم بالحجز: {_username}", boldFont, Brushes.Black, leftMargin, yPosition, leftAlignFormat); // Left aligned
                 yPosition += lineHeight;
 
@@ -766,11 +776,15 @@ namespace Reservation
                 e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
                 yPosition += 10;
 
-                // Add the order details (old items)
+
+
                 e.Graphics.DrawString(":تفاصيل الاوردر", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
                 yPosition += lineHeight;
 
-                // Retrieve old items and print them
+                // Dictionary to store the total quantities for each item type
+                Dictionary<string, (decimal ItemPrice, int TotalQuantity)> itemTotals = new Dictionary<string, (decimal, int)>();
+
+                // Retrieve old items (without new OrderDetailsID)
                 string oldItemsQuery = "SELECT MenuItemName, Quantity, ItemPrice FROM View_ManageReservationsDetails WHERE ReservationID = @ReservationID";
                 decimal oldTotalAmount = 0;
 
@@ -785,13 +799,34 @@ namespace Reservation
                         {
                             while (reader.Read())
                             {
-                                string itemDetails = $"{reader["MenuItemName"]} - {reader["Quantity"]} x {Convert.ToDecimal(reader["ItemPrice"]):0.##}";
-                                e.Graphics.DrawString(itemDetails, font, Brushes.Black, rightMargin, yPosition , rtlFormat);
-                                oldTotalAmount += Convert.ToDecimal(reader["ItemPrice"]) * Convert.ToInt32(reader["Quantity"]);
-                                yPosition += lineHeight;
+                                string itemName = reader["MenuItemName"].ToString();
+                                decimal itemPrice = Convert.ToDecimal(reader["ItemPrice"]);
+                                int quantity = Convert.ToInt32(reader["Quantity"]);
+
+                                // Check if the item already exists in the dictionary, if so, update the quantity
+                                if (itemTotals.ContainsKey(itemName))
+                                {
+                                    itemTotals[itemName] = (itemPrice, itemTotals[itemName].TotalQuantity + quantity);
+                                }
+                                else
+                                {
+                                    itemTotals.Add(itemName, (itemPrice, quantity));
+                                }
                             }
                         }
                     }
+                }
+
+                // Now print each item and its total quantity
+                foreach (var item in itemTotals)
+                {
+                    string itemDetails = $"{item.Key} - {item.Value.TotalQuantity} x {item.Value.ItemPrice:0.##}";
+                    e.Graphics.DrawString(itemDetails, font, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                    yPosition += lineHeight;
+
+                    // Calculate total for the item and add it to overall total
+                    decimal itemTotal = item.Value.ItemPrice * item.Value.TotalQuantity;
+                    oldTotalAmount += itemTotal;
                 }
 
 
@@ -928,59 +963,18 @@ namespace Reservation
 
         private void ReservationGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            try
-            {
-                // Get the selected customer ID (modify this line based on how you capture customer ID)
-                int customerId = GetCustomerId(); // Replace with the actual method to get CustomerID
-
-                // Validate customer ID
-                if (customerId <= 0) // Check if it's a valid positive ID
-                {
-                    MessageBox.Show("Please select a valid customer.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
-                {
-                    connection.Open();
-
-                    // Query to fetch reservation IDs for the specified customer ID
-                    string query = "SELECT ReservationID, ReservationDate, AmountPaid FROM Reservations WHERE CustomerID = @CustomerID";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@CustomerID", customerId);
-
-                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-                        {
-                            DataTable reservationsTable = new DataTable();
-                            adapter.Fill(reservationsTable);
-
-                            // Bind the results to the DataGridView
-                            ReservationGridView.DataSource = reservationsTable;
-
-                            // Optionally customize column headers
-                            if (ReservationGridView.Columns.Contains("ReservationID"))
-                                ReservationGridView.Columns["ReservationID"].HeaderText = "Reservation ID";
-
-                            if (ReservationGridView.Columns.Contains("ReservationDate"))
-                                ReservationGridView.Columns["ReservationDate"].HeaderText = "Reservation Date";
-
-                            if (ReservationGridView.Columns.Contains("AmountPaid"))
-                                ReservationGridView.Columns["AmountPaid"].HeaderText = "Amount Paid";
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-              
-            }
+            
         }
 
 
 
-        private void Getdata() {
+        private void Getdata()
+        {
+            // Validate phone number
+            if (string.IsNullOrWhiteSpace(Phonenumbertxt.Text) || Phonenumbertxt.Text.Length != 11 || !Phonenumbertxt.Text.All(char.IsDigit))
+            {
+                return;
+            }
 
             try
             {
@@ -997,8 +991,20 @@ namespace Reservation
                 {
                     connection.Open();
 
-                    // Query to fetch payment data for the selected customer
-                    string query = "SELECT  ReservationID,TotalAmount,  PaidAmount, RemainingAmount FROM Payments WHERE CustomerID = @CustomerID";
+                    // Query to fetch payment data for the selected customer, including ReservationDate
+                    string query = @"
+                SELECT 
+                    p.ReservationID, 
+                    r.ReservationDate, 
+                    p.TotalAmount, 
+                    p.PaidAmount, 
+                    p.RemainingAmount 
+                FROM 
+                    Payments p
+                INNER JOIN 
+                    Reservations r ON p.ReservationID = r.ReservationID
+                WHERE 
+                    p.CustomerID = @CustomerID";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -1013,9 +1019,9 @@ namespace Reservation
                             ReservationGridView.DataSource = paymentsTable;
 
                             // Customize column headers
-                            //   ReservationGridView.Columns["PaymentID"].HeaderText = "Payment ID";
-                            ReservationGridView.Columns["ReservationID"].HeaderText = "ReservationID";
-                            ReservationGridView.Columns["PaidAmount"].HeaderText = "PaidAmount";
+                            ReservationGridView.Columns["ReservationID"].HeaderText = "Reservation ID";
+                            ReservationGridView.Columns["ReservationDate"].HeaderText = "Reservation Date";
+                            ReservationGridView.Columns["PaidAmount"].HeaderText = "Paid Amount";
                             ReservationGridView.Columns["RemainingAmount"].HeaderText = "Remaining Amount";
                         }
                     }
@@ -1025,9 +1031,8 @@ namespace Reservation
             {
                 MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-
         }
+
 
 
 
@@ -1195,10 +1200,24 @@ namespace Reservation
                                         var totalPaid = paidCommand.ExecuteScalar();
                                         decimal amountPaid = totalPaid != DBNull.Value ? Convert.ToDecimal(totalPaid) : 0;
 
-                                        details += $"\nTotal Amount for this order: {totalAmount:C}\n";
-                                        details += $"PaidAmount: {amountPaid:C}";
+                                        // Fetch the notes from the Reservations table
+                                        string notesQuery = "SELECT Notes FROM Reservations WHERE ReservationID = @ReservationID";
+                                        using (SqlCommand notesCommand = new SqlCommand(notesQuery, connection))
+                                        {
+                                            notesCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                                            var notes = notesCommand.ExecuteScalar();
 
-                                        MessageBox.Show(details, "Order Details", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                            details += $"\nTotal Amount for this order: {totalAmount:C}\n";
+                                            details += $"Paid Amount: {amountPaid:C}\n";
+
+                                            // Only add Notes if they are not null
+                                            if (notes != DBNull.Value && !string.IsNullOrWhiteSpace(notes.ToString()))
+                                            {
+                                                details += $"(ملاحظات): {notes}";
+                                            }
+
+                                            MessageBox.Show(details, "Order Details", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        }
                                     }
                                 }
                                 else
@@ -1242,11 +1261,9 @@ namespace Reservation
             return text
                 .Replace('أ', 'ا')  // Normalize 'أ' to 'ا'
                 .Replace('إ', 'ا')  // Normalize 'إ' to 'ا'
-                .Replace('آ', 'ا')  // Normalize 'آ' to 'ا'
-                .Replace('ى', 'ي')  // Normalize 'ى' to 'ي'
-                .Replace('ؤ', 'و')  // Normalize 'ؤ' to 'و'
-                .Replace('ئ', 'ي')  // Normalize 'ئ' to 'ي'
-                .Replace('ة', 'ه'); // Normalize 'ة' to 'ه'
+                .Replace('آ', 'ا');  // Normalize 'آ' to 'ا'
+
+
         }
 
         private string ReverseNormalizeArabicText(string text)
@@ -1257,12 +1274,11 @@ namespace Reservation
             return text
                 .Replace('ا', 'أ')  // Reverse normalize 'ا' to 'أ'
                 .Replace('ا', 'إ')  // Reverse normalize 'ا' to 'إ'
-                .Replace('ا', 'آ')  // Reverse normalize 'ا' to 'آ'
-                .Replace('ي', 'ى')  // Reverse normalize 'ي' to 'ى'
-                .Replace('ي', 'ئ')  // Reverse normalize 'ي' to 'ئ'
-                .Replace('ه', 'ة')  // Reverse normalize 'ه' to 'ة'
-                .Replace('و', 'ؤ'); // Reverse normalize 'و' to 'ؤ'
+                .Replace('ا', 'آ');  // Reverse normalize 'ا' to 'آ'
+
+
         }
+
 
 
 
@@ -1499,9 +1515,10 @@ namespace Reservation
 
         private async Task SearchUserAsync(string mobileNumber)
         {
-            if (string.IsNullOrWhiteSpace(mobileNumber))
+            // Validate phone number
+            if (string.IsNullOrWhiteSpace(mobileNumber) || mobileNumber.Length != 11 || !mobileNumber.All(char.IsDigit))
             {
-                //  ResetUserFields();
+
                 return;
             }
 
@@ -1608,6 +1625,26 @@ namespace Reservation
             this.Hide();
             login.ShowDialog();
             this.Close();
+        }
+
+        private string paymentMethod = "Cash"; // Default to Cash
+
+        private void Cashradiobtn_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Cashradiobtn.Checked) // Check if the Cash radio button is selected
+            {
+                paymentMethod = "Cash";
+
+            }
+        }
+
+        private void Visaradiobtn_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Visaradiobtn.Checked) // Check if the Visa radio button is selected
+            {
+                paymentMethod = "Visa";
+
+            }
         }
     }
 

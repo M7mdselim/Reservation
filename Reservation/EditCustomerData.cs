@@ -96,7 +96,7 @@ namespace Reservation
 
         private void LoadReservations()
         {
-            string customersQuery = "SELECT CustomerID, Name, PhoneNumber FROM Customer"; // Adjusted to query the Customers table
+            string customersQuery = "SELECT CustomerID, Name, PhoneNumber FROM Customer  ORDER BY CustomerID DESC"; // Adjusted to query the Customers table
 
             using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
             {
@@ -205,7 +205,7 @@ namespace Reservation
                             }
 
                             // Log the action in the UserLog table
-                            string action = $"User: {_username} Edited CustomerID: {customerID}, Name: {name}, PhoneNumber: {phoneNumber} , EditCustomerData";
+                            string action = $"Edited CustomerID: {customerID}, Name: {name}, PhoneNumber: {phoneNumber} , EditCustomerData";
                             string logQuery = "INSERT INTO UserLog (CashierName, Action) VALUES (@CashierName, @Action)";
 
                             using (SqlCommand logCmd = new SqlCommand(logQuery, conn))
@@ -278,5 +278,47 @@ namespace Reservation
             login.ShowDialog();
             this.Close();
         }
+
+        private void ApplyFilter()
+        {
+            if (ManageReservationGridview.DataSource is DataTable dataTable)
+            {
+                string filter = "";
+
+                if (filterselectioncombo.SelectedIndex == 0)  // "اسم المبلغ" selected
+                {
+                    if (!string.IsNullOrWhiteSpace(filteringTxtBox.Text))
+                    {
+                        filter = $"Name LIKE '%{filteringTxtBox.Text}%'";
+                    }
+                }
+                else if (filterselectioncombo.SelectedIndex == 1)  // "المكان" selected
+                {
+                    if (!string.IsNullOrWhiteSpace(filteringTxtBox.Text))
+                    {
+                        filter = $"PhoneNumber LIKE '%{filteringTxtBox.Text}%'";
+                    }
+                }
+
+
+
+                // Apply the filter to the DataTable
+                dataTable.DefaultView.RowFilter = filter;
+            }
+
+
+        }
+
+        private void filterselectioncombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ApplyFilter();
+        }
+
+        private void filteringTxtBox_TextChanged_1(object sender, EventArgs e)
+        {
+            ApplyFilter();
+        }
+
+       
     }
 }

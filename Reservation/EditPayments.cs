@@ -208,7 +208,7 @@ ORDER BY p.PaymentID DESC"; // Order by PaymentID in descending order
                             }
 
                             // Log the update in the UserLog table
-                            string action = $"User: {_username} Edited PaymentID: {paymentID}, PaidAmount: {paidAmount} , EditPayment";
+                            string action = $"Edited PaymentID: {paymentID}, PaidAmount: {paidAmount} , EditPayment";
                             string logQuery = "INSERT INTO UserLog (CashierName, Action) VALUES (@CashierName, @Action)";
 
                             using (SqlCommand logCmd = new SqlCommand(logQuery, conn))

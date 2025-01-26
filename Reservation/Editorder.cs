@@ -347,36 +347,7 @@ namespace Reservation
 
 
 
-        private void UpdateCustomerId(string customerName, string customerPhoneNumber)
-        {
-            using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
-            {
-                conn.Open();
-
-                // Ensure we're only updating Name and PhoneNumber, not CustomerID
-                string query = @"
-            UPDATE Customer
-            SET Name = @CustomerName, PhoneNumber = @PhoneNumber
-            WHERE CustomerID = (
-                SELECT TOP 1 CustomerID
-                FROM Customer
-                WHERE Name = @CustomerName AND PhoneNumber = @PhoneNumber
-            )";
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@CustomerName", customerName);
-                    cmd.Parameters.AddWithValue("@PhoneNumber", customerPhoneNumber);
-
-                    int rowsAffected = cmd.ExecuteNonQuery();
-
-                    if (rowsAffected == 0)
-                    {
-                        throw new Exception("No matching record found to update.");
-                    }
-                }
-            }
-        }
+        
 
         private void updatebtn_Click(object sender, EventArgs e)
         {
@@ -395,6 +366,14 @@ namespace Reservation
                         decimal itemPrice = row.Cells["ItemPrice"].Value != DBNull.Value ? Convert.ToDecimal(row.Cells["ItemPrice"].Value) : 0m;
                         int quantity = row.Cells["Quantity"].Value != DBNull.Value ? Convert.ToInt32(row.Cells["Quantity"].Value) : 0;
                         string menuItemName = row.Cells["MenuItemNameComboBox"].Value?.ToString() ?? "N/A";
+                        decimal totalAmount = row.Cells["Totalamount"].Value != DBNull.Value ? Convert.ToDecimal(row.Cells["Totalamount"].Value) : 0m;
+
+                        // Check if totalAmount is 0 or invalid (e.g., DBNull)
+                        if (totalAmount == 0)
+                        {
+                            MessageBox.Show("لا يمكن اضافه العنصر .", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return; // Skip this row and move to the next one
+                        }
 
                         // Calculate SubTotal
                         decimal subTotal = quantity * itemPrice;
@@ -427,7 +406,7 @@ namespace Reservation
                         if (rowsAffected > 0)
                         {
                             // Build the descriptive action message
-                            string action = $"User: {_username} Edited ReservationID: {reservationID}, " +
+                            string action = $"Edited ReservationID: {reservationID}, " +
                                             $"MenuItemName: {menuItemName}, ItemPrice: {itemPrice}, " +
                                             $"Quantity: {quantity} , Edit Order";
 
@@ -543,7 +522,7 @@ namespace Reservation
                     else
                     {
                         // Handle case where the text is not a valid integer (optional)
-                        MessageBox.Show("Please enter a valid integer for ReservationID.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
                 }
                 else if (filterselectioncombo.SelectedIndex == 1)  // "المكان" selected

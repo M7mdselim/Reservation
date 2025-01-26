@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Krypton.Toolkit, Version=90.24.11.317, Culture=neutral, PublicKeyToken=a87e673e9ecb6e8e, processorArchitecture=MSIL">
       <HintPath>..\packages\Krypton.Toolkit.90.24.11.317\lib\net472\Krypton.Toolkit.dll</HintPath>
@@ -228,6 +231,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Back-Button-Download-Transparent-PNG-Image.png" />
+    <None Include="bin\Debug\logo.png" />
+    <Content Include="logo.ico" />
     <Content Include="Resources\logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

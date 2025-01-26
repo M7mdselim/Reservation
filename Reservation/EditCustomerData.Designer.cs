@@ -43,6 +43,9 @@
             this.updatebtn = new System.Windows.Forms.Button();
             this.loadbtn = new System.Windows.Forms.Button();
             this.ManageReservationGridview = new System.Windows.Forms.DataGridView();
+            this.label1 = new System.Windows.Forms.Label();
+            this.filteringTxtBox = new System.Windows.Forms.TextBox();
+            this.filterselectioncombo = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -260,11 +263,45 @@
             this.ManageReservationGridview.Size = new System.Drawing.Size(928, 459);
             this.ManageReservationGridview.TabIndex = 34;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Stencil", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.label1.Location = new System.Drawing.Point(547, 516);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(97, 22);
+            this.label1.TabIndex = 39;
+            this.label1.Text = "بحث عن طريق";
+            // 
+            // filteringTxtBox
+            // 
+            this.filteringTxtBox.Location = new System.Drawing.Point(361, 553);
+            this.filteringTxtBox.Name = "filteringTxtBox";
+            this.filteringTxtBox.Size = new System.Drawing.Size(175, 20);
+            this.filteringTxtBox.TabIndex = 41;
+            this.filteringTxtBox.TextChanged += new System.EventHandler(this.filteringTxtBox_TextChanged_1);
+            // 
+            // filterselectioncombo
+            // 
+            this.filterselectioncombo.FormattingEnabled = true;
+            this.filterselectioncombo.Items.AddRange(new object[] {
+            "اسم ",
+            "رقم التليفون"});
+            this.filterselectioncombo.Location = new System.Drawing.Point(361, 516);
+            this.filterselectioncombo.Name = "filterselectioncombo";
+            this.filterselectioncombo.Size = new System.Drawing.Size(175, 21);
+            this.filterselectioncombo.TabIndex = 40;
+            this.filterselectioncombo.SelectedIndexChanged += new System.EventHandler(this.filterselectioncombo_SelectedIndexChanged);
+            // 
             // EditCustomerData
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1099, 605);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.filteringTxtBox);
+            this.Controls.Add(this.filterselectioncombo);
             this.Controls.Add(this.updatebtn);
             this.Controls.Add(this.loadbtn);
             this.Controls.Add(this.panel2);
@@ -284,6 +321,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ManageReservationGridview)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -304,5 +342,8 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button backkbtn;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox filteringTxtBox;
+        private System.Windows.Forms.ComboBox filterselectioncombo;
     }
 }

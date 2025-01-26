@@ -98,17 +98,30 @@ namespace Reservation
 
         private void LoadReservations()
         {
+            if (dateTimePicker != null)
+            {
+                ManageReservationGridview.Controls.Remove(dateTimePicker);
+                dateTimePicker.Dispose();
+                dateTimePicker = null;
+            }
+
+
             string reservationsQuery = @"
     SELECT 
         r.ReservationID, 
         c.Name AS CustomerName, 
         r.RestaurantID, 
+        rest.Name AS RestaurantName, 
         r.ReservationDate, 
-        r.NumberOfGuests, 
+        r.NumberOfGuests,
+        r.Notes,
+        r.Important,
         r.TotalPrice, 
-        r.DateSubmitted 
+        r.DateSubmitted,
+        r.Cashiername
     FROM Reservations r
     INNER JOIN Customer c ON r.CustomerID = c.CustomerID
+    INNER JOIN Restaurant rest ON r.RestaurantID = rest.RestaurantID
     ORDER BY r.ReservationID DESC"; // Order by ReservationID in descending order
 
             using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
@@ -120,19 +133,71 @@ namespace Reservation
                     DataTable reservationsTable = new DataTable();
                     reservationsAdapter.Fill(reservationsTable);
 
+                    // Fetch restaurant data for the ComboBox
+                    string restaurantQuery = "SELECT RestaurantID, Name FROM Restaurant";
+                    SqlDataAdapter restaurantAdapter = new SqlDataAdapter(restaurantQuery, conn);
+                    DataTable restaurantTable = new DataTable();
+                    restaurantAdapter.Fill(restaurantTable);
+
                     // Bind reservation data to the DataGridView
                     ManageReservationGridview.DataSource = reservationsTable;
 
-                    // Auto-size columns to fit the content
-                    ManageReservationGridview.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+                    // Add ComboBox column for Restaurant
+                    if (!ManageReservationGridview.Columns.Contains("RestaurantColumn"))
+                    {
+                        DataGridViewComboBoxColumn restaurantColumn = new DataGridViewComboBoxColumn
+                        {
+                            Name = "RestaurantColumn",
+                            HeaderText = "Restaurant",
+                            DataSource = restaurantTable,
+                            DisplayMember = "Name",
+                            ValueMember = "RestaurantID",
+                            DataPropertyName = "RestaurantID",
+                            AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                        };
+                        ManageReservationGridview.Columns.Insert(
+                            ManageReservationGridview.Columns["RestaurantName"].Index, restaurantColumn);
+                        ManageReservationGridview.Columns.Remove("RestaurantName");
+                    }
 
-                    // Stretch columns to fill the grid's width
-                    ManageReservationGridview.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                    // Hide the RestaurantID column
+                    if (ManageReservationGridview.Columns.Contains("RestaurantID"))
+                    {
+                        ManageReservationGridview.Columns["RestaurantID"].Visible = false;
+                        
+                    }
 
-                    // Set specific columns to editable and others to read-only
+
+                    // Hide the RestaurantID column
+                    if (ManageReservationGridview.Columns.Contains("RestaurantName"))
+                    {
+                        ManageReservationGridview.Columns["RestaurantName"].Visible = false;
+
+                    }
+
+                    // Add a DateTimePicker column for ReservationDate
+                    if (!ManageReservationGridview.Columns.Contains("ReservationDatePicker"))
+                    {
+                        DataGridViewTextBoxColumn reservationDateColumn = new DataGridViewTextBoxColumn
+                        {
+                            Name = "ReservationDatePicker",
+                            HeaderText = "Reservation Date",
+                            DataPropertyName = "ReservationDate",
+                            AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
+                        };
+                        ManageReservationGridview.Columns.Insert(
+                            ManageReservationGridview.Columns["ReservationDate"].Index, reservationDateColumn);
+                        ManageReservationGridview.Columns.Remove("ReservationDate");
+                    }
+
+                    // Configure column properties
                     foreach (DataGridViewColumn column in ManageReservationGridview.Columns)
                     {
-                        if (column.Name == "RestaurantID" || column.Name == "NumberOfGuests" || column.Name == "ReservationDate")
+                        if (column.Name == "RestaurantColumn" ||
+                            column.Name == "ReservationDatePicker" ||
+                            column.Name == "NumberOfGuests" ||
+                            column.Name == "Notes" ||
+                            column.Name == "Important")
                         {
                             column.ReadOnly = false; // Allow editing
                         }
@@ -141,6 +206,9 @@ namespace Reservation
                             column.ReadOnly = true; // Make other columns read-only
                         }
                     }
+
+                    // Add event to show DateTimePicker
+                    ManageReservationGridview.CellClick += ManageReservationGridview_CellClick;
                 }
                 catch (Exception ex)
                 {
@@ -148,6 +216,63 @@ namespace Reservation
                 }
             }
         }
+
+
+        private DateTimePicker dateTimePicker; // Declare a DateTimePicker at the class level for reuse
+
+        private void ManageReservationGridview_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Ensure the click is on a valid cell
+            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+
+            // Ensure the click is on the ReservationDatePicker column
+            var columnName = ManageReservationGridview.Columns[e.ColumnIndex].Name;
+            if (columnName != "ReservationDatePicker") return;
+
+            // Remove any existing DateTimePicker
+            if (dateTimePicker != null)
+            {
+                ManageReservationGridview.Controls.Remove(dateTimePicker);
+                dateTimePicker.Dispose();
+                dateTimePicker = null;
+            }
+
+            // Create and configure the DateTimePicker
+            dateTimePicker = new DateTimePicker
+            {
+                Format = DateTimePickerFormat.Short,
+                Visible = true
+            };
+
+            // Get the cell rectangle to position the DateTimePicker
+            Rectangle cellRectangle = ManageReservationGridview.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, true);
+            dateTimePicker.Size = new Size(cellRectangle.Width, cellRectangle.Height);
+            dateTimePicker.Location = new Point(cellRectangle.X, cellRectangle.Y);
+
+            // Set the DateTimePicker value to the cell's current value (if valid)
+            object cellValue = ManageReservationGridview.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+            if (cellValue != null && DateTime.TryParse(cellValue.ToString(), out DateTime cellDate))
+            {
+                dateTimePicker.Value = cellDate;
+            }
+            else
+            {
+                dateTimePicker.Value = DateTime.Today; // Default to today's date
+            }
+
+            // Handle the value change event
+            dateTimePicker.ValueChanged += (s, ev) =>
+            {
+                ManageReservationGridview.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = dateTimePicker.Value;
+            };
+
+            // Add and show the DateTimePicker
+            ManageReservationGridview.Controls.Add(dateTimePicker);
+            dateTimePicker.BringToFront();
+            dateTimePicker.Focus();
+        }
+
+
 
         private void loadbtn_Click(object sender, EventArgs e)
         {
@@ -160,50 +285,100 @@ namespace Reservation
             {
                 try
                 {
-                    conn.Open();
-
-                    foreach (DataGridViewRow row in ManageReservationGridview.Rows)
+                    if (ManageReservationGridview.CurrentRow == null || ManageReservationGridview.CurrentRow.IsNewRow)
                     {
-                        if (row.IsNewRow) continue; // Skip new row placeholder
-
-                        // Retrieve editable values
-                        int reservationID = Convert.ToInt32(row.Cells["ReservationID"].Value);
-                        int restaurantID = Convert.ToInt32(row.Cells["RestaurantID"].Value);
-                        int numberOfGuests = Convert.ToInt32(row.Cells["NumberOfGuests"].Value);
-                        DateTime reservationDate = Convert.ToDateTime(row.Cells["ReservationDate"].Value);
-
-                        // Update query
-                        string updateQuery = @"
-                UPDATE Reservations
-                SET 
-                    RestaurantID = @RestaurantID,
-                    NumberOfGuests = @NumberOfGuests,
-                    ReservationDate = @ReservationDate
-                WHERE 
-                    ReservationID = @ReservationID";
-
-                        using (SqlCommand cmd = new SqlCommand(updateQuery, conn))
-                        {
-                            // Add parameters
-                            cmd.Parameters.AddWithValue("@ReservationID", reservationID);
-                            cmd.Parameters.AddWithValue("@RestaurantID", restaurantID);
-                            cmd.Parameters.AddWithValue("@NumberOfGuests", numberOfGuests);
-                            cmd.Parameters.AddWithValue("@ReservationDate", reservationDate);
-
-                            // Execute the update
-                            cmd.ExecuteNonQuery();
-                        }
+                        MessageBox.Show("Please select a valid row to update.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
 
-                    MessageBox.Show("Reservations updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadReservations(); // Reload reservations to reflect updates
+                    conn.Open();
+
+                    // Get the selected row
+                    DataGridViewRow row = ManageReservationGridview.CurrentRow;
+
+                    // Retrieve editable values
+                    int reservationID = Convert.ToInt32(row.Cells["ReservationID"].Value);
+
+                    // Validate and retrieve the selected restaurant ID from the ComboBox column
+                    if (row.Cells["RestaurantColumn"].Value == null)
+                    {
+                        MessageBox.Show("Please select a valid restaurant.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    int restaurantID = Convert.ToInt32(row.Cells["RestaurantColumn"].Value);
+                    int numberOfGuests = Convert.ToInt32(row.Cells["NumberOfGuests"].Value);
+                    DateTime reservationDate = Convert.ToDateTime(row.Cells["ReservationDatePicker"].Value);
+                    string notes = row.Cells["Notes"].Value.ToString();
+                    string important =  row.Cells["important"].Value.ToString() ;
+
+                    // Update query
+                    string updateQuery = @"
+            UPDATE Reservations
+            SET 
+                RestaurantID = @RestaurantID,
+                NumberOfGuests = @NumberOfGuests,
+                ReservationDate = @ReservationDate,
+                Notes = @Notes,
+                Important = @Important
+            WHERE 
+                ReservationID = @ReservationID";
+
+                    using (SqlCommand cmd = new SqlCommand(updateQuery, conn))
+                    {
+                        // Add parameters
+                        cmd.Parameters.AddWithValue("@ReservationID", reservationID);
+                        cmd.Parameters.AddWithValue("@RestaurantID", restaurantID);
+                        cmd.Parameters.AddWithValue("@NumberOfGuests", numberOfGuests);
+                        cmd.Parameters.AddWithValue("@ReservationDate", reservationDate);
+                        cmd.Parameters.AddWithValue("@Notes", notes);
+                        cmd.Parameters.AddWithValue("@Important", important);
+
+                        // Execute the update
+                        cmd.ExecuteNonQuery();
+
+
+
+
+
+                    }
+
+
+                    string Resturantname = row.Cells["RestaurantColumn"].FormattedValue?.ToString() ?? "N/A"; // Get the display name of the restaurant
+
+                    // Only log if a row was actually updated
+
+                    // Build the descriptive action message
+                    string action = $"Edited ReservationID: {reservationID}, " +
+                                         $" Resturant: {Resturantname}, " +
+                                        $" Quantity: {numberOfGuests}, " +
+                                        $"ReservationDate: {reservationDate} , Edited Reservation";
+
+                        // Log the action into UserLog
+                        string logQuery = "INSERT INTO UserLog (CashierName, Action) VALUES (@CashierName, @Action)";
+
+                        using (SqlCommand cmd = new SqlCommand(logQuery, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@CashierName", _username);
+                            cmd.Parameters.AddWithValue("@Action", action);
+
+                            cmd.ExecuteNonQuery();
+                        }
+
+                    LoadReservations();
+
+                    MessageBox.Show("Reservation updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Reload reservations to reflect updates
+                  
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error updating reservations: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Error updating reservation: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
+
 
 
 

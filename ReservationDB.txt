@@ -513,7 +513,7 @@ BEGIN
 END
 
 
-CREATE VIEW vw_DailyPaymentsSummary AS
+ Create VIEW vw_DailyPaymentsSummary AS
 SELECT 
     dp.PaymentID,
     c.Name, -- Assuming Customer table has a column for customer name
@@ -521,7 +521,8 @@ SELECT
     dp.PaidAmount,
     dp.PaymentDate,
     dp.CustomerID,
-    dp.Cashiername
+    dp.Cashiername,
+	dp.PaymentMethod
    
    
     
@@ -531,7 +532,6 @@ INNER JOIN
     Customer c ON dp.CustomerID = c.CustomerID
 INNER JOIN 
     Reservations r ON dp.ReservationID = r.ReservationID;
-
 
 
 
@@ -558,6 +558,13 @@ END;
 ADD 
     Notes NVARCHAR(MAX) NULL,           -- Column for notes, allows longer text
     Important NVARCHAR(50) NULL;        -- Column for importance as a string
+
+
+
+
+ ALTER TABLE [dbo].[DailyPayments]
+ADD [PaymentMethod] NVARCHAR(50) NOT NULL DEFAULT 'Cash';
+
 
 ..................................................................
 

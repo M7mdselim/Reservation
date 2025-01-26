@@ -107,11 +107,11 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackgroundImage = global::Reservation.Properties.Resources.icons8_employee_card_100px;
+            this.pictureBox1.BackgroundImage = global::Reservation.Properties.Resources.logo;
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureBox1.Location = new System.Drawing.Point(384, 90);
+            this.pictureBox1.Location = new System.Drawing.Point(350, 82);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(268, 180);
+            this.pictureBox1.Size = new System.Drawing.Size(329, 188);
             this.pictureBox1.TabIndex = 15;
             this.pictureBox1.TabStop = false;
             // 

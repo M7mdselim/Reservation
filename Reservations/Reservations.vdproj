@@ -21,6 +21,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_79042BABA8C3459DB162AEEF5705319A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B9A37AAF6C268DE27898A6808BB8D9B2"
         "OwnerKey" = "8:_C280378B617B489B8BB6E58403AB022A"
         "MsmSig" = "8:_UNDEFINED"
@@ -34,12 +40,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B9A37AAF6C268DE27898A6808BB8D9B2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_C280378B617B489B8BB6E58403AB022A"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -47,6 +47,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_542252930C01A18406A9655025107888"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_B9A37AAF6C268DE27898A6808BB8D9B2"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -67,6 +73,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
         "Release"
         {
@@ -83,6 +105,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -141,6 +179,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_79042BABA8C3459DB162AEEF5705319A"
+            {
+            "SourcePath" = "8:..\\Reservation\\bin\\Debug\\logo.png"
+            "TargetName" = "8:logo.png"
+            "Tag" = "8:"
+            "Folder" = "8:_8568B167C9F94EE4884D4DA5E4018FAE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B9A37AAF6C268DE27898A6808BB8D9B2"
@@ -231,7 +289,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Reservations"
         "ProductCode" = "8:{810453CA-2304-419E-BD00-F088BA6E2C33}"
-        "PackageCode" = "8:{F1546711-F94B-4B5F-9C24-809AD7D64CD3}"
+        "PackageCode" = "8:{7760EF1B-3967-4B7B-931B-3C25EF48FF89}"
         "UpgradeCode" = "8:{D7340951-FCEF-4EE0-9C85-9DBB28A6ACF4}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

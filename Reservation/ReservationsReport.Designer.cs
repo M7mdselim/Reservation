@@ -31,6 +31,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.backkbtn = new System.Windows.Forms.Button();
             this.cashiernamelabel = new System.Windows.Forms.Label();
             this.greet_user = new System.Windows.Forms.Label();
             this.button5 = new System.Windows.Forms.Button();
@@ -39,6 +40,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.dashboard_btn = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.reservationsview = new System.Windows.Forms.DataGridView();
             this.searchbtn = new System.Windows.Forms.Button();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
@@ -46,12 +48,10 @@
             this.filterselectioncombo = new System.Windows.Forms.ComboBox();
             this.PrintButton = new System.Windows.Forms.Button();
             this.pdfbutton = new System.Windows.Forms.Button();
-            this.backkbtn = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.reservationsview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.reservationsview)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -95,6 +95,17 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(169, 565);
             this.panel2.TabIndex = 1;
+            // 
+            // backkbtn
+            // 
+            this.backkbtn.BackgroundImage = global::Reservation.Properties.Resources.Back_Button_Download_Transparent_PNG_Image;
+            this.backkbtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.backkbtn.Location = new System.Drawing.Point(9, 5);
+            this.backkbtn.Name = "backkbtn";
+            this.backkbtn.Size = new System.Drawing.Size(52, 41);
+            this.backkbtn.TabIndex = 15;
+            this.backkbtn.UseVisualStyleBackColor = true;
+            this.backkbtn.Click += new System.EventHandler(this.backkbtn_Click);
             // 
             // cashiernamelabel
             // 
@@ -220,6 +231,15 @@
             this.dashboard_btn.UseVisualStyleBackColor = false;
             this.dashboard_btn.Click += new System.EventHandler(this.dashboard_btn_Click);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::Reservation.Properties.Resources.icons8_employee_card_100px;
+            this.pictureBox1.Location = new System.Drawing.Point(33, 60);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(100, 100);
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            // 
             // reservationsview
             // 
             this.reservationsview.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
@@ -229,6 +249,8 @@
             this.reservationsview.ReadOnly = true;
             this.reservationsview.Size = new System.Drawing.Size(931, 457);
             this.reservationsview.TabIndex = 2;
+            this.reservationsview.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.reservationsview_CellContentClick);
+            this.reservationsview.Sorted += new System.EventHandler(this.reservationsview_Sorted);
             // 
             // searchbtn
             // 
@@ -316,26 +338,6 @@
             this.pdfbutton.UseVisualStyleBackColor = false;
             this.pdfbutton.Click += new System.EventHandler(this.pdfbutton_Click);
             // 
-            // backkbtn
-            // 
-            this.backkbtn.BackgroundImage = global::Reservation.Properties.Resources.Back_Button_Download_Transparent_PNG_Image;
-            this.backkbtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.backkbtn.Location = new System.Drawing.Point(9, 5);
-            this.backkbtn.Name = "backkbtn";
-            this.backkbtn.Size = new System.Drawing.Size(52, 41);
-            this.backkbtn.TabIndex = 15;
-            this.backkbtn.UseVisualStyleBackColor = true;
-            this.backkbtn.Click += new System.EventHandler(this.backkbtn_Click);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::Reservation.Properties.Resources.icons8_employee_card_100px;
-            this.pictureBox1.Location = new System.Drawing.Point(33, 60);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(100, 100);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            // 
             // ReservationsReport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -361,8 +363,8 @@
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.reservationsview)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.reservationsview)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

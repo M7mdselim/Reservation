@@ -413,6 +413,16 @@ namespace Reservation
                         int quantity = row.Cells["Quantity"].Value != DBNull.Value ? Convert.ToInt32(row.Cells["Quantity"].Value) : 0;
                         string menuItemName = row.Cells["MenuItemNameComboBox"].Value?.ToString() ?? "N/A";
 
+
+
+                        decimal totalAmount = row.Cells["Totalamount"].Value != DBNull.Value ? Convert.ToDecimal(row.Cells["Totalamount"].Value) : 0m;
+
+                        // Check if totalAmount is 0 or invalid (e.g., DBNull)
+                        if (totalAmount == 0)
+                        {
+                            MessageBox.Show("لا يمكن اضافه العنصر .", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return; // Skip this row and move to the next one
+                        }
                         // Calculate SubTotal
                         decimal subTotal = quantity * itemPrice;
 

@@ -130,6 +130,8 @@
             // 
             // ManageReservationGridview
             // 
+            this.ManageReservationGridview.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.ManageReservationGridview.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.ManageReservationGridview.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ManageReservationGridview.Location = new System.Drawing.Point(79, 40);
             this.ManageReservationGridview.Name = "ManageReservationGridview";
