@@ -32,6 +32,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.backkbtn = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -39,7 +40,6 @@
             this.greet_user = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.dashboard_btn = new System.Windows.Forms.Button();
-            this.backkbtn = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.ManageReservationGridview = new System.Windows.Forms.DataGridView();
             this.loadbtn = new System.Windows.Forms.Button();
@@ -93,6 +93,17 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(169, 559);
             this.panel2.TabIndex = 1;
+            // 
+            // backkbtn
+            // 
+            this.backkbtn.BackgroundImage = global::Reservation.Properties.Resources.Back_Button_Download_Transparent_PNG_Image;
+            this.backkbtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.backkbtn.Location = new System.Drawing.Point(10, 6);
+            this.backkbtn.Name = "backkbtn";
+            this.backkbtn.Size = new System.Drawing.Size(52, 41);
+            this.backkbtn.TabIndex = 19;
+            this.backkbtn.UseVisualStyleBackColor = true;
+            this.backkbtn.Click += new System.EventHandler(this.backkbtn_Click);
             // 
             // button3
             // 
@@ -200,17 +211,6 @@
             this.dashboard_btn.UseVisualStyleBackColor = false;
             this.dashboard_btn.Click += new System.EventHandler(this.dashboard_btn_Click);
             // 
-            // backkbtn
-            // 
-            this.backkbtn.BackgroundImage = global::Reservation.Properties.Resources.Back_Button_Download_Transparent_PNG_Image;
-            this.backkbtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.backkbtn.Location = new System.Drawing.Point(10, 6);
-            this.backkbtn.Name = "backkbtn";
-            this.backkbtn.Size = new System.Drawing.Size(52, 41);
-            this.backkbtn.TabIndex = 19;
-            this.backkbtn.UseVisualStyleBackColor = true;
-            this.backkbtn.Click += new System.EventHandler(this.backkbtn_Click);
-            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
@@ -223,6 +223,7 @@
             // ManageReservationGridview
             // 
             this.ManageReservationGridview.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.ManageReservationGridview.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.ManageReservationGridview.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ManageReservationGridview.Location = new System.Drawing.Point(167, 35);
             this.ManageReservationGridview.Name = "ManageReservationGridview";
@@ -324,6 +325,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "تقرير يومي";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.DailyReports_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

@@ -928,9 +928,13 @@ WHERE ReservationDate = @ReservationDate;
                 yPosition += 10;
 
                 // Add the footer message
-                string footerMessage = "شكرا على اختيارك دار الضيافه";
+                string footerMessage = "شكرا على اختيارك دار الضيافة";
                 e.Graphics.DrawString(footerMessage, boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
-                yPosition += lineHeight;
+                yPosition += 20;
+
+                string selim = "Selim's For Software \n 01155003537";
+                e.Graphics.DrawString(selim, new Font("Arial", 4, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += 5;
             };
 
             printDocument.Print();

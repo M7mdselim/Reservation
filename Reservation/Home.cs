@@ -442,9 +442,10 @@ namespace Reservation
                             reservationnumberlabel.Text = $"Reservation number is = {reservationId}";
                             reservationnumberlabel.ForeColor = Color.Red;
                             reservationidtxt.Text = reservationId.ToString(); // Update TextBox
-
+                            LoadAvailableRestaurants();
                             LockReservationFields();
                             LockCustomerFields();
+
                         }
                         else
                         {
@@ -937,9 +938,9 @@ namespace Reservation
 
         private void Home_Load(object sender, EventArgs e)
         {
+           ;
 
-            
-        
+
 
         clockTimer = new System.Threading.Timer(UpdateDateTime, null, 0, 1000); // 1 second interval
 
@@ -1489,10 +1490,14 @@ namespace Reservation
                 e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:N2}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
                 yPosition += lineHeight;
 
-                // Draw a thank-you message
-                yPosition += 20;
-                string footerMessage = "شكرا على اختيارك دار الضيافه";
+                // Add the footer message
+                string footerMessage = "شكرا على اختيارك دار الضيافة";
                 e.Graphics.DrawString(footerMessage, boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += 20;
+
+                string selim = "Selim's For Software \n 01155003537";
+                e.Graphics.DrawString(selim, new Font("Arial", 4, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += 5;
 
                 // Ensure the footer does not overflow the page height
                 if (yPosition + lineHeight > e.PageBounds.Height)

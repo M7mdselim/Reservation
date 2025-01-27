@@ -62,52 +62,29 @@ namespace Reservation
         }
 
 
-        private bool _isResizing = false;
-
         private void Home_Resize(object sender, EventArgs e)
         {
-            if (_isResizing) return;
-
-            _isResizing = true;
-            try
-            {
-                float widthRatio = this.Width / _initialFormWidth;
-                float heightRatio = this.Height / _initialFormHeight;
-                ResizeControls(this.Controls, widthRatio, heightRatio);
-            }
-            finally
-            {
-                _isResizing = false;
-            }
+            float widthRatio = this.Width / _initialFormWidth;
+            float heightRatio = this.Height / _initialFormHeight;
+            ResizeControls(this.Controls, widthRatio, heightRatio);
         }
-
 
         private void ResizeControls(Control.ControlCollection controls, float widthRatio, float heightRatio)
         {
-            foreach (Control control in controls)
+            for (int i = 0; i < controls.Count; i++)
             {
+                Control control = controls[i];
+                ControlInfo controlInfo = _controlsInfo[i];
 
-                if (control is Panel panel)
-                {
-                    // Recursively adjust panel's child controls
-                    ResizeControls(panel.Controls, widthRatio, heightRatio);
-                }
-                else
-                {
-                    // Adjust control dimensions
-                    var controlInfo = Array.Find(_controlsInfo, c => c.Left == control.Left && c.Top == control.Top);
-                    if (controlInfo != null)
-                    {
-                        control.Left = (int)(controlInfo.Left * widthRatio);
-                        control.Top = (int)(controlInfo.Top * heightRatio);
-                        control.Width = (int)(controlInfo.Width * widthRatio);
-                        control.Height = (int)(controlInfo.Height * heightRatio);
-                        control.Font = new Font(control.Font.FontFamily, controlInfo.FontSize * Math.Min(widthRatio, heightRatio));
-                    }
-                }
+                control.Left = (int)(controlInfo.Left * widthRatio);
+                control.Top = (int)(controlInfo.Top * heightRatio);
+                control.Width = (int)(controlInfo.Width * widthRatio);
+                control.Height = (int)(controlInfo.Height * heightRatio);
+
+                // Adjust font size
+                control.Font = new Font(control.Font.FontFamily, controlInfo.FontSize * Math.Min(widthRatio, heightRatio));
             }
         }
-
 
         private class ControlInfo
         {
@@ -126,7 +103,6 @@ namespace Reservation
                 FontSize = fontSize;
             }
         }
-
         private void exit_Click(object sender, EventArgs e)
         {
             Application.Exit();
@@ -728,14 +704,21 @@ namespace Reservation
                 StringFormat centerFormat = new StringFormat { Alignment = StringAlignment.Center }; // Center alignment
 
                 // Draw the company logo
-               string logoPath = Path.Combine(Application.StartupPath, "logo.png"); // Replace with the actual path to the logo
+
+                e.Graphics.DrawString(" COPY ", new Font("Arial", 16, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, 5, centerFormat);
+                yPosition += 40; // Adjust for logo height
+                string logoPath = Path.Combine(Application.StartupPath, "logo.png"); // Replace with the actual path to the logo
                 if (System.IO.File.Exists(logoPath))
                 {
                     Image logo = Image.FromFile(logoPath);
-                    e.Graphics.DrawString(" COPY ", new Font("Arial", 16, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, 5, centerFormat);
-                    yPosition += 40; // Adjust for logo height
+                  
                     e.Graphics.DrawImage(logo, (e.PageBounds.Width - 100) / 2, yPosition, 100, 100); // Center the logo
+                
+                    // Adjust for logo height
                     yPosition += 110; // Adjust for logo height
+
+
+                  
                 }
 
                 // Draw the company name or title
@@ -869,9 +852,13 @@ namespace Reservation
                 yPosition += 10;
 
                 // Add the footer message
-                string footerMessage = "شكرا على اختيارك دار الضيافه";
+                string footerMessage = "شكرا على اختيارك دار الضيافة";
                 e.Graphics.DrawString(footerMessage, boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
-                yPosition += lineHeight;
+                yPosition += 20;
+
+                string selim = "Selim's For Software \n 01155003537";
+                e.Graphics.DrawString(selim, new Font("Arial", 4, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += 5;
 
             };
 

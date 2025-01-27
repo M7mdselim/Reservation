@@ -107,6 +107,7 @@ namespace Reservation
             Action, 
             DateAndTime
         FROM UserLog
+        WHERE CAST(DateAndTime AS DATE) = @SelectedDate
         ORDER BY DateAndTime DESC;
     ";
 
@@ -114,8 +115,12 @@ namespace Reservation
             {
                 try
                 {
+
+
+                    DateTime selectedDate = dateTimePicker1.Value.Date;
                     // Fetch user logs with descending order by DateAndTime
                     SqlDataAdapter userLogAdapter = new SqlDataAdapter(userLogQuery, conn);
+                    userLogAdapter.SelectCommand.Parameters.AddWithValue("@SelectedDate", selectedDate);
                     DataTable userLogTable = new DataTable();
                     userLogAdapter.Fill(userLogTable);
 
@@ -418,6 +423,11 @@ namespace Reservation
             this.Hide();
             login.ShowDialog();
             this.Close();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

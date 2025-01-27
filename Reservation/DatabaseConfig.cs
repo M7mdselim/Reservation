@@ -15,9 +15,10 @@ public static class DatabaseConfig
         string configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MyApp", "config.txt");
 
        
-              connectionString = $"Data Source=Selim-pc;Initial Catalog=ReservationsDB;Integrated Security=True;Encrypt=False";
+           //  connectionString = $"Data Source=Selim-pc;Initial Catalog=ReservationsDB;Integrated Security=True;Encrypt=False";
 
-               //connectionString = $"Data Source=192.168.50.5;Initial Catalog=ReservationsDB;User Id=sa;Password=comsys@123;Encrypt=False";
+               
+        connectionString = $"Data Source=192.168.50.5;Initial Catalog=ReservationsDB;User Id=sa;Password=comsys@123;Encrypt=False";
            
         }
        

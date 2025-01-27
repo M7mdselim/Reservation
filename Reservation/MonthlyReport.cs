@@ -433,7 +433,7 @@ namespace Reservation
 
         private void MonthlyReport_Load_1(object sender, EventArgs e)
         {
-
+            cashiernamelabel.Text = _username;
         }
     }
 }

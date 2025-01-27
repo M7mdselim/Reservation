@@ -291,7 +291,7 @@
             // 
             this.panel4.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.panel4.Font = new System.Drawing.Font("Tahoma", 2F);
-            this.panel4.Location = new System.Drawing.Point(170, 164);
+            this.panel4.Location = new System.Drawing.Point(170, 158);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(931, 5);
             this.panel4.TabIndex = 10;
@@ -478,6 +478,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "اضافه حساب";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Home_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
