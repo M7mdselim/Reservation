@@ -46,6 +46,9 @@
             this.updatebtn = new System.Windows.Forms.Button();
             this.loadbtn = new System.Windows.Forms.Button();
             this.ManageReservationGridview = new System.Windows.Forms.DataGridView();
+            this.label3 = new System.Windows.Forms.Label();
+            this.filteringTxtBox = new System.Windows.Forms.TextBox();
+            this.filterselectioncombo = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -205,7 +208,7 @@
             this.dashboard_btn.Name = "dashboard_btn";
             this.dashboard_btn.Size = new System.Drawing.Size(151, 40);
             this.dashboard_btn.TabIndex = 2;
-            this.dashboard_btn.Text = "تعديل طلبات";
+            this.dashboard_btn.Text = "اضافات";
             this.dashboard_btn.UseVisualStyleBackColor = false;
             this.dashboard_btn.Click += new System.EventHandler(this.dashboard_btn_Click);
             // 
@@ -220,7 +223,7 @@
             // 
             // deletebtn
             // 
-            this.deletebtn.Location = new System.Drawing.Point(539, 553);
+            this.deletebtn.Location = new System.Drawing.Point(363, 553);
             this.deletebtn.Name = "deletebtn";
             this.deletebtn.Size = new System.Drawing.Size(75, 23);
             this.deletebtn.TabIndex = 38;
@@ -230,7 +233,7 @@
             // 
             // reservationidtxt
             // 
-            this.reservationidtxt.Location = new System.Drawing.Point(527, 523);
+            this.reservationidtxt.Location = new System.Drawing.Point(351, 523);
             this.reservationidtxt.Name = "reservationidtxt";
             this.reservationidtxt.Size = new System.Drawing.Size(100, 20);
             this.reservationidtxt.TabIndex = 37;
@@ -240,7 +243,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(633, 521);
+            this.label1.Location = new System.Drawing.Point(457, 521);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(87, 19);
             this.label1.TabIndex = 36;
@@ -292,11 +295,47 @@
             this.ManageReservationGridview.Size = new System.Drawing.Size(928, 459);
             this.ManageReservationGridview.TabIndex = 34;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Stencil", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.label3.Location = new System.Drawing.Point(825, 518);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(97, 22);
+            this.label3.TabIndex = 46;
+            this.label3.Text = "بحث عن طريق";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
+            // 
+            // filteringTxtBox
+            // 
+            this.filteringTxtBox.Location = new System.Drawing.Point(639, 555);
+            this.filteringTxtBox.Name = "filteringTxtBox";
+            this.filteringTxtBox.Size = new System.Drawing.Size(175, 20);
+            this.filteringTxtBox.TabIndex = 48;
+            this.filteringTxtBox.TextChanged += new System.EventHandler(this.filteringTxtBox_TextChanged);
+            // 
+            // filterselectioncombo
+            // 
+            this.filterselectioncombo.FormattingEnabled = true;
+            this.filterselectioncombo.Items.AddRange(new object[] {
+            "ID",
+            "اسم",
+            "كاشير"});
+            this.filterselectioncombo.Location = new System.Drawing.Point(639, 518);
+            this.filterselectioncombo.Name = "filterselectioncombo";
+            this.filterselectioncombo.Size = new System.Drawing.Size(175, 21);
+            this.filterselectioncombo.TabIndex = 47;
+            this.filterselectioncombo.SelectedIndexChanged += new System.EventHandler(this.filterselectioncombo_SelectedIndexChanged);
+            // 
             // EditReservation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1099, 595);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.filteringTxtBox);
+            this.Controls.Add(this.filterselectioncombo);
             this.Controls.Add(this.deletebtn);
             this.Controls.Add(this.reservationidtxt);
             this.Controls.Add(this.panel2);
@@ -344,5 +383,8 @@
         private System.Windows.Forms.TextBox reservationidtxt;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button backkbtn;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox filteringTxtBox;
+        private System.Windows.Forms.ComboBox filterselectioncombo;
     }
 }

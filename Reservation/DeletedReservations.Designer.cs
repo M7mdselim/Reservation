@@ -47,6 +47,7 @@
             this.filterselectioncombo = new System.Windows.Forms.ComboBox();
             this.filteringTxtBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.SpotCheckbtn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -78,6 +79,7 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.panel2.Controls.Add(this.SpotCheckbtn);
             this.panel2.Controls.Add(this.backkbtn);
             this.panel2.Controls.Add(this.button3);
             this.panel2.Controls.Add(this.button2);
@@ -114,7 +116,7 @@
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button3.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button3.ForeColor = System.Drawing.Color.White;
-            this.button3.Location = new System.Drawing.Point(10, 366);
+            this.button3.Location = new System.Drawing.Point(10, 379);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(151, 43);
             this.button3.TabIndex = 18;
@@ -131,7 +133,7 @@
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button2.ForeColor = System.Drawing.Color.White;
-            this.button2.Location = new System.Drawing.Point(10, 419);
+            this.button2.Location = new System.Drawing.Point(10, 432);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(151, 40);
             this.button2.TabIndex = 17;
@@ -149,7 +151,7 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(10, 225);
+            this.button1.Location = new System.Drawing.Point(10, 218);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(151, 43);
             this.button1.TabIndex = 15;
@@ -201,7 +203,7 @@
             this.dashboard_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.dashboard_btn.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dashboard_btn.ForeColor = System.Drawing.Color.White;
-            this.dashboard_btn.Location = new System.Drawing.Point(10, 287);
+            this.dashboard_btn.Location = new System.Drawing.Point(10, 275);
             this.dashboard_btn.Name = "dashboard_btn";
             this.dashboard_btn.Size = new System.Drawing.Size(151, 40);
             this.dashboard_btn.TabIndex = 2;
@@ -303,6 +305,24 @@
             this.label1.Text = "بحث عن طريق";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
+            // SpotCheckbtn
+            // 
+            this.SpotCheckbtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.SpotCheckbtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.SpotCheckbtn.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.SpotCheckbtn.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.SpotCheckbtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.SpotCheckbtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.SpotCheckbtn.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SpotCheckbtn.ForeColor = System.Drawing.Color.White;
+            this.SpotCheckbtn.Location = new System.Drawing.Point(11, 327);
+            this.SpotCheckbtn.Name = "SpotCheckbtn";
+            this.SpotCheckbtn.Size = new System.Drawing.Size(151, 40);
+            this.SpotCheckbtn.TabIndex = 28;
+            this.SpotCheckbtn.Text = "سبوت شهري";
+            this.SpotCheckbtn.UseVisualStyleBackColor = false;
+            this.SpotCheckbtn.Click += new System.EventHandler(this.SpotCheckbtn_Click);
+            // 
             // DeletedReservations
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -357,5 +377,6 @@
         private System.Windows.Forms.TextBox filteringTxtBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button backkbtn;
+        private System.Windows.Forms.Button SpotCheckbtn;
     }
 }

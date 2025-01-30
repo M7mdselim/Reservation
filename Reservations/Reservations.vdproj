@@ -289,7 +289,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Reservations"
         "ProductCode" = "8:{C804BE6A-434D-4441-960E-32FB489CF46A}"
-        "PackageCode" = "8:{9A464514-6021-41E4-989D-D9DC7B077EC7}"
+        "PackageCode" = "8:{AE0843A1-B385-45AA-B66A-6CF3691779AF}"
         "UpgradeCode" = "8:{D7340951-FCEF-4EE0-9C85-9DBB28A6ACF4}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

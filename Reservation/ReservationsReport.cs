@@ -815,16 +815,22 @@ WHERE ReservationDate = @ReservationDate;
 
 
                 // Set the maximum number of characters allowed
-                int maxNameLength = 20;
+                int maxNameLength = 14;
+                int maxCashierNameLength = 13; // Ensure both are within limits
 
                 // Truncate the name if it exceeds the max length
-                string truncatedName = name.Length > maxNameLength
-                    ? name.Substring(0, maxNameLength)
-                    : name;
+                string truncatedName = _username.Length > maxNameLength
+                    ? _username.Substring(0, maxNameLength)
+                    : _username;
 
+                string truncatedCashierName = _username.Length > maxCashierNameLength
+                    ? _username.Substring(0, maxCashierNameLength)
+                    : _username;
+
+                // Draw the text with proper alignment
                 e.Graphics.DrawString($"حجز باسم: {truncatedName}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
-                e.Graphics.DrawString($"القائم بالحجز: {_username}", boldFont, Brushes.Black, leftMargin, yPosition, leftAlignFormat); // Left aligned
-                yPosition += lineHeight;
+                e.Graphics.DrawString($"القائم بالحجز: {truncatedCashierName}", boldFont, Brushes.Black, leftMargin, yPosition, new StringFormat { Alignment = StringAlignment.Near }); // Left aligned
+                yPosition += lineHeight; // Move to next line
 
                 string resturantname = $" مطعم:  {restaurantName}";
                 // Add the restaurant name under the customer name and number of guests
@@ -933,7 +939,7 @@ WHERE ReservationDate = @ReservationDate;
                 yPosition += 20;
 
                 string selim = "Selim's For Software \n 01155003537";
-                e.Graphics.DrawString(selim, new Font("Arial", 4, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                e.Graphics.DrawString(selim, new Font("Arial", 6, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
                 yPosition += 5;
             };
 
@@ -1384,6 +1390,45 @@ GROUP BY RestaurantName;
                     row.Cells["اهميه"].Style.ForeColor = Color.Black;
                 }
             }
+        }
+
+        private void Grandsummarybtn_Click(object sender, EventArgs e)
+        {
+            decimal grandTotalAmount = 0; // Variable to store total amount of all orders
+            List<OrderSummary> orderSummaryList = new List<OrderSummary>(); // List to store order summary
+
+            // Loop through each row in the reservations view
+            foreach (DataGridViewRow row in reservationsview.Rows)
+            {
+                if (!row.IsNewRow)
+                {
+                    // Check if the CustomerName is "Total" and skip the row if so
+                    string customerName = row.Cells["CustomerName"].Value != DBNull.Value ? row.Cells["CustomerName"].Value.ToString() : string.Empty;
+                    if (customerName.Equals("Total", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue; // Skip the row if CustomerName is "Total"
+                    }
+
+                    int reservationId = row.Cells["ReservationId"].Value != DBNull.Value ? Convert.ToInt32(row.Cells["ReservationId"].Value) : 0;
+                    decimal totalAmount = row.Cells["TotalAmount"].Value != DBNull.Value ? Convert.ToDecimal(row.Cells["TotalAmount"].Value) : 0m;
+                    decimal paidAmount = row.Cells["PaidAmount"].Value != DBNull.Value ? Convert.ToDecimal(row.Cells["PaidAmount"].Value) : 0m;
+                    string numberOfGuests = row.Cells["NumberOfGuests"].Value != DBNull.Value ? row.Cells["NumberOfGuests"].Value.ToString() : string.Empty;
+                    string name = row.Cells["CustomerName"].Value.ToString();
+
+                    // Call PrintReceipt for each row with the appropriate data
+                  
+
+                    // Add the total amount of each reservation to the grand total
+                    grandTotalAmount += totalAmount;
+
+                    // Get order details for summary
+                    var reservationSummary = GetOrderSummaryByReservation(reservationId);
+                    orderSummaryList.AddRange(reservationSummary);
+                }
+            }
+
+            // After all receipts, print the summary of total orders
+            PrintGrandSummary();
         }
     }
 

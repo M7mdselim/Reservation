@@ -44,7 +44,7 @@ namespace Reservation
 
 
             // Configure autocomplete for the name TextBox
-            ConfigureNameAutoComplete();
+          
 
             // Event handlers
             ConfigureNameAutoComplete();
@@ -1396,16 +1396,23 @@ namespace Reservation
 
 
                 // Set the maximum number of characters allowed
-                int maxNameLength = 20;
+                int maxNameLength = 14;
+                int maxCashierNameLength = 13; // Ensure both are within limits
 
                 // Truncate the name if it exceeds the max length
                 string truncatedName = nametxt.Text.Length > maxNameLength
                     ? nametxt.Text.Substring(0, maxNameLength)
                     : nametxt.Text;
 
+                string truncatedCashierName = cashierName.Length > maxCashierNameLength
+                    ? cashierName.Substring(0, maxCashierNameLength)
+                    : cashierName;
+
+                // Draw the text with proper alignment
                 e.Graphics.DrawString($"حجز باسم: {truncatedName}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
-                e.Graphics.DrawString($"القائم بالحجز: {cashierName}", boldFont, Brushes.Black, leftMargin, yPosition, leftFormat); // Left aligned
-                yPosition += lineHeight;
+                e.Graphics.DrawString($"القائم بالحجز: {truncatedCashierName}", boldFont, Brushes.Black, leftMargin, yPosition, leftFormat); // Left aligned
+                yPosition += lineHeight; // Move to next line
+
 
                 string resturantname = $" مطعم:  {restaurantName}";
                 // Add the restaurant name under the customer name and number of guests
@@ -1486,9 +1493,15 @@ namespace Reservation
                 e.Graphics.DrawString($"اجمالي المبلغ: {totalAmount:N2}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
                 yPosition += lineHeight;
 
-                // Add paid amount (without currency symbol)
-                e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:N2}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                // Display paid amount and remaining total on the same line
+                e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:N2}    اجمالي المتبقى: {totalAmount - paidAmount:N2}",
+                    boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
                 yPosition += lineHeight;
+
+
+
+                // Add total amount (without currency symbol)
+
 
                 // Add the footer message
                 string footerMessage = "شكرا على اختيارك دار الضيافة";
@@ -1496,7 +1509,7 @@ namespace Reservation
                 yPosition += 20;
 
                 string selim = "Selim's For Software \n 01155003537";
-                e.Graphics.DrawString(selim, new Font("Arial", 4, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                e.Graphics.DrawString(selim, new Font("Arial", 6, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
                 yPosition += 5;
 
                 // Ensure the footer does not overflow the page height
@@ -2121,6 +2134,10 @@ namespace Reservation
             }
         }
 
+        private void nametxt_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
     }
 
 

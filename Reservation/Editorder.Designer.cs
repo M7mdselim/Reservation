@@ -238,6 +238,7 @@
             this.label1.Size = new System.Drawing.Size(97, 22);
             this.label1.TabIndex = 43;
             this.label1.Text = "بحث عن طريق";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // filteringTxtBox
             // 

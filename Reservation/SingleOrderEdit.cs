@@ -646,6 +646,9 @@ namespace Reservation
             this.Close();
         }
 
-      
+        private void filteringTxtBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

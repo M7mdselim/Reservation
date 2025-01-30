@@ -13,7 +13,7 @@ using System.Windows.Forms;
 
 namespace Reservation
 {
-    public partial class SpotCheck : Form
+    public partial class MonthlySpotCheck : Form
     {
         private float _initialFormWidth;
         private float _initialFormHeight;
@@ -22,7 +22,7 @@ namespace Reservation
 
 
         private string _username;
-        public SpotCheck(string username)
+        public MonthlySpotCheck(string username)
         {
             InitializeComponent();
 
@@ -111,7 +111,7 @@ namespace Reservation
 
         private void dashboard_btn_Click(object sender, EventArgs e)
         {
-            Home home = new Home(_username);
+            MonthlyReport home = new MonthlyReport(_username);
             this.Hide();
             home.ShowDialog();
             this.Close();
@@ -177,7 +177,7 @@ namespace Reservation
         private void Home_Load(object sender, EventArgs e)
         {
             cashiernamelabel.Text = _username;
-           
+
             ConfigureNameAutoComplete();
         }
 
@@ -251,6 +251,7 @@ namespace Reservation
         }
 
 
+
         private void LoadReservations()
         {
 
@@ -258,7 +259,8 @@ namespace Reservation
             {
                 // Database connection string (update with your actual connection details)
 
-
+                int selectedYear = dateTimePicker1.Value.Year;
+                int selectedMonth = dateTimePicker1.Value.Month;
                 // Get the selected date from the DateTimePicker
                 DateTime selectedDate = dateTimePicker1.Value.Date;
 
@@ -275,8 +277,7 @@ namespace Reservation
                     PaymentMethod
                 FROM 
                     vw_DailyPaymentsSummary
-                WHERE 
-                    CAST(PaymentDate AS DATE) = @PaymentDate 
+                WHERE YEAR(PaymentDate) = @Year AND MONTH(PaymentDate) = @Month
                     AND Cashiername = @Username
                 UNION ALL
                 SELECT 
@@ -290,8 +291,7 @@ namespace Reservation
                     'Cash' AS PaymentMethod
                 FROM 
                     vw_DailyPaymentsSummary
-                WHERE 
-                    CAST(PaymentDate AS DATE) = @PaymentDate 
+               WHERE YEAR(PaymentDate) = @Year AND MONTH(PaymentDate) = @Month
                     AND Cashiername = @Username
                     AND PaymentMethod = 'Cash'
                 UNION ALL
@@ -306,8 +306,7 @@ namespace Reservation
                     'Visa' AS PaymentMethod
                 FROM 
                     vw_DailyPaymentsSummary
-                WHERE 
-                    CAST(PaymentDate AS DATE) = @PaymentDate 
+               WHERE YEAR(PaymentDate) = @Year AND MONTH(PaymentDate) = @Month
                     AND Cashiername = @Username
                     AND PaymentMethod = 'Visa'
                 UNION ALL
@@ -322,8 +321,7 @@ namespace Reservation
                     NULL AS PaymentMethod
                 FROM 
                     vw_DailyPaymentsSummary
-                WHERE 
-                    CAST(PaymentDate AS DATE) = @PaymentDate 
+                WHERE YEAR(PaymentDate) = @Year AND MONTH(PaymentDate) = @Month
                     AND Cashiername = @Username;
                             ";
 
@@ -338,7 +336,10 @@ namespace Reservation
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         // Add the parameter for the selected date
-                        command.Parameters.AddWithValue("@Paymentdate", selectedDate);
+                       
+
+                        command.Parameters.AddWithValue("@Year", selectedYear);
+                        command.Parameters.AddWithValue("@Month", selectedMonth);
                         if (GlobalUser.Role == 1)
                         {
 
@@ -348,7 +349,7 @@ namespace Reservation
                         else
                         {
 
-                            command.Parameters.AddWithValue("@Username",_username);
+                            command.Parameters.AddWithValue("@Username", _username);
 
                         }
 
@@ -375,14 +376,14 @@ namespace Reservation
         }
 
 
-
         private void LoadAllReservations()
         {
 
             try
             {
                 // Database connection string (update with your actual connection details)
-
+                int selectedYear = dateTimePicker1.Value.Year;
+                int selectedMonth = dateTimePicker1.Value.Month;
 
                 // Get the selected date from the DateTimePicker
                 DateTime selectedDate = dateTimePicker1.Value.Date;
@@ -400,8 +401,7 @@ namespace Reservation
                     PaymentMethod
                 FROM 
                     vw_DailyPaymentsSummary
-                WHERE 
-                    CAST(PaymentDate AS DATE) = @PaymentDate 
+                  WHERE YEAR(PaymentDate) = @Year AND MONTH(PaymentDate) = @Month
                    
                 UNION ALL
                 SELECT 
@@ -415,8 +415,7 @@ namespace Reservation
                     'Cash' AS PaymentMethod
                 FROM 
                     vw_DailyPaymentsSummary
-                WHERE 
-                    CAST(PaymentDate AS DATE) = @PaymentDate 
+             WHERE YEAR(PaymentDate) = @Year AND MONTH(PaymentDate) = @Month
                    
                     AND PaymentMethod = 'Cash'
                 UNION ALL
@@ -431,8 +430,7 @@ namespace Reservation
                     'Visa' AS PaymentMethod
                 FROM 
                     vw_DailyPaymentsSummary
-                WHERE 
-                    CAST(PaymentDate AS DATE) = @PaymentDate 
+                 WHERE YEAR(PaymentDate) = @Year AND MONTH(PaymentDate) = @Month
                   
                     AND PaymentMethod = 'Visa'
                 UNION ALL
@@ -447,8 +445,7 @@ namespace Reservation
                     NULL AS PaymentMethod
                 FROM 
                     vw_DailyPaymentsSummary
-                WHERE 
-                    CAST(PaymentDate AS DATE) = @PaymentDate 
+                WHERE YEAR(PaymentDate) = @Year AND MONTH(PaymentDate) = @Month
                     
                             ";
 
@@ -463,8 +460,10 @@ namespace Reservation
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         // Add the parameter for the selected date
-                        command.Parameters.AddWithValue("@Paymentdate", selectedDate);
-                       // command.Parameters.AddWithValue("@Username", usertxt.Text);
+                        
+                        command.Parameters.AddWithValue("@Year", selectedYear);
+                        command.Parameters.AddWithValue("@Month", selectedMonth);
+                        // command.Parameters.AddWithValue("@Username", usertxt.Text);
 
                         // Create a data adapter
                         using (SqlDataAdapter adapter = new SqlDataAdapter(command))
@@ -490,10 +489,9 @@ namespace Reservation
 
         private void searchbtn_Click(object sender, EventArgs e)
         {
+
             if (GlobalUser.Role == 1)
             {
-
-                usertxt.Enabled = true;
                 // If usertxt has text, load specific reservations instead of all
                 if (!string.IsNullOrWhiteSpace(usertxt.Text))
                 {
@@ -508,6 +506,9 @@ namespace Reservation
             {
                 LoadReservations();
             }
+
+
+
         }
 
 
@@ -530,7 +531,7 @@ namespace Reservation
 
         private void button2_Click(object sender, EventArgs e)
         {
-            AddPayment addPayment = new AddPayment(_username);
+            UserLog addPayment = new UserLog(_username);
             this.Hide();
             addPayment.ShowDialog();
             this.Close();
@@ -553,13 +554,13 @@ namespace Reservation
 {
 
      { "Cashiername", "القائم بالحجز" },
-    
-    
+
+
     { "PaymentDate", "تاريخ الدفع" },
     { "PaidAmount", "المدفوع" },
    { "ReservationID", "رقم الحجز" },
     { "Name", "الاسم" },
-    
+
     { "PaymentID", "رقم العمليه" }
 };
 
@@ -572,7 +573,7 @@ namespace Reservation
             columnsToPrint = new List<DataGridViewColumn>
     {
         reservationsview.Columns["Cashiername"],
-        
+
         reservationsview.Columns["PaymentDate"],
         reservationsview.Columns["PaidAmount"],
         reservationsview.Columns["ReservationID"],
@@ -704,9 +705,9 @@ namespace Reservation
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Home home = new Home(_username);
+            DailyReports home = new DailyReports(_username);
             this.Hide();
-            home .ShowDialog();
+            home.ShowDialog();
             this.Close();
         }
 
@@ -747,7 +748,7 @@ namespace Reservation
             usertxt.AutoCompleteSource = AutoCompleteSource.CustomSource;
             usertxt.AutoCompleteCustomSource = autoCompleteCollection;
 
-          
+
         }
 
 
@@ -787,7 +788,7 @@ namespace Reservation
                             if (await reader.ReadAsync())
                             {
                                 string id = reader["CashierID"]?.ToString() ?? "N/A";
-                               
+
                                 string names = reader["FullName"]?.ToString() ?? "N/A";
 
 
@@ -796,7 +797,7 @@ namespace Reservation
                                     Invoke(new Action(() =>
                                     {
 
-                                       
+
                                         usertxt.Text = names;
 
                                     }));
@@ -804,12 +805,12 @@ namespace Reservation
                                 else
                                 {
 
-                                   
+
                                     usertxt.Text = names;
 
                                 }
 
-                              
+
                             }
 
                         }
@@ -862,9 +863,42 @@ namespace Reservation
         {
             if (usertxt.AutoCompleteMode == AutoCompleteMode.None)
             {
-              await  SearchUserByNameAsync(usertxt.Text); 
+                await SearchUserByNameAsync(usertxt.Text);
             }
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            DeletedReservations deletedReservations = new DeletedReservations(_username);
+            this.Hide();
+            deletedReservations.ShowDialog();
+            this.Close();
+        }
+
+
+
+
+        private void ApplyFilter()
+        {
+            if (reservationsview.DataSource is DataTable dataTable)
+            {
+                string filter = "";
+
+                if (!string.IsNullOrWhiteSpace(textBox1.Text) && int.TryParse(textBox1.Text, out int reservationId))
+                {
+                    filter = $"ReservationID = {reservationId}"; // Use '=' for integer comparison
+                }
+
+                // Apply the filter to the DataTable
+                dataTable.DefaultView.RowFilter = filter;
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            ApplyFilter();
+        }
+
     }
 
 }

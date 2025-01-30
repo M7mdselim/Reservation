@@ -206,7 +206,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(140, 40);
             this.button1.TabIndex = 7;
-            this.button1.Text = "الطلبات";
+            this.button1.Text = "اضافات";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 

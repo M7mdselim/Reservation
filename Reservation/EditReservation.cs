@@ -554,6 +554,69 @@ namespace Reservation
             this.Close();
         }
 
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ApplyFilter()
+        {
+            if (ManageReservationGridview.DataSource is DataTable dataTable)
+            {
+                string filter = "";
+
+                if (filterselectioncombo.SelectedIndex == 0)
+                {
+                    if (int.TryParse(filteringTxtBox.Text, out int reservationId)) // Try to parse the value as an integer
+                    {
+                        filter = $"ReservationID = {reservationId}"; // Filter by ReservationID as integer
+                    }
+                    else
+                    {
+                        // Handle case where the text is not a valid integer (optional)
+                        return;
+                    }
+                }
+                else if (filterselectioncombo.SelectedIndex == 1)  // "المكان" selected
+                {
+                    if (!string.IsNullOrWhiteSpace(filteringTxtBox.Text))
+                    {
+                        filter = $"CustomerName LIKE '%{filteringTxtBox.Text}%'";
+                    }
+                }
+
+
+                else if (filterselectioncombo.SelectedIndex == 2)  // "المكان" selected
+                {
+                    if (!string.IsNullOrWhiteSpace(filteringTxtBox.Text))
+                    {
+                        filter = $"Cashiername LIKE '%{filteringTxtBox.Text}%'";
+                    }
+                }
+
+             
+
+
+
+
+                // Apply the filter to the DataTable
+                dataTable.DefaultView.RowFilter = filter;
+            }
+
+
+        }
+
+        private void filterselectioncombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ApplyFilter();
+        }
+
+        private void filteringTxtBox_TextChanged(object sender, EventArgs e)
+        {
+            ApplyFilter();
+        }
+
+
         // Optional: Define the RefreshData method to reload data in your application
 
 

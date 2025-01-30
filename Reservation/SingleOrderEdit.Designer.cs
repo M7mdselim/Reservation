@@ -91,6 +91,7 @@
             this.filteringTxtBox.Name = "filteringTxtBox";
             this.filteringTxtBox.Size = new System.Drawing.Size(175, 20);
             this.filteringTxtBox.TabIndex = 53;
+            this.filteringTxtBox.TextChanged += new System.EventHandler(this.filteringTxtBox_TextChanged);
             // 
             // updatebtn
             // 

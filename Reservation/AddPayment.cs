@@ -557,6 +557,9 @@ namespace Reservation
                 // Print receipt
                 PrintReceipt(reservationId, newTotalAmount, newPaidAmount, true , capacity); // Pass true to indicate adding new items to the old ones
 
+                paidamount.Text = "";
+                reservationidtxt.Text = "";
+
                 MessageBox.Show("Order details and payment saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Getdata();
             }
@@ -661,7 +664,7 @@ namespace Reservation
             return reservationDate;
         }
 
-        private void PrintReceipt(int reservationId, decimal totalAmount, decimal paidAmount, bool isNewPayment , string numberOfGuests)
+        private void PrintReceipt(int reservationId, decimal totalAmount, decimal paidAmount, bool isNewPayment, string numberOfGuests)
         {
             DateTime reservationDate = GetReservationDateById(reservationId);
             string formattedReservationDateAndTime = reservationDate.ToString("dd/MM/yyyy");
@@ -705,25 +708,35 @@ namespace Reservation
 
                 // Draw the company logo
 
-                e.Graphics.DrawString(" COPY ", new Font("Arial", 16, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, 5, centerFormat);
+
+                // Determine receipt type (COPY or REFUND)
+                string receiptType = decimal.TryParse(paidamount.Text, out decimal paidAmountValue) && paidAmountValue < 0
+                    ? " REFUND "
+                    : " COPY ";
+
+
+                // Draw the receipt type
+                e.Graphics.DrawString(receiptType, new Font("Arial", 16, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, 5, centerFormat);
                 yPosition += 40; // Adjust for logo height
+
+
                 string logoPath = Path.Combine(Application.StartupPath, "logo.png"); // Replace with the actual path to the logo
                 if (System.IO.File.Exists(logoPath))
                 {
                     Image logo = Image.FromFile(logoPath);
-                  
+
                     e.Graphics.DrawImage(logo, (e.PageBounds.Width - 100) / 2, yPosition, 100, 100); // Center the logo
-                
+
                     // Adjust for logo height
                     yPosition += 110; // Adjust for logo height
 
 
-                  
+
                 }
 
                 // Draw the company name or title
                 string companyName = "Royal Resort";
-                
+
                 e.Graphics.DrawString(companyName, titleFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
                 yPosition += header;
 
@@ -737,16 +750,22 @@ namespace Reservation
                 yPosition += lineHeight;
 
                 // Set the maximum number of characters allowed
-                int maxNameLength = 20;
+                int maxNameLength = 14;
+                int maxCashierNameLength = 13; // Ensure both are within limits
 
                 // Truncate the name if it exceeds the max length
                 string truncatedName = nametxt.Text.Length > maxNameLength
                     ? nametxt.Text.Substring(0, maxNameLength)
                     : nametxt.Text;
 
+                string truncatedCashierName = _username.Length > maxCashierNameLength
+                    ? _username.Substring(0, maxCashierNameLength)
+                    : _username;
+
+                // Draw the text with proper alignment
                 e.Graphics.DrawString($"حجز باسم: {truncatedName}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
-                e.Graphics.DrawString($"القائم بالحجز: {_username}", boldFont, Brushes.Black, leftMargin, yPosition, leftAlignFormat); // Left aligned
-                yPosition += lineHeight;
+                e.Graphics.DrawString($"القائم بالحجز: {truncatedCashierName}", boldFont, Brushes.Black, leftMargin, yPosition, new StringFormat { Alignment = StringAlignment.Near }); // Left aligned
+                yPosition += lineHeight; // Move to next line
 
                 string resturantname = $" مطعم:  {restaurantName}";
                 // Add the restaurant name under the customer name and number of guests
@@ -841,12 +860,35 @@ namespace Reservation
                 e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
                 yPosition += 10;
 
-                e.Graphics.DrawString($"اجمالي المبلغ: {totalAmount:0.##} ج.م", boldFont, Brushes.Black, leftMargin, yPosition);
+                e.Graphics.DrawString($"اجمالي المبلغ: {totalAmount:0.##}", boldFont, Brushes.Black, leftMargin, yPosition);
                 yPosition += lineHeight;
 
-                e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:0.##} ج.م", boldFont, Brushes.Black, leftMargin, yPosition);
-                yPosition += lineHeight;
+                // Display paid amount (and refund amount if negative)
+                if (paidAmountValue < 0)
+                {
 
+
+                    // Display paid amount and remaining total on the same line
+                    e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:N2}  اجمالي المتبقى: {totalAmount - paidAmount:N2}",
+                        boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                    yPosition += lineHeight;
+
+
+                    e.Graphics.DrawString($"المبلغ المسترد: {Math.Abs(paidAmountValue):0.##}",
+                        boldFont, Brushes.Black, leftMargin, yPosition);
+                }
+                else
+                {
+                    // Display paid amount and remaining total on the same line
+                    e.Graphics.DrawString($"اجمالي المتبقى: {totalAmount - paidAmount:N2}     المبلغ المفوغ: {paidAmount:N2}",
+       boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                    
+
+
+
+                }
+
+                yPosition += lineHeight;
                 // Draw another separator line before the footer
                 e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
                 yPosition += 10;
@@ -857,13 +899,15 @@ namespace Reservation
                 yPosition += 20;
 
                 string selim = "Selim's For Software \n 01155003537";
-                e.Graphics.DrawString(selim, new Font("Arial", 4, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                e.Graphics.DrawString(selim, new Font("Arial", 6, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
                 yPosition += 5;
 
             };
 
             printDocument.Print();
         }
+
+
 
 
 

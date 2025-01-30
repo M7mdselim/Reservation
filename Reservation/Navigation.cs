@@ -104,20 +104,33 @@ namespace Reservation
             this.Close();   
         }
 
+
+
+
+        private void NavigateToForm(int requiredRole, Form targetForm, string unauthorizedMessage = "غير مسموح بالضغط على هذا الزرار")
+        {
+            if (GlobalUser.Role != requiredRole)
+            {
+                this.Hide();
+                targetForm.ShowDialog();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show(unauthorizedMessage, "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+
         private void button1_Click(object sender, EventArgs e)
         {
-            EditCustomerData editCustomerData = new EditCustomerData(_username );
-            this.Hide();
-            editCustomerData.ShowDialog();
-            this.Close();
+            NavigateToForm(2, new EditCustomerData(_username));
+           
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            DailyReports dailyReports = new DailyReports(_username);
-            this.Hide();
-            dailyReports.ShowDialog();
-            this.Close();
+            NavigateToForm(2, new DailyReports(_username));
         }
 
         private void Navigation_Load(object sender, EventArgs e)

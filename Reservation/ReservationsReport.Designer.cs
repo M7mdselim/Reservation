@@ -48,6 +48,7 @@
             this.filterselectioncombo = new System.Windows.Forms.ComboBox();
             this.PrintButton = new System.Windows.Forms.Button();
             this.pdfbutton = new System.Windows.Forms.Button();
+            this.Grandsummarybtn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -197,7 +198,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(140, 40);
             this.button1.TabIndex = 7;
-            this.button1.Text = "الطلبات";
+            this.button1.Text = "اضافات";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -339,11 +340,30 @@
             this.pdfbutton.UseVisualStyleBackColor = false;
             this.pdfbutton.Click += new System.EventHandler(this.pdfbutton_Click);
             // 
+            // Grandsummarybtn
+            // 
+            this.Grandsummarybtn.BackColor = System.Drawing.Color.Transparent;
+            this.Grandsummarybtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.Grandsummarybtn.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.Grandsummarybtn.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.Grandsummarybtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.Grandsummarybtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Grandsummarybtn.Font = new System.Drawing.Font("Arial Narrow", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Grandsummarybtn.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.Grandsummarybtn.Location = new System.Drawing.Point(187, 576);
+            this.Grandsummarybtn.Name = "Grandsummarybtn";
+            this.Grandsummarybtn.Size = new System.Drawing.Size(81, 24);
+            this.Grandsummarybtn.TabIndex = 44;
+            this.Grandsummarybtn.Text = "مطبخ";
+            this.Grandsummarybtn.UseVisualStyleBackColor = false;
+            this.Grandsummarybtn.Click += new System.EventHandler(this.Grandsummarybtn_Click);
+            // 
             // ReservationsReport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1100, 600);
+            this.Controls.Add(this.Grandsummarybtn);
             this.Controls.Add(this.pdfbutton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.filterselectioncombo);
@@ -394,5 +414,6 @@
         private System.Windows.Forms.Button PrintButton;
         private System.Windows.Forms.Button pdfbutton;
         private System.Windows.Forms.Button backkbtn;
+        private System.Windows.Forms.Button Grandsummarybtn;
     }
 }

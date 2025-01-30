@@ -26,3 +26,4 @@ D:\Github\Reservation\Reservation\obj\Debug\Reservation.UserLog.resources
 D:\Github\Reservation\Reservation\obj\Debug\Reservation.DeletedReservations.resources
 D:\Github\Reservation\Reservation\obj\Debug\Reservation.Navigation.resources
 D:\Github\Reservation\Reservation\obj\Debug\Reservation.SingleOrderEdit.resources
+D:\Github\Reservation\Reservation\obj\Debug\Reservation.MonthlySpotCheck.resources

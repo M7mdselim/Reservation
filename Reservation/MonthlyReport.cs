@@ -435,5 +435,18 @@ namespace Reservation
         {
             cashiernamelabel.Text = _username;
         }
+
+        private void SpotCheckbtn_Click(object sender, EventArgs e)
+        {
+            MonthlySpotCheck monthlySpotCheck = new MonthlySpotCheck(_username);
+            this.Hide();
+            monthlySpotCheck.ShowDialog();  
+            this.Close();
+        }
+
+        private void dashboard_btn_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

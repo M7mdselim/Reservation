@@ -1037,18 +1037,25 @@ namespace Reservation
                 e.Graphics.DrawString($"تاريخ الحجز: {formattedReservationDateAndTime}", boldFont, Brushes.Black, leftMargin, yPosition, leftAlignFormat); // Left aligned
                 yPosition += lineHeight;
 
-               
+
+
                 // Set the maximum number of characters allowed
-                int maxNameLength = 20;
+                int maxNameLength = 14;
+                int maxCashierNameLength = 13; // Ensure both are within limits
 
                 // Truncate the name if it exceeds the max length
                 string truncatedName = nametxt.Text.Length > maxNameLength
-                    ? nametxt.Text.Substring(0, maxNameLength) 
+                    ? nametxt.Text.Substring(0, maxNameLength)
                     : nametxt.Text;
 
+                string truncatedCashierName = _username.Length > maxCashierNameLength
+                    ? _username.Substring(0, maxCashierNameLength)
+                    : _username;
+
+                // Draw the text with proper alignment
                 e.Graphics.DrawString($"حجز باسم: {truncatedName}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
-                e.Graphics.DrawString($"القائم بالحجز: {_username}", boldFont, Brushes.Black, leftMargin, yPosition, leftAlignFormat); // Left aligned
-                yPosition += lineHeight;
+                e.Graphics.DrawString($"القائم بالحجز: {truncatedCashierName}", boldFont, Brushes.Black, leftMargin, yPosition, new StringFormat { Alignment = StringAlignment.Near }); // Left aligned
+                yPosition += lineHeight; // Move to next line
 
                 string resturantname = $" مطعم:  {restaurantName}";
                 // Add the restaurant name under the customer name and number of guests
@@ -1166,11 +1173,16 @@ namespace Reservation
 
                 // Add total amount for all items (old + new)
                 decimal totalAmountForItems = oldTotalAmount; // Get the total from the database or previous calculation
-                e.Graphics.DrawString($"اجمالي المبلغ: {totalAmountForItems:0.##} ج.م", boldFont, Brushes.Black, leftMargin, yPosition);
+                e.Graphics.DrawString($"اجمالي المبلغ: {totalAmountForItems:0.##}", boldFont, Brushes.Black, leftMargin, yPosition);
                 yPosition += lineHeight;
 
-                // Add the paid amount
-                e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:0.##} ج.م", boldFont, Brushes.Black, leftMargin, yPosition);
+                // Display paid amount and remaining total on the same line
+                e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:N2}",
+                    boldFont, Brushes.Black, leftMargin, yPosition);
+                yPosition += lineHeight;
+
+
+                e.Graphics.DrawString($"اجمالي المتبقى: {totalAmountForItems - paidAmount:N2}", boldFont, Brushes.Black, leftMargin, yPosition);
                 yPosition += lineHeight;
 
                 // Draw another separator line before the footer
@@ -1183,7 +1195,7 @@ namespace Reservation
                 yPosition += 20;
 
                 string selim = "Selim's For Software \n 01155003537";
-                e.Graphics.DrawString(selim, new Font("Arial", 4, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                e.Graphics.DrawString(selim, new Font("Arial", 6, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
                 yPosition += 5;
             };
 
