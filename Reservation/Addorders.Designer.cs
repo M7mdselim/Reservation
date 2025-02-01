@@ -31,7 +31,6 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.backkbtn = new System.Windows.Forms.Button();
             this.cashiernamelabel = new System.Windows.Forms.Label();
             this.greet_user = new System.Windows.Forms.Label();
             this.button5 = new System.Windows.Forms.Button();
@@ -40,7 +39,6 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.dashboard_btn = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.Fetchdatabtn = new System.Windows.Forms.Button();
@@ -67,10 +65,13 @@
             this.button6 = new System.Windows.Forms.Button();
             this.Cashradiobtn = new System.Windows.Forms.RadioButton();
             this.Visaradiobtn = new System.Windows.Forms.RadioButton();
+            this.button7 = new System.Windows.Forms.Button();
+            this.backkbtn = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ReservationGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -114,17 +115,6 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(169, 561);
             this.panel2.TabIndex = 1;
-            // 
-            // backkbtn
-            // 
-            this.backkbtn.BackgroundImage = global::Reservation.Properties.Resources.Back_Button_Download_Transparent_PNG_Image;
-            this.backkbtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.backkbtn.Location = new System.Drawing.Point(8, 3);
-            this.backkbtn.Name = "backkbtn";
-            this.backkbtn.Size = new System.Drawing.Size(52, 41);
-            this.backkbtn.TabIndex = 15;
-            this.backkbtn.UseVisualStyleBackColor = true;
-            this.backkbtn.Click += new System.EventHandler(this.backkbtn_Click);
             // 
             // cashiernamelabel
             // 
@@ -249,15 +239,6 @@
             this.dashboard_btn.Text = "حجز";
             this.dashboard_btn.UseVisualStyleBackColor = false;
             this.dashboard_btn.Click += new System.EventHandler(this.dashboard_btn_Click);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::Reservation.Properties.Resources.icons8_employee_card_100px;
-            this.pictureBox1.Location = new System.Drawing.Point(33, 55);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(100, 100);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
             // 
             // label3
             // 
@@ -491,7 +472,7 @@
             this.ReservationGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ReservationGridView.Location = new System.Drawing.Point(766, 175);
             this.ReservationGridView.Name = "ReservationGridView";
-            this.ReservationGridView.Size = new System.Drawing.Size(338, 421);
+            this.ReservationGridView.Size = new System.Drawing.Size(338, 346);
             this.ReservationGridView.TabIndex = 35;
             this.ReservationGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ReservationGridView_CellContentClick);
             // 
@@ -541,10 +522,10 @@
             this.button6.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
             this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button6.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button6.ForeColor = System.Drawing.Color.DarkRed;
-            this.button6.Location = new System.Drawing.Point(1009, 131);
+            this.button6.ForeColor = System.Drawing.Color.Silver;
+            this.button6.Location = new System.Drawing.Point(1009, 536);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(85, 32);
+            this.button6.Size = new System.Drawing.Size(95, 32);
             this.button6.TabIndex = 42;
             this.button6.Text = "تعديل طلبه";
             this.button6.UseVisualStyleBackColor = false;
@@ -555,7 +536,7 @@
             this.Cashradiobtn.AutoSize = true;
             this.Cashradiobtn.Location = new System.Drawing.Point(472, 533);
             this.Cashradiobtn.Name = "Cashradiobtn";
-            this.Cashradiobtn.Size = new System.Drawing.Size(52, 17);
+            this.Cashradiobtn.Size = new System.Drawing.Size(54, 17);
             this.Cashradiobtn.TabIndex = 49;
             this.Cashradiobtn.TabStop = true;
             this.Cashradiobtn.Text = "CASH";
@@ -567,18 +548,57 @@
             this.Visaradiobtn.AutoSize = true;
             this.Visaradiobtn.Location = new System.Drawing.Point(536, 534);
             this.Visaradiobtn.Name = "Visaradiobtn";
-            this.Visaradiobtn.Size = new System.Drawing.Size(48, 17);
+            this.Visaradiobtn.Size = new System.Drawing.Size(49, 17);
             this.Visaradiobtn.TabIndex = 48;
             this.Visaradiobtn.TabStop = true;
             this.Visaradiobtn.Text = "VISA";
             this.Visaradiobtn.UseVisualStyleBackColor = true;
             this.Visaradiobtn.CheckedChanged += new System.EventHandler(this.Visaradiobtn_CheckedChanged);
             // 
+            // button7
+            // 
+            this.button7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.button7.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button7.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button7.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button7.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button7.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button7.ForeColor = System.Drawing.Color.Silver;
+            this.button7.Location = new System.Drawing.Point(882, 536);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(95, 32);
+            this.button7.TabIndex = 50;
+            this.button7.Text = "تعديل حجز";
+            this.button7.UseVisualStyleBackColor = false;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // backkbtn
+            // 
+            this.backkbtn.BackgroundImage = global::Reservation.Properties.Resources.Back_Button_Download_Transparent_PNG_Image;
+            this.backkbtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.backkbtn.Location = new System.Drawing.Point(8, 3);
+            this.backkbtn.Name = "backkbtn";
+            this.backkbtn.Size = new System.Drawing.Size(52, 41);
+            this.backkbtn.TabIndex = 15;
+            this.backkbtn.UseVisualStyleBackColor = true;
+            this.backkbtn.Click += new System.EventHandler(this.backkbtn_Click);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::Reservation.Properties.Resources.icons8_employee_card_100px;
+            this.pictureBox1.Location = new System.Drawing.Point(33, 55);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(100, 100);
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            // 
             // Addorders
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1104, 596);
+            this.Controls.Add(this.button7);
             this.Controls.Add(this.Cashradiobtn);
             this.Controls.Add(this.Visaradiobtn);
             this.Controls.Add(this.button6);
@@ -619,8 +639,8 @@
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ReservationGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -667,5 +687,6 @@
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.RadioButton Cashradiobtn;
         private System.Windows.Forms.RadioButton Visaradiobtn;
+        private System.Windows.Forms.Button button7;
     }
 }

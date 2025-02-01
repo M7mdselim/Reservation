@@ -1980,6 +1980,13 @@ namespace Reservation
             }
         }
 
+        private void button7_Click(object sender, EventArgs e)
+        {
+            SingleReservationEdit singleReservationEdit = new SingleReservationEdit(_username);
+            this.Hide();
+            singleReservationEdit.ShowDialog();
+            this.Close();
+        }
     }
 
 

@@ -11,24 +11,22 @@ using System.Windows.Forms;
 
 namespace Reservation
 {
-    public partial class EditReservation : Form
+    public partial class SingleReservationEdit : Form
     {
-
-
         private string _username;
+
 
 
         private float _initialFormWidth;
         private float _initialFormHeight;
         private ControlInfo[] _controlsInfo;
 
-        public EditReservation(string username)
+        public SingleReservationEdit(string username)
         {
             InitializeComponent();
+
             _username = username;
-
-
-
+         
 
             _initialFormWidth = this.Width;
             _initialFormHeight = this.Height;
@@ -44,8 +42,8 @@ namespace Reservation
             // Set event handler for form resize
             this.Resize += Home_Resize;
 
-
         }
+
 
 
         private void Home_Resize(object sender, EventArgs e)
@@ -104,7 +102,15 @@ namespace Reservation
                 dateTimePicker.Dispose();
                 dateTimePicker = null;
             }
+            // Get the filter value from the TextBox
+            string filterValue = filteringTxtBox.Text.Trim();
 
+            // If the TextBox is empty, do nothing
+            if (string.IsNullOrEmpty(filterValue))
+            {
+                ManageReservationGridview.DataSource = null; // Clear the DataGridView
+                return;
+            }
 
             string reservationsQuery = @"
     SELECT 
@@ -122,6 +128,8 @@ namespace Reservation
     FROM Reservations r
     INNER JOIN Customer c ON r.CustomerID = c.CustomerID
     INNER JOIN Restaurant rest ON r.RestaurantID = rest.RestaurantID
+
+    WHERE Reservationid = @ReservationId 
     ORDER BY r.ReservationID DESC"; // Order by ReservationID in descending order
 
             using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
@@ -130,9 +138,10 @@ namespace Reservation
                 {
                     // Fetch reservation data
                     SqlDataAdapter reservationsAdapter = new SqlDataAdapter(reservationsQuery, conn);
+                    reservationsAdapter.SelectCommand.Parameters.AddWithValue("@ReservationId", filterValue);
                     DataTable reservationsTable = new DataTable();
                     reservationsAdapter.Fill(reservationsTable);
-
+                    
                     // Fetch restaurant data for the ComboBox
                     string restaurantQuery = "SELECT RestaurantID, Name FROM Restaurant";
                     SqlDataAdapter restaurantAdapter = new SqlDataAdapter(restaurantQuery, conn);
@@ -164,7 +173,7 @@ namespace Reservation
                     if (ManageReservationGridview.Columns.Contains("RestaurantID"))
                     {
                         ManageReservationGridview.Columns["RestaurantID"].Visible = false;
-                        
+
                     }
 
 
@@ -274,9 +283,128 @@ namespace Reservation
 
 
 
+        // This method will handle the search button click
         private void loadbtn_Click(object sender, EventArgs e)
         {
+
+
+
             LoadReservations();
+        }
+
+
+        private HashSet<int> editedRows = new HashSet<int>();
+
+
+       
+
+        // Method to update PaidAmount in both Payments and DailyPayments tables
+        private void UpdatePaidAmount(int paymentID, decimal paidAmount)
+        {
+            using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                try
+                {
+                    conn.Open();
+
+                    // Update PaidAmount in Payments table
+                    string updatePaymentsQuery = @"
+                UPDATE Payments
+                SET PaidAmount = @PaidAmount
+                WHERE PaymentID = @PaymentID";
+
+                    using (SqlCommand cmd = new SqlCommand(updatePaymentsQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@PaidAmount", paidAmount);
+                        cmd.Parameters.AddWithValue("@PaymentID", paymentID);
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    // Update PaidAmount in DailyPayments table
+                    string updateDailyPaymentsQuery = @"
+                UPDATE DailyPayments
+                SET PaidAmount = @PaidAmount
+                WHERE PaymentID = @PaymentID";
+
+                    using (SqlCommand cmd = new SqlCommand(updateDailyPaymentsQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@PaidAmount", paidAmount);
+                        cmd.Parameters.AddWithValue("@PaymentID", paymentID);
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    MessageBox.Show("PaidAmount updated successfully " +
+                        "" +
+                        "", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error updating PaidAmount: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void UpdateSubTotal(int rowIndex)
+        {
+            try
+            {
+                // Get Quantity and ItemPrice cells
+                DataGridViewCell quantityCell = ManageReservationGridview.Rows[rowIndex].Cells["Quantity"];
+                DataGridViewCell itemPriceCell = ManageReservationGridview.Rows[rowIndex].Cells["ItemPrice"];
+                DataGridViewCell subTotalCell = ManageReservationGridview.Rows[rowIndex].Cells["SubTotal"];
+
+                // Parse values and calculate SubTotal
+                if (decimal.TryParse(quantityCell.Value?.ToString(), out decimal quantity) &&
+                    decimal.TryParse(itemPriceCell.Value?.ToString(), out decimal itemPrice))
+                {
+                    subTotalCell.Value = quantity * itemPrice;
+                }
+                else
+                {
+                    subTotalCell.Value = DBNull.Value; // Clear SubTotal if values are invalid
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error updating subtotal: {ex.Message}");
+            }
+        }
+
+
+
+
+
+        private void UpdateCustomerId(string customerName, string customerPhoneNumber)
+        {
+            using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                conn.Open();
+
+                // Ensure we're only updating Name and PhoneNumber, not CustomerID
+                string query = @"
+            UPDATE Customer
+            SET Name = @CustomerName, PhoneNumber = @PhoneNumber
+            WHERE CustomerID = (
+                SELECT TOP 1 CustomerID
+                FROM Customer
+                WHERE Name = @CustomerName AND PhoneNumber = @PhoneNumber
+            )";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@CustomerName", customerName);
+                    cmd.Parameters.AddWithValue("@PhoneNumber", customerPhoneNumber);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        throw new Exception("No matching record found to update.");
+                    }
+                }
+            }
         }
 
         private void updatebtn_Click(object sender, EventArgs e)
@@ -310,7 +438,7 @@ namespace Reservation
                     int numberOfGuests = Convert.ToInt32(row.Cells["NumberOfGuests"].Value);
                     DateTime reservationDate = Convert.ToDateTime(row.Cells["ReservationDatePicker"].Value);
                     string notes = row.Cells["Notes"].Value.ToString();
-                    string important =  row.Cells["important"].Value.ToString() ;
+                    string important = row.Cells["important"].Value.ToString();
 
                     // Update query
                     string updateQuery = @"
@@ -354,23 +482,23 @@ namespace Reservation
                                         $" Quantity: {numberOfGuests}, " +
                                         $"ReservationDate: {reservationDate} , Edited Reservation";
 
-                        // Log the action into UserLog
-                        string logQuery = "INSERT INTO UserLog (CashierName, Action) VALUES (@CashierName, @Action)";
+                    // Log the action into UserLog
+                    string logQuery = "INSERT INTO UserLog (CashierName, Action) VALUES (@CashierName, @Action)";
 
-                        using (SqlCommand cmd = new SqlCommand(logQuery, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@CashierName", _username);
-                            cmd.Parameters.AddWithValue("@Action", action);
+                    using (SqlCommand cmd = new SqlCommand(logQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@CashierName", _username);
+                        cmd.Parameters.AddWithValue("@Action", action);
 
-                            cmd.ExecuteNonQuery();
-                        }
+                        cmd.ExecuteNonQuery();
+                    }
 
                     LoadReservations();
 
                     MessageBox.Show("Reservation updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     // Reload reservations to reflect updates
-                  
+
                 }
                 catch (Exception ex)
                 {
@@ -379,6 +507,38 @@ namespace Reservation
             }
         }
 
+
+
+
+        // Helper method to get MenuItemName based on MenuItemID
+        private string GetMenuItemName(int menuItemID, SqlConnection conn)
+        {
+            if (conn == null || conn.State != ConnectionState.Open)
+            {
+                throw new InvalidOperationException("Connection is not open.");
+            }
+
+            string menuItemName = string.Empty;
+            string query = "SELECT ItemName FROM Menu WHERE MenuItemID = @MenuItemID";
+
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@MenuItemID", menuItemID);
+
+                try
+                {
+                    var result = cmd.ExecuteScalar();
+                    menuItemName = result != null ? result.ToString() : string.Empty;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error executing SQL: {ex.Message}", "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    menuItemName = string.Empty; // Fallback to empty string in case of error
+                }
+            }
+
+            return menuItemName;
+        }
 
 
 
@@ -400,32 +560,32 @@ namespace Reservation
 
         private void button3_Click(object sender, EventArgs e)
         {
-
-        }
-
-        private void EditReservation_Load(object sender, EventArgs e)
-        {
-            cashiernamelabel.Text = _username;
-       
-        }
-
-        private void label4_Click(object sender, EventArgs e)
-        {
-            Login login = new Login();
+            EditReservation editReservation = new EditReservation(_username);
             this.Hide();
-            login.ShowDialog();
+            editReservation.ShowDialog();
             this.Close();
         }
 
-        private void reservationidtxt_TextChanged(object sender, EventArgs e)
+        private void Editorder_Load_1(object sender, EventArgs e)
         {
 
+            //cashiernamelabel.Text = _username;
         }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            Home home = new Home(_username);
+            this.Hide();
+            home.ShowDialog();
+            this.Close();
+        }
+
+
 
         private void deletebtn_Click(object sender, EventArgs e)
         {
             // Get the Reservation ID from the TextBox
-            if (int.TryParse(reservationidtxt.Text, out int reservationID))
+            if (int.TryParse(filteringTxtBox.Text, out int reservationID))
             {
                 // Ask the user for confirmation
                 var confirmationResult = MessageBox.Show(
@@ -499,7 +659,7 @@ namespace Reservation
                                 string logQuery = "INSERT INTO UserLog (CashierName, Action, DateAndTime) VALUES (@CashierName, @Action, GETDATE())";
                                 using (SqlCommand logCommand = new SqlCommand(logQuery, connection))
                                 {
-                                    string logDetails = $"Deleted Reservation ID: {reservationidtxt.Text} , Deleted Reservation";
+                                    string logDetails = $"Deleted Reservation ID: {filteringTxtBox.Text} , Deleted Reservation";
                                     logCommand.Parameters.AddWithValue("@CashierName", _username);
                                     logCommand.Parameters.AddWithValue("@Action", logDetails);
                                     logCommand.ExecuteNonQuery();
@@ -510,7 +670,7 @@ namespace Reservation
                                 MessageBox.Show("Reservation and related data deleted successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                                 // Optionally, clear the TextBox after deletion
-                                reservationidtxt.Clear();
+                                filteringTxtBox.Clear();
 
                                 // Refresh any related UI or data grid to reflect changes
                                 LoadReservations();
@@ -538,82 +698,18 @@ namespace Reservation
         }
 
 
-        private void dashboard_btn_Click(object sender, EventArgs e)
-        {
-            Editorder editorder = new Editorder(_username);
-            this.Hide();
-            editorder.ShowDialog();
-            this.Close();
-        }
 
         private void backkbtn_Click(object sender, EventArgs e)
         {
-            Navigation navigation = new Navigation(_username);
+            Addorders navigation = new Addorders(_username);
             this.Hide();
             navigation.ShowDialog();
             this.Close();
         }
 
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ApplyFilter()
-        {
-            if (ManageReservationGridview.DataSource is DataTable dataTable)
-            {
-                string filter = "";
-
-                if (filterselectioncombo.SelectedIndex == 0)
-                {
-                    if (int.TryParse(filteringTxtBox.Text, out int reservationId)) // Try to parse the value as an integer
-                    {
-                        filter = $"ReservationID = {reservationId}"; // Filter by ReservationID as integer
-                    }
-                    else
-                    {
-                        // Handle case where the text is not a valid integer (optional)
-                        return;
-                    }
-                }
-                else if (filterselectioncombo.SelectedIndex == 1)  // "المكان" selected
-                {
-                    if (!string.IsNullOrWhiteSpace(filteringTxtBox.Text))
-                    {
-                        filter = $"CustomerName LIKE '%{filteringTxtBox.Text}%'";
-                    }
-                }
-
-
-                else if (filterselectioncombo.SelectedIndex == 2)  // "المكان" selected
-                {
-                    if (!string.IsNullOrWhiteSpace(filteringTxtBox.Text))
-                    {
-                        filter = $"Cashiername LIKE '%{filteringTxtBox.Text}%'";
-                    }
-                }
-
-             
-
-
-
-
-                // Apply the filter to the DataTable
-                dataTable.DefaultView.RowFilter = filter;
-            }
-
-
-        }
-
-        private void filterselectioncombo_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ApplyFilter();
-        }
-
         private void filteringTxtBox_TextChanged(object sender, EventArgs e)
         {
-            ApplyFilter();
+
         }
 
         private void ManageReservationGridview_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -621,11 +717,6 @@ namespace Reservation
 
         }
 
-
-        // Optional: Define the RefreshData method to reload data in your application
-
-
-
+       
     }
 }
-        

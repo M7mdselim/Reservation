@@ -475,69 +475,138 @@ namespace Reservation
 
         private void LoadAvailableRestaurants()
         {
-            // Clear existing items
-            Resturantnamecombo.Items.Clear();
 
-            // Variable to hold the restaurant list to show in the label
-            string restaurantInfo = "";
-
-            // Load data from the database
-            DateTime selectedDate = reservationdateandtime.Value.Date;
-
-            try
+            if (GlobalUser.Role != 1)
             {
-                using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                // Clear existing items
+                Resturantnamecombo.Items.Clear();
+
+                // Variable to hold the restaurant list to show in the label
+                string restaurantInfo = "";
+
+                // Load data from the database
+                DateTime selectedDate = reservationdateandtime.Value.Date;
+
+                try
                 {
-                    connection.Open();
-                    string query = @"
+                    using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                    {
+                        connection.Open();
+                        string query = @"
             SELECT r.RestaurantID, r.Name, rd.RemainingCapacity
             FROM Restaurant r
             INNER JOIN RestaurantDailyCapacity rd ON r.RestaurantID = rd.RestaurantID
             WHERE rd.Date = @SelectedDate AND rd.RemainingCapacity > 10";
 
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@SelectedDate", selectedDate);
-
-                        using (SqlDataReader reader = command.ExecuteReader())
+                        using (SqlCommand command = new SqlCommand(query, connection))
                         {
-                            // Loop through all available restaurants and add to ComboBox
-                            while (reader.Read())
-                            {
-                                ComboboxItem item = new ComboboxItem
-                                {
-                                    Text = reader["Name"].ToString(),  // Restaurant Name
-                                    Value = Convert.ToInt32(reader["RestaurantID"]),  // Restaurant ID
-                                    RemainingCapacity = Convert.ToInt32(reader["RemainingCapacity"])  // Remaining Capacity
-                                };
-                                Resturantnamecombo.Items.Add(item);  // Add the item to ComboBox
+                            command.Parameters.AddWithValue("@SelectedDate", selectedDate);
 
-                                // Append the restaurant name and remaining capacity to the label string
-                                restaurantInfo += $"{item.Text}: {item.RemainingCapacity} capacity available\n";
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                // Loop through all available restaurants and add to ComboBox
+                                while (reader.Read())
+                                {
+                                    ComboboxItem item = new ComboboxItem
+                                    {
+                                        Text = reader["Name"].ToString(),  // Restaurant Name
+                                        Value = Convert.ToInt32(reader["RestaurantID"]),  // Restaurant ID
+                                        RemainingCapacity = Convert.ToInt32(reader["RemainingCapacity"])  // Remaining Capacity
+                                    };
+                                    Resturantnamecombo.Items.Add(item);  // Add the item to ComboBox
+
+                                    // Append the restaurant name and remaining capacity to the label string
+                                    restaurantInfo += $"{item.Text}: {item.RemainingCapacity} capacity available\n";
+                                }
                             }
                         }
                     }
-                }
 
-                // Enable the ComboBox if we have any restaurants
-                Resturantnamecombo.Enabled = Resturantnamecombo.Items.Count > 0;
+                    // Enable the ComboBox if we have any restaurants
+                    Resturantnamecombo.Enabled = Resturantnamecombo.Items.Count > 0;
 
-                if (Resturantnamecombo.Items.Count == 0)
-                {
-                    MessageBox.Show("No restaurants with sufficient capacity available for the selected date.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (Resturantnamecombo.Items.Count == 0)
+                    {
+                        MessageBox.Show("No restaurants with sufficient capacity available for the selected date.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        // Update the label with the restaurant info
+                        RemainingCapacitylabel.Text = restaurantInfo;
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Update the label with the restaurant info
-                    RemainingCapacitylabel.Text = restaurantInfo;
+                    MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            else {
+
+
+                // Clear existing items
+                Resturantnamecombo.Items.Clear();
+
+                // Variable to hold the restaurant list to show in the label
+                string restaurantInfo = "";
+
+                // Load data from the database
+                DateTime selectedDate = reservationdateandtime.Value.Date;
+
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                    {
+                        connection.Open();
+                        string query = @"
+            SELECT r.RestaurantID, r.Name, rd.RemainingCapacity
+            FROM Restaurant r
+            INNER JOIN RestaurantDailyCapacity rd ON r.RestaurantID = rd.RestaurantID
+            WHERE rd.Date = @SelectedDate AND rd.RemainingCapacity > 0";
+
+                        using (SqlCommand command = new SqlCommand(query, connection))
+                        {
+                            command.Parameters.AddWithValue("@SelectedDate", selectedDate);
+
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                // Loop through all available restaurants and add to ComboBox
+                                while (reader.Read())
+                                {
+                                    ComboboxItem item = new ComboboxItem
+                                    {
+                                        Text = reader["Name"].ToString(),  // Restaurant Name
+                                        Value = Convert.ToInt32(reader["RestaurantID"]),  // Restaurant ID
+                                        RemainingCapacity = Convert.ToInt32(reader["RemainingCapacity"])  // Remaining Capacity
+                                    };
+                                    Resturantnamecombo.Items.Add(item);  // Add the item to ComboBox
+
+                                    // Append the restaurant name and remaining capacity to the label string
+                                    restaurantInfo += $"{item.Text}: {item.RemainingCapacity} capacity available\n";
+                                }
+                            }
+                        }
+                    }
+
+                    // Enable the ComboBox if we have any restaurants
+                    Resturantnamecombo.Enabled = Resturantnamecombo.Items.Count > 0;
+
+                    if (Resturantnamecombo.Items.Count == 0)
+                    {
+                        MessageBox.Show("No restaurants with sufficient capacity available for the selected date.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        // Update the label with the restaurant info
+                        RemainingCapacitylabel.Text = restaurantInfo;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
-
 
 
         private int GetSelectedCustomerId()

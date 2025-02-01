@@ -1,6 +1,6 @@
 ﻿namespace Reservation
 {
-    partial class SingleOrderEdit
+    partial class SingleReservationEdit
     {
         /// <summary>
         /// Required designer variable.
@@ -30,13 +30,13 @@
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
-            this.backkbtn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.filteringTxtBox = new System.Windows.Forms.TextBox();
             this.updatebtn = new System.Windows.Forms.Button();
             this.loadbtn = new System.Windows.Forms.Button();
             this.ManageReservationGridview = new System.Windows.Forms.DataGridView();
             this.deletebtn = new System.Windows.Forms.Button();
+            this.backkbtn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ManageReservationGridview)).BeginInit();
             this.SuspendLayout();
@@ -62,17 +62,6 @@
             this.label2.Size = new System.Drawing.Size(89, 16);
             this.label2.TabIndex = 1;
             this.label2.Text = "حجوزات رمضان";
-            // 
-            // backkbtn
-            // 
-            this.backkbtn.BackgroundImage = global::Reservation.Properties.Resources.Back_Button_Download_Transparent_PNG_Image;
-            this.backkbtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.backkbtn.Location = new System.Drawing.Point(9, 41);
-            this.backkbtn.Name = "backkbtn";
-            this.backkbtn.Size = new System.Drawing.Size(52, 41);
-            this.backkbtn.TabIndex = 48;
-            this.backkbtn.UseVisualStyleBackColor = true;
-            this.backkbtn.Click += new System.EventHandler(this.backkbtn_Click);
             // 
             // label1
             // 
@@ -107,7 +96,7 @@
             this.updatebtn.Name = "updatebtn";
             this.updatebtn.Size = new System.Drawing.Size(140, 40);
             this.updatebtn.TabIndex = 50;
-            this.updatebtn.Text = "تعديل طلب";
+            this.updatebtn.Text = "تعديل حجز";
             this.updatebtn.UseVisualStyleBackColor = false;
             this.updatebtn.Click += new System.EventHandler(this.updatebtn_Click);
             // 
@@ -138,18 +127,31 @@
             this.ManageReservationGridview.Name = "ManageReservationGridview";
             this.ManageReservationGridview.Size = new System.Drawing.Size(679, 196);
             this.ManageReservationGridview.TabIndex = 49;
+            this.ManageReservationGridview.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ManageReservationGridview_CellClick);
             // 
             // deletebtn
             // 
-            this.deletebtn.Location = new System.Drawing.Point(113, 306);
+            this.deletebtn.Location = new System.Drawing.Point(109, 306);
             this.deletebtn.Name = "deletebtn";
             this.deletebtn.Size = new System.Drawing.Size(75, 23);
             this.deletebtn.TabIndex = 54;
             this.deletebtn.Text = "مسح";
             this.deletebtn.UseVisualStyleBackColor = true;
+            this.deletebtn.Visible = false;
             this.deletebtn.Click += new System.EventHandler(this.deletebtn_Click);
             // 
-            // SingleOrderEdit
+            // backkbtn
+            // 
+            this.backkbtn.BackgroundImage = global::Reservation.Properties.Resources.Back_Button_Download_Transparent_PNG_Image;
+            this.backkbtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.backkbtn.Location = new System.Drawing.Point(9, 41);
+            this.backkbtn.Name = "backkbtn";
+            this.backkbtn.Size = new System.Drawing.Size(52, 41);
+            this.backkbtn.TabIndex = 48;
+            this.backkbtn.UseVisualStyleBackColor = true;
+            this.backkbtn.Click += new System.EventHandler(this.backkbtn_Click);
+            // 
+            // SingleReservationEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -163,7 +165,7 @@
             this.Controls.Add(this.ManageReservationGridview);
             this.Controls.Add(this.panel1);
             this.ImeMode = System.Windows.Forms.ImeMode.On;
-            this.Name = "SingleOrderEdit";
+            this.Name = "SingleReservationEdit";
             this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

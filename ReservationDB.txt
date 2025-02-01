@@ -177,7 +177,8 @@ SELECT
     c.Name AS CustomerName,           -- اسم العميل
     c.PhoneNumber AS CustomerPhoneNumber, -- رقم هاتف العميل
     res.Name AS RestaurantName,       -- اسم المطعم
-    r.NumberOfGuests,                 -- عدد الضيوف
+    r.NumberOfGuests,
+    r.important,          -- عدد الضيوف
     r.ReservationDate,                -- تاريخ الحجز
     r.DateSubmitted,                  -- تاريخ تقديم الحجز
     p.TotalAmount,                    -- المبلغ الإجمالي
