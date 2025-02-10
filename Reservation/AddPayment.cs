@@ -402,7 +402,32 @@ namespace Reservation
             }
         }
 
+        private string GetCashierNameByReservationId(int reservationId)
+        {
+            string Cashiername = string.Empty;
+            // Replace with actual database logic to fetch the restaurant name
+            string query = "SELECT CashierName FROM reservations WHERE reservationid = @reservationId";
 
+            using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@reservationId", reservationId);
+                        var result = cmd.ExecuteScalar();
+                        Cashiername = result?.ToString(); // If result is null, capacity remains empty
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error fetching capacity: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            return Cashiername;
+        }
 
         private void printnpaybtn_Click_1(object sender, EventArgs e)
         {
@@ -554,8 +579,9 @@ namespace Reservation
 
 
                 string capacity = GetCapacityFromDatabase(reservationId);
+                string cashiername = GetCashierNameByReservationId(reservationId);  
                 // Print receipt
-                PrintReceipt(reservationId, newTotalAmount, newPaidAmount, true , capacity); // Pass true to indicate adding new items to the old ones
+                PrintReceipt(reservationId, newTotalAmount, newPaidAmount, true , capacity , cashiername); // Pass true to indicate adding new items to the old ones
 
                 paidamount.Text = "";
                 reservationidtxt.Text = "";
@@ -664,7 +690,7 @@ namespace Reservation
             return reservationDate;
         }
 
-        private void PrintReceipt(int reservationId, decimal totalAmount, decimal paidAmount, bool isNewPayment, string numberOfGuests)
+        private void PrintReceipt(int reservationId, decimal totalAmount, decimal paidAmount, bool isNewPayment, string numberOfGuests, string cashiername)
         {
             DateTime reservationDate = GetReservationDateById(reservationId);
             string formattedReservationDateAndTime = reservationDate.ToString("dd/MM/yyyy");
@@ -758,9 +784,9 @@ namespace Reservation
                     ? nametxt.Text.Substring(0, maxNameLength)
                     : nametxt.Text;
 
-                string truncatedCashierName = _username.Length > maxCashierNameLength
-                    ? _username.Substring(0, maxCashierNameLength)
-                    : _username;
+                string truncatedCashierName = cashiername.Length > maxCashierNameLength
+                    ? cashiername.Substring(0, maxCashierNameLength)
+                    : cashiername;
 
                 // Draw the text with proper alignment
                 e.Graphics.DrawString($"حجز باسم: {truncatedName}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned

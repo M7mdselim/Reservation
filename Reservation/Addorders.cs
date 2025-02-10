@@ -284,7 +284,7 @@ namespace Reservation
                     addedItems.Add(newItem);
 
                     AddItemToPanel(selectedItem, quantity, itemPrice, itemTotalPrice);
-                    totalPriceLabel.Text = $"Total Price: {totalPrice:C}";
+                    totalPriceLabel.Text = $"Total Price: {totalPrice}";
                 }
                 catch (Exception ex)
                 {
@@ -485,7 +485,7 @@ namespace Reservation
         private void UpdateTotalPrice(decimal change)
         {
             totalPrice += change;
-            totalPriceLabel.Text = $"Total Price: {totalPrice:C}";
+            totalPriceLabel.Text = $"Total Price: {totalPrice}";
         }
 
 
@@ -512,7 +512,7 @@ namespace Reservation
                 {
                     totalPrice -= itemTotalPrice;
                     totalPrice = Math.Max(totalPrice, 0); // Ensure it doesn't go negative
-                    totalPriceLabel.Text = $"Total Price: {totalPrice:C}";
+                    totalPriceLabel.Text = $"Total Price: {totalPrice}";
                 }
                 else
                 {
@@ -716,7 +716,32 @@ namespace Reservation
             // Clear all child controls in the menu items panel
         }
 
+        private string GetCashierNameByReservationId(int reservationId)
+        {
+            string Cashiername = string.Empty;
+            // Replace with actual database logic to fetch the restaurant name
+            string query = "SELECT CashierName FROM reservations WHERE reservationid = @reservationId";
 
+            using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@reservationId", reservationId);
+                        var result = cmd.ExecuteScalar();
+                        Cashiername = result?.ToString(); // If result is null, capacity remains empty
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error fetching capacity: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            return Cashiername;
+        }
 
         private void printnpaybtn_Click_1(object sender, EventArgs e)
         {
@@ -865,8 +890,9 @@ namespace Reservation
                     }
                 }
                 string capacity = GetCapacityFromDatabase(reservationId);
+                string cashiername = GetCashierNameByReservationId(reservationId);
                 // Print receipt
-                PrintReceipt(reservationId, newTotalAmount, newPaidAmount, true , capacity); // Pass true to indicate adding new items to the old ones
+                PrintReceipt(reservationId, newTotalAmount, newPaidAmount, true , capacity , cashiername); // Pass true to indicate adding new items to the old ones
 
                 MessageBox.Show("Order details and payment saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearMenuItems();
@@ -973,7 +999,7 @@ namespace Reservation
 
 
         // Modify PrintReceipt to include old and new order details
-        private void PrintReceipt(int reservationId, decimal totalAmount, decimal paidAmount, bool isNewPayment, string numberOfGuests)
+        private void PrintReceipt(int reservationId, decimal totalAmount, decimal paidAmount, bool isNewPayment, string numberOfGuests , string cashiername)
         {
             DateTime reservationDate = GetReservationDateById(reservationId);
             string formattedReservationDateAndTime = reservationDate.ToString("dd/MM/yyyy");
@@ -1048,9 +1074,9 @@ namespace Reservation
                     ? nametxt.Text.Substring(0, maxNameLength)
                     : nametxt.Text;
 
-                string truncatedCashierName = _username.Length > maxCashierNameLength
-                    ? _username.Substring(0, maxCashierNameLength)
-                    : _username;
+                string truncatedCashierName = cashiername.Length > maxCashierNameLength
+                    ? cashiername.Substring(0, maxCashierNameLength)
+                    : cashiername;
 
                 // Draw the text with proper alignment
                 e.Graphics.DrawString($"حجز باسم: {truncatedName}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned

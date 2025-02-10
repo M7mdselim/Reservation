@@ -714,7 +714,7 @@ namespace Reservation
                     addedItems.Add(newItem);
 
                     AddItemToPanel(selectedItem, quantity, itemPrice, itemTotalPrice);
-                    totalPriceLabel.Text = $"Total Price: {totalPrice:C}";
+                    totalPriceLabel.Text = $"Total Price: {totalPrice}";
                 }
                 catch (Exception ex)
                 {
@@ -915,7 +915,7 @@ namespace Reservation
         private void UpdateTotalPrice(decimal change)
         {
             totalPrice += change;
-            totalPriceLabel.Text = $"Total Price: {totalPrice:C}";
+            totalPriceLabel.Text = $"Total Price: {totalPrice}";
         }
 
 
@@ -942,7 +942,7 @@ namespace Reservation
                 {
                     totalPrice -= itemTotalPrice;
                     totalPrice = Math.Max(totalPrice, 0); // Ensure it doesn't go negative
-                    totalPriceLabel.Text = $"Total Price: {totalPrice:C}";
+                    totalPriceLabel.Text = $"Total Price: {totalPrice}";
                 }
                 else
                 {

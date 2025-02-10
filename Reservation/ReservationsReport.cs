@@ -571,7 +571,32 @@ WHERE ReservationDate = @ReservationDate;
             public string MonthText { get; set; }
         }
 
+        private string GetCashierNameByReservationId(int reservationId)
+        {
+            string Cashiername = string.Empty;
+            // Replace with actual database logic to fetch the restaurant name
+            string query = "SELECT CashierName FROM reservations WHERE reservationid = @reservationId";
 
+            using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@reservationId", reservationId);
+                        var result = cmd.ExecuteScalar();
+                        Cashiername = result?.ToString(); // If result is null, capacity remains empty
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error fetching capacity: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            return Cashiername;
+        }
         private void PrintButton_Click(object sender, EventArgs e)
         {
             decimal grandTotalAmount = 0; // Variable to store total amount of all orders
@@ -595,8 +620,9 @@ WHERE ReservationDate = @ReservationDate;
                     string numberOfGuests = row.Cells["NumberOfGuests"].Value != DBNull.Value ? row.Cells["NumberOfGuests"].Value.ToString() : string.Empty;
                     string name = row.Cells["CustomerName"].Value.ToString();
 
+                    string cashiername = GetCashierNameByReservationId(reservationId);
                     // Call PrintReceipt for each row with the appropriate data
-                    PrintReceipt(reservationId, totalAmount, paidAmount, numberOfGuests, name);
+                    PrintReceipt(reservationId, totalAmount, paidAmount, numberOfGuests, name , cashiername);
 
                     // Add the total amount of each reservation to the grand total
                     grandTotalAmount += totalAmount;
@@ -745,7 +771,7 @@ WHERE ReservationDate = @ReservationDate;
 
 
 
-        private void PrintReceipt(int reservationId, decimal totalAmount, decimal paidAmount, string numberOfGuests, string name)
+        private void PrintReceipt(int reservationId, decimal totalAmount, decimal paidAmount, string numberOfGuests, string name , string cashiername)
         {
             DateTime reservationDate = GetReservationDateById(reservationId);
             string formattedReservationDateAndTime = reservationDate.ToString("dd/MM/yyyy");
@@ -823,9 +849,9 @@ WHERE ReservationDate = @ReservationDate;
                     ? name.Substring(0, maxNameLength)
                     : name;
 
-                string truncatedCashierName = _username.Length > maxCashierNameLength
-                    ? _username.Substring(0, maxCashierNameLength)
-                    : _username;
+                string truncatedCashierName = cashiername.Length > maxCashierNameLength
+                    ? cashiername.Substring(0, maxCashierNameLength)
+                    : cashiername;
 
                 // Draw the text with proper alignment
                 e.Graphics.DrawString($"حجز باسم: {truncatedName}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
