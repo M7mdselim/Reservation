@@ -760,7 +760,7 @@ WHERE ReservationDate = @ReservationDate;
             using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
             {
                 connection.Open();
-                string notesQuery = "SELECT Notes FROM Reservations WHERE ReservationID = @ReservationID";
+                string notesQuery = "SELECT ISNULL(MenuItemName, ''), ISNULL(Quantity, 0), ISNULL(ItemPrice, 0) FROM View_ManageReservationsDetails WHERE ReservationID = @ReservationID";
                 using (SqlCommand notesCommand = new SqlCommand(notesQuery, connection))
                 {
                     notesCommand.Parameters.AddWithValue("@ReservationID", reservationId);
@@ -819,9 +819,9 @@ WHERE ReservationDate = @ReservationDate;
                 int maxCashierNameLength = 13; // Ensure both are within limits
 
                 // Truncate the name if it exceeds the max length
-                string truncatedName = _username.Length > maxNameLength
-                    ? _username.Substring(0, maxNameLength)
-                    : _username;
+                string truncatedName = name.Length > maxNameLength
+                    ? name.Substring(0, maxNameLength)
+                    : name;
 
                 string truncatedCashierName = _username.Length > maxCashierNameLength
                     ? _username.Substring(0, maxCashierNameLength)
@@ -864,18 +864,21 @@ WHERE ReservationDate = @ReservationDate;
                         {
                             while (reader.Read())
                             {
-                                string itemName = reader["MenuItemName"].ToString();
-                                decimal itemPrice = Convert.ToDecimal(reader["ItemPrice"]);
-                                int quantity = Convert.ToInt32(reader["Quantity"]);
+                                if (!reader.IsDBNull(reader.GetOrdinal("MenuItemName"))) // Check for NULL
+                                {
+                                    string itemName = reader["MenuItemName"].ToString();
+                                    decimal itemPrice = reader.IsDBNull(reader.GetOrdinal("ItemPrice")) ? 0 : Convert.ToDecimal(reader["ItemPrice"]);
+                                    int quantity = reader.IsDBNull(reader.GetOrdinal("Quantity")) ? 0 : Convert.ToInt32(reader["Quantity"]);
 
-                                // Check if the item already exists in the dictionary, if so, update the quantity
-                                if (itemTotals.ContainsKey(itemName))
-                                {
-                                    itemTotals[itemName] = (itemPrice, itemTotals[itemName].TotalQuantity + quantity);
-                                }
-                                else
-                                {
-                                    itemTotals.Add(itemName, (itemPrice, quantity));
+                                    // Check if the item already exists in the dictionary, if so, update the quantity
+                                    if (itemTotals.ContainsKey(itemName))
+                                    {
+                                        itemTotals[itemName] = (itemPrice, itemTotals[itemName].TotalQuantity + quantity);
+                                    }
+                                    else
+                                    {
+                                        itemTotals.Add(itemName, (itemPrice, quantity));
+                                    }
                                 }
                             }
                         }
@@ -893,6 +896,7 @@ WHERE ReservationDate = @ReservationDate;
                     decimal itemTotal = item.Value.ItemPrice * item.Value.TotalQuantity;
                     oldTotalAmount += itemTotal;
                 }
+
 
 
                 // Add notes (ملحوظات) if present

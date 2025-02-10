@@ -683,9 +683,9 @@ namespace Reservation
                         }
                         else
                         {
-                            MessageBox.Show("Customer not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return -1; // Or handle as appropriate
+                            return -1;
                         }
+                      
                     }
                 }
                 catch (Exception ex)
@@ -1986,6 +1986,11 @@ namespace Reservation
             this.Hide();
             singleReservationEdit.ShowDialog();
             this.Close();
+        }
+
+        private void nametxt_TextChanged_1(object sender, EventArgs e)
+        {
+
         }
     }
 
