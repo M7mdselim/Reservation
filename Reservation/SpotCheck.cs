@@ -599,92 +599,138 @@ namespace Reservation
 
         private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
         {
-            // Calculate scale factor for fitting content to page width
-            int totalWidth = columnsToPrint.Sum(col => col.Width);
-            int printableWidth = e.MarginBounds.Width;
-            float scaleFactor = (float)printableWidth / totalWidth;
-
-            // Calculate rows per page
-            rowsPerPage = (int)((e.MarginBounds.Height - e.MarginBounds.Top) / (reservationsview.RowTemplate.Height + 5)); // Adjust spacing as needed
-
-            // Print header with title and date on each page
-            string headerText = "تقرير يومي";
-            string reportDateText = $"التاريخ: {dateTimePicker1.Value.Date.ToShortDateString()}";
-
-            // Adjust the y position to decrease space above the header
-            float y = e.MarginBounds.Top - 30; // Start closer to the top of the page
-            float x = e.MarginBounds.Left;
-
-            // Define font sizes
-            Font headerFont = new Font(reservationsview.Font.FontFamily, 14, FontStyle.Bold);
-            Font dateFont = new Font(reservationsview.Font.FontFamily, 12, FontStyle.Regular);
-
-            // Measure the width of the header and date texts
-            SizeF headerSize = e.Graphics.MeasureString(headerText, headerFont);
-            SizeF dateSize = e.Graphics.MeasureString(reportDateText, dateFont);
-
-            // Set x positions for right-aligned text
-            float headerX = e.MarginBounds.Right - headerSize.Width;
-            float dateX = e.MarginBounds.Right - dateSize.Width;
-
-            // Print the header text and date
-            e.Graphics.DrawString(headerText, headerFont, Brushes.Black, new PointF(headerX, y));
-            e.Graphics.DrawString(reportDateText, dateFont, Brushes.Black, new PointF(dateX, y + headerSize.Height + 5)); // Add space between header and date
-
-            // Add less additional space between date and content
-            y += (int)headerSize.Height + (int)dateSize.Height + 30; // Reduce the space as needed
-
-            // Print column headers in the manually defined order
-            x = e.MarginBounds.Left;
-            foreach (var column in columnsToPrint)
+            try
             {
-                int columnWidth = (int)(column.Width * scaleFactor);
-                RectangleF rect = new RectangleF(x, y, columnWidth, reservationsview.RowTemplate.Height);
-                string headerColumnText = columnHeaderMappings.ContainsKey(column.Name)
-                    ? columnHeaderMappings[column.Name]
-                    : column.HeaderText;
+                int paperWidth = e.MarginBounds.Width; // Thermal printer width
+                int y = 5; // Start at top of page
 
-                e.Graphics.DrawString(headerColumnText, reservationsview.Font, Brushes.Black, rect, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
-                x += columnWidth;
-            }
+                // Use monospaced font for better alignment
+                Font titleFont = new Font("Courier New", 14, FontStyle.Bold);
+                Font headerFont = new Font("Courier New", 10, FontStyle.Bold);
+                Font bodyFont = new Font("Courier New", 9, FontStyle.Regular);
+                Font summaryFont = new Font("Courier New", 10, FontStyle.Bold);
 
-            // Move down for rows, adjust spacing as needed
-            y += reservationsview.RowTemplate.Height + 5; // Move down for the next row
+                // Print Store Name (Centered)
+                string storeName = "Dareldyafa Sportshub"; // Customize if needed
+                SizeF storeSize = e.Graphics.MeasureString(storeName, titleFont);
+                e.Graphics.DrawString(storeName, titleFont, Brushes.Black, (paperWidth - storeSize.Width) / 2, y);
+                y += (int)storeSize.Height + 5;
 
-            // Track rows printed on current page
-            int rowsPrinted = 0;
+                // Print Report Title
+                string headerText = "تقرير يومي";
+                SizeF headerSize = e.Graphics.MeasureString(headerText, titleFont);
+                e.Graphics.DrawString(headerText, titleFont, Brushes.Black, (paperWidth - headerSize.Width) / 2, y);
+                y += (int)headerSize.Height + 5;
 
-            // Print rows
-            for (int i = currentPage * rowsPerPage; i < reservationsview.Rows.Count; i++)
-            {
-                if (reservationsview.Rows[i].IsNewRow) continue;
+                // Print Date
+                string reportDateText = $"التاريخ: {dateTimePicker1.Value:yyyy-MM-dd}";
+                e.Graphics.DrawString(reportDateText, headerFont, Brushes.Black, 5, y);
+                y += 20;
 
-                x = e.MarginBounds.Left;
-                foreach (var column in columnsToPrint)
+                // Define Column Positions (Manual Spacing)
+                int[] colWidths = { 60, 100, 80, 60, 100, 70 }; // Adjust widths
+                int x = 5; // Start X position
+
+                // Print Column Headers with Arabic Labels
+                string[] headers = { "القائم بالحجز", "تاريخ الدفع", "المدفوع", "رقم الحجز", "الاسم", "رقم العملية" };
+
+                for (int i = 0; i < headers.Length; i++)
                 {
-                    var cell = reservationsview.Rows[i].Cells[column.Name];
-                    int cellWidth = (int)(column.Width * scaleFactor);
-                    RectangleF rect = new RectangleF(x, y, cellWidth, reservationsview.RowTemplate.Height);
-                    e.Graphics.DrawString(cell.Value?.ToString(), reservationsview.Font, Brushes.Black, rect, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
-                    x += cellWidth;
+                    e.Graphics.DrawString(headers[i], headerFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Center });
+                    x += colWidths[i];
                 }
 
-                y += reservationsview.RowTemplate.Height + 5; // Move down for the next row
-                rowsPrinted++;
+                y += 20;
+                e.Graphics.DrawString("------------------------------------------", bodyFont, Brushes.Black, 5, y);
+                y += 15;
 
-                // Check if we need to create a new page
-                if (rowsPrinted >= rowsPerPage)
+                // Print Rows
+                decimal totalCash = 0;
+                decimal totalVisa = 0;
+                decimal totalAmount = 0;
+
+                foreach (DataGridViewRow row in reservationsview.Rows)
                 {
-                    currentPage++; // Increment page number
-                    e.HasMorePages = true;
-                    return; // Exit method to trigger the next page
-                }
-            }
+                    if (row.IsNewRow) continue; // Skip empty rows
 
-            // If we've finished printing all rows, reset for the next print job
-            e.HasMorePages = false;
-            currentPage = 0; // Reset page number for the next print job
+                    try
+                    {
+                        string cashier = row.Cells["Cashiername"]?.Value?.ToString() ?? "N/A";
+                        string date = row.Cells["PaymentDate"]?.Value != null
+                            ? Convert.ToDateTime(row.Cells["PaymentDate"].Value).ToString("yy-MM-dd")
+                            : "N/A";
+                        string amount = row.Cells["PaidAmount"]?.Value?.ToString() ?? "0";
+                        string resID = row.Cells["ReservationID"]?.Value?.ToString() ?? "-";
+                        string name = row.Cells["Name"]?.Value?.ToString() ?? "Unknown";
+                        string payID = row.Cells["PaymentID"]?.Value?.ToString() ?? "-";
+                        string paymentMethod = row.Cells["PaymentMethod"]?.Value?.ToString() ?? "N/A";
+
+                        // Parse and accumulate totals
+                        if (decimal.TryParse(amount, out decimal parsedAmount))
+                        {
+                            totalAmount += parsedAmount;
+                            if (paymentMethod.Equals("Cash")) totalCash += parsedAmount;
+                            else if (paymentMethod.Equals("Visa")) totalVisa += parsedAmount;
+                        }
+
+                        // Reset X Position
+                        x = 5;
+
+                        // Print values with column alignment
+                        e.Graphics.DrawString(cashier, bodyFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Center });
+                        x += colWidths[0];
+
+                        e.Graphics.DrawString(date, bodyFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Center });
+                        x += colWidths[1];
+
+                        e.Graphics.DrawString(amount, bodyFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Far });
+                        x += colWidths[2];
+
+                        e.Graphics.DrawString(resID, bodyFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Center });
+                        x += colWidths[3];
+
+                        e.Graphics.DrawString(name, bodyFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Near });
+                        x += colWidths[4];
+
+                        e.Graphics.DrawString(payID, bodyFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Far });
+
+                        y += 20;
+                    }
+                    catch (Exception rowEx)
+                    {
+                        e.Graphics.DrawString($"خطأ في قراءة الصف: {row.Index}", bodyFont, Brushes.Red, 5, y);
+                        y += 20;
+                        Console.WriteLine($"Row Error: {rowEx.Message}"); // Debugging
+                    }
+                }
+
+                // Print Summary Rows
+                y += 10;
+                e.Graphics.DrawString("------------------------------------------", bodyFont, Brushes.Black, 5, y);
+                y += 15;
+
+                e.Graphics.DrawString($"إجمالي النقدي: {totalCash:0.00} ج", summaryFont, Brushes.Black, 5, y);
+                y += 20;
+                e.Graphics.DrawString($"إجمالي الفيزا: {totalVisa:0.00} ج", summaryFont, Brushes.Black, 5, y);
+                y += 20;
+                e.Graphics.DrawString($"المبلغ الإجمالي: {totalAmount:0.00} ج", summaryFont, Brushes.Black, 5, y);
+                y += 20;
+
+                e.Graphics.DrawString("------------------------------------------", bodyFont, Brushes.Black, 5, y);
+                y += 15;
+
+                // Print Footer
+                string footerText = "شكراً لاستخدامكم نظامنا!";
+                SizeF footerSize = e.Graphics.MeasureString(footerText, titleFont);
+                e.Graphics.DrawString(footerText, titleFont, Brushes.Black, (paperWidth - footerSize.Width) / 2, y);
+            }
+            catch (Exception ex)
+            {
+                e.Graphics.DrawString($"⚠ خطأ أثناء الطباعة: {ex.Message}", new Font("Arial", 10, FontStyle.Bold), Brushes.Red, 5, 10);
+                Console.WriteLine($"Print Error: {ex.Message}");
+            }
         }
+
 
         private void backkbtn_Click(object sender, EventArgs e)
         {
