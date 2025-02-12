@@ -306,11 +306,11 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(542, 508);
+            this.label1.Location = new System.Drawing.Point(542, 509);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(62, 13);
+            this.label1.Size = new System.Drawing.Size(83, 13);
             this.label1.TabIndex = 13;
-            this.label1.Text = "بحث بالاسم";
+            this.label1.Text = "بحث باسم كاشير";
             // 
             // textBox1
             // 
@@ -325,7 +325,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(367, 540);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(79, 13);
+            this.label3.Size = new System.Drawing.Size(78, 13);
             this.label3.TabIndex = 15;
             this.label3.Text = "Reservation ID";
             // 

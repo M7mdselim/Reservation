@@ -124,14 +124,17 @@ namespace Reservation
 
         private void button1_Click(object sender, EventArgs e)
         {
-            NavigateToForm(2, new EditCustomerData(_username));
+            NavigateToForm(3, new EditCustomerData(_username));
            
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            NavigateToForm(2, new DailyReports(_username));
+            NavigateToForm(3, new MonthlySpotCheck(_username));
         }
+
+
+
 
         private void Navigation_Load(object sender, EventArgs e)
         {

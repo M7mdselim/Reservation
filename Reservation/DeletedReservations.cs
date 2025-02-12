@@ -157,10 +157,7 @@ namespace Reservation
 
         private void button1_Click(object sender, EventArgs e)
         {
-            DailyReports dailyreports = new DailyReports(_username);
-            this.Hide();
-            dailyreports.ShowDialog();
-            this.Close();
+            NavigateToForm(2, new DailyReports(_username));
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -181,13 +178,27 @@ namespace Reservation
 
             cashiernamelabel.Text = _username;
         }
+        private void NavigateToForm(int requiredRole, Form targetForm, string unauthorizedMessage = "غير مسموح بالضغط على هذا الزرار")
+        {
+            if (GlobalUser.Role != requiredRole)
+            {
+                this.Hide();
+                targetForm.ShowDialog();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show(unauthorizedMessage, "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
 
         private void dashboard_btn_Click(object sender, EventArgs e)
         {
-            MonthlyReport monthlyReport = new MonthlyReport(_username);
-            this.Hide();
-            monthlyReport.ShowDialog();
-            this.Close();
+            NavigateToForm(2, new MonthlyReport(_username));
+
+
+
         }
 
         private int currentPageIndex = 0;

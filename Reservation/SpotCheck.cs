@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -563,172 +564,112 @@ namespace Reservation
     { "PaymentID", "رقم العمليه" }
 };
 
-
         private void Printbtn_Click(object sender, EventArgs e)
         {
-            currentPageIndex = 0;
+            List<Tuple<string, string, decimal>> payments = new List<Tuple<string, string, decimal>>();
+            decimal totalCash = 0, totalVisa = 0, totalAmount = 0;
+            string cashier = cashiernamelabel.Text;
+            string date = DateTime.Now.ToString("yy-MM-dd HH:mm:ss");
 
-            // Manually define the column order you want for printing
-            columnsToPrint = new List<DataGridViewColumn>
-    {
-        reservationsview.Columns["Cashiername"],
-        
-        reservationsview.Columns["PaymentDate"],
-        reservationsview.Columns["PaidAmount"],
-        reservationsview.Columns["ReservationID"],
-        reservationsview.Columns["Name"],
-        reservationsview.Columns["PaymentID"]
-    };
+            int totalRows = reservationsview.Rows.Count;
+            int rowsToRemove = Math.Min(4, totalRows);
 
-            PrintDocument printDocument = new PrintDocument();
-            printDocument.PrintPage += PrintDocument_PrintPage;
-
-            // Set landscape mode
-            printDocument.DefaultPageSettings.Landscape = true;
-
-            PrintDialog printDialog = new PrintDialog
+            for (int i = 0; i < totalRows - rowsToRemove; i++)
             {
-                Document = printDocument
-            };
+                DataGridViewRow row = reservationsview.Rows[i];
 
-            if (printDialog.ShowDialog() == DialogResult.OK)
-            {
-                printDocument.Print();
+              
+                string paymentDate = row.Cells["PaymentDate"]?.Value != null
+                    ? Convert.ToDateTime(row.Cells["PaymentDate"].Value).ToString("yy-MM-dd")
+                    : "N/A";
+                string amount = row.Cells["PaidAmount"]?.Value?.ToString() ?? "0";
+                string resID = row.Cells["ReservationID"]?.Value?.ToString() ?? "-";
+                string payID = row.Cells["PaymentID"]?.Value?.ToString() ?? "-";
+                string paymentMethod = row.Cells["PaymentMethod"]?.Value?.ToString() ?? "N/A";
+
+                if (decimal.TryParse(amount, out decimal parsedAmount))
+                {
+                    totalAmount += parsedAmount;
+                    if (paymentMethod.Equals("Cash", StringComparison.OrdinalIgnoreCase))
+                        totalCash += parsedAmount;
+                    else if (paymentMethod.Equals("Visa", StringComparison.OrdinalIgnoreCase))
+                        totalVisa += parsedAmount;
+                }
+
+                payments.Add(new Tuple<string, string, decimal>(resID, payID, parsedAmount));
+
+               
             }
+
+            PrintSpotCheckReceipt(payments, totalCash, totalVisa, totalAmount, cashier, date);
         }
 
-        private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
+        private void PrintSpotCheckReceipt(List<Tuple<string, string, decimal>> payments, decimal totalCash, decimal totalVisa, decimal totalAmount, string cashier, string date)
         {
-            try
+            PrintDocument printDocument = new PrintDocument();
+            printDocument.PrintPage += (sender, e) =>
             {
-                int paperWidth = e.MarginBounds.Width; // Thermal printer width
-                int y = 5; // Start at top of page
+                float yPosition = 10;
+                float leftMargin = 10;
+                float rightMargin = e.PageBounds.Width - 10;
+                float lineHeight = 25;
+                Font font = new Font("Arial", 14);
+                Font boldFont = new Font("Arial", 10, FontStyle.Bold);
+                Font titleFont = new Font("Arial", 12, FontStyle.Bold);
+                StringFormat rtlFormat = new StringFormat { Alignment = StringAlignment.Far };
+                StringFormat leftAlignFormat = new StringFormat { Alignment = StringAlignment.Near };
+                StringFormat centerFormat = new StringFormat { Alignment = StringAlignment.Center };
 
-                // Use monospaced font for better alignment
-                Font titleFont = new Font("Courier New", 14, FontStyle.Bold);
-                Font headerFont = new Font("Courier New", 10, FontStyle.Bold);
-                Font bodyFont = new Font("Courier New", 9, FontStyle.Regular);
-                Font summaryFont = new Font("Courier New", 10, FontStyle.Bold);
+                e.Graphics.DrawString("Spot Check Receipt", titleFont, Brushes.Black, new PointF(e.PageBounds.Width / 2, yPosition), centerFormat);
+                yPosition += 40;
 
-                // Print Store Name (Centered)
-                string storeName = "Dareldyafa Sportshub"; // Customize if needed
-                SizeF storeSize = e.Graphics.MeasureString(storeName, titleFont);
-                e.Graphics.DrawString(storeName, titleFont, Brushes.Black, (paperWidth - storeSize.Width) / 2, y);
-                y += (int)storeSize.Height + 5;
+                e.Graphics.DrawString($"Date: {date}", font, Brushes.Black, new PointF(rightMargin, yPosition), rtlFormat);
+                e.Graphics.DrawString($"Cashier: {cashier}", font, Brushes.Black, new PointF(leftMargin, yPosition), leftAlignFormat);
+                yPosition += lineHeight;
 
-                // Print Report Title
-                string headerText = "تقرير يومي";
-                SizeF headerSize = e.Graphics.MeasureString(headerText, titleFont);
-                e.Graphics.DrawString(headerText, titleFont, Brushes.Black, (paperWidth - headerSize.Width) / 2, y);
-                y += (int)headerSize.Height + 5;
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, rightMargin, yPosition);
+                yPosition += 10;
 
-                // Print Date
-                string reportDateText = $"التاريخ: {dateTimePicker1.Value:yyyy-MM-dd}";
-                e.Graphics.DrawString(reportDateText, headerFont, Brushes.Black, 5, y);
-                y += 20;
+                e.Graphics.DrawString("Res ID", boldFont, Brushes.Black, new PointF(leftMargin, yPosition), leftAlignFormat);
+                e.Graphics.DrawString("Pay ID", boldFont, Brushes.Black, new PointF(leftMargin + 80, yPosition), leftAlignFormat);
+                e.Graphics.DrawString("Amount Paid", boldFont, Brushes.Black, new PointF(rightMargin, yPosition), rtlFormat);
+                yPosition += lineHeight;
 
-                // Define Column Positions (Manual Spacing)
-                int[] colWidths = { 60, 100, 80, 60, 100, 70 }; // Adjust widths
-                int x = 5; // Start X position
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, rightMargin, yPosition);
+                yPosition += 10;
 
-                // Print Column Headers with Arabic Labels
-                string[] headers = { "القائم بالحجز", "تاريخ الدفع", "المدفوع", "رقم الحجز", "الاسم", "رقم العملية" };
-
-                for (int i = 0; i < headers.Length; i++)
+                foreach (var payment in payments)
                 {
-                    e.Graphics.DrawString(headers[i], headerFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Center });
-                    x += colWidths[i];
+                    e.Graphics.DrawString(payment.Item1, font, Brushes.Black, new PointF(leftMargin, yPosition), leftAlignFormat);
+                    e.Graphics.DrawString(payment.Item2, font, Brushes.Black, new PointF(leftMargin + 80, yPosition), leftAlignFormat);
+                    e.Graphics.DrawString(payment.Item3.ToString("N2"), font, Brushes.Black, new PointF(rightMargin, yPosition), rtlFormat);
+                    yPosition += lineHeight;
                 }
 
-                y += 20;
-                e.Graphics.DrawString("------------------------------------------", bodyFont, Brushes.Black, 5, y);
-                y += 15;
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, rightMargin, yPosition);
+                yPosition += 10;
 
-                // Print Rows
-                decimal totalCash = 0;
-                decimal totalVisa = 0;
-                decimal totalAmount = 0;
+                e.Graphics.DrawString($"Total Cash: {totalCash:N2}", boldFont, Brushes.Black, new PointF(leftMargin, yPosition), leftAlignFormat);
+                yPosition += lineHeight;
+                e.Graphics.DrawString($"Total Visa: {totalVisa:N2}", boldFont, Brushes.Black, new PointF(leftMargin, yPosition), leftAlignFormat);
+                yPosition += lineHeight;
+                e.Graphics.DrawString($"Total Amount: {totalAmount:N2}", titleFont, Brushes.Black, new PointF(leftMargin, yPosition), leftAlignFormat);
+                yPosition += lineHeight;
 
-                foreach (DataGridViewRow row in reservationsview.Rows)
-                {
-                    if (row.IsNewRow) continue; // Skip empty rows
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, rightMargin, yPosition);
+                yPosition += 10;
 
-                    try
-                    {
-                        string cashier = row.Cells["Cashiername"]?.Value?.ToString() ?? "N/A";
-                        string date = row.Cells["PaymentDate"]?.Value != null
-                            ? Convert.ToDateTime(row.Cells["PaymentDate"].Value).ToString("yy-MM-dd")
-                            : "N/A";
-                        string amount = row.Cells["PaidAmount"]?.Value?.ToString() ?? "0";
-                        string resID = row.Cells["ReservationID"]?.Value?.ToString() ?? "-";
-                        string name = row.Cells["Name"]?.Value?.ToString() ?? "Unknown";
-                        string payID = row.Cells["PaymentID"]?.Value?.ToString() ?? "-";
-                        string paymentMethod = row.Cells["PaymentMethod"]?.Value?.ToString() ?? "N/A";
+                // Add the footer message
+                string footerMessage = "شكرا على اختيارك دار الضيافة";
+                e.Graphics.DrawString(footerMessage, font, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += 25;
 
-                        // Parse and accumulate totals
-                        if (decimal.TryParse(amount, out decimal parsedAmount))
-                        {
-                            totalAmount += parsedAmount;
-                            if (paymentMethod.Equals("Cash")) totalCash += parsedAmount;
-                            else if (paymentMethod.Equals("Visa")) totalVisa += parsedAmount;
-                        }
+                string selim = "Selim's For Software \n 01155003537";
+                e.Graphics.DrawString(selim, new Font("Arial", 7, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += 5;
+            };
 
-                        // Reset X Position
-                        x = 5;
-
-                        // Print values with column alignment
-                        e.Graphics.DrawString(cashier, bodyFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Center });
-                        x += colWidths[0];
-
-                        e.Graphics.DrawString(date, bodyFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Center });
-                        x += colWidths[1];
-
-                        e.Graphics.DrawString(amount, bodyFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Far });
-                        x += colWidths[2];
-
-                        e.Graphics.DrawString(resID, bodyFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Center });
-                        x += colWidths[3];
-
-                        e.Graphics.DrawString(name, bodyFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Near });
-                        x += colWidths[4];
-
-                        e.Graphics.DrawString(payID, bodyFont, Brushes.Black, x, y, new StringFormat { Alignment = StringAlignment.Far });
-
-                        y += 20;
-                    }
-                    catch (Exception rowEx)
-                    {
-                        e.Graphics.DrawString($"خطأ في قراءة الصف: {row.Index}", bodyFont, Brushes.Red, 5, y);
-                        y += 20;
-                        Console.WriteLine($"Row Error: {rowEx.Message}"); // Debugging
-                    }
-                }
-
-                // Print Summary Rows
-                y += 10;
-                e.Graphics.DrawString("------------------------------------------", bodyFont, Brushes.Black, 5, y);
-                y += 15;
-
-                e.Graphics.DrawString($"إجمالي النقدي: {totalCash:0.00} ج", summaryFont, Brushes.Black, 5, y);
-                y += 20;
-                e.Graphics.DrawString($"إجمالي الفيزا: {totalVisa:0.00} ج", summaryFont, Brushes.Black, 5, y);
-                y += 20;
-                e.Graphics.DrawString($"المبلغ الإجمالي: {totalAmount:0.00} ج", summaryFont, Brushes.Black, 5, y);
-                y += 20;
-
-                e.Graphics.DrawString("------------------------------------------", bodyFont, Brushes.Black, 5, y);
-                y += 15;
-
-                // Print Footer
-                string footerText = "شكراً لاستخدامكم نظامنا!";
-                SizeF footerSize = e.Graphics.MeasureString(footerText, titleFont);
-                e.Graphics.DrawString(footerText, titleFont, Brushes.Black, (paperWidth - footerSize.Width) / 2, y);
-            }
-            catch (Exception ex)
-            {
-                e.Graphics.DrawString($"⚠ خطأ أثناء الطباعة: {ex.Message}", new Font("Arial", 10, FontStyle.Bold), Brushes.Red, 5, 10);
-                Console.WriteLine($"Print Error: {ex.Message}");
-            }
+            printDocument.Print();
         }
 
 

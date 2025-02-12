@@ -2018,6 +2018,14 @@ namespace Reservation
         {
 
         }
+        private void paidamount_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Allow only numeric characters and control keys (e.g., backspace)
+            if (!char.IsDigit(e.KeyChar) && e.KeyChar != (char)Keys.Back)
+            {
+                e.Handled = true; // Prevent the key from being entered
+            }
+        }
     }
 
 

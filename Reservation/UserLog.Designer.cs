@@ -31,6 +31,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.SpotCheckbtn = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.backkbtn = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -47,7 +48,6 @@
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.loadbtn = new System.Windows.Forms.Button();
             this.ManageReservationGridview = new System.Windows.Forms.DataGridView();
-            this.SpotCheckbtn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -94,6 +94,24 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(169, 572);
             this.panel2.TabIndex = 1;
+            // 
+            // SpotCheckbtn
+            // 
+            this.SpotCheckbtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
+            this.SpotCheckbtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.SpotCheckbtn.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.SpotCheckbtn.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.SpotCheckbtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
+            this.SpotCheckbtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.SpotCheckbtn.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SpotCheckbtn.ForeColor = System.Drawing.Color.White;
+            this.SpotCheckbtn.Location = new System.Drawing.Point(9, 328);
+            this.SpotCheckbtn.Name = "SpotCheckbtn";
+            this.SpotCheckbtn.Size = new System.Drawing.Size(151, 40);
+            this.SpotCheckbtn.TabIndex = 28;
+            this.SpotCheckbtn.Text = "سبوت شهري";
+            this.SpotCheckbtn.UseVisualStyleBackColor = false;
+            this.SpotCheckbtn.Click += new System.EventHandler(this.SpotCheckbtn_Click);
             // 
             // button3
             // 
@@ -306,24 +324,6 @@
             this.ManageReservationGridview.Size = new System.Drawing.Size(928, 459);
             this.ManageReservationGridview.TabIndex = 34;
             // 
-            // SpotCheckbtn
-            // 
-            this.SpotCheckbtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(11)))), ((int)(((byte)(97)))));
-            this.SpotCheckbtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.SpotCheckbtn.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
-            this.SpotCheckbtn.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
-            this.SpotCheckbtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(8)))), ((int)(((byte)(138)))));
-            this.SpotCheckbtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.SpotCheckbtn.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SpotCheckbtn.ForeColor = System.Drawing.Color.White;
-            this.SpotCheckbtn.Location = new System.Drawing.Point(9, 328);
-            this.SpotCheckbtn.Name = "SpotCheckbtn";
-            this.SpotCheckbtn.Size = new System.Drawing.Size(151, 40);
-            this.SpotCheckbtn.TabIndex = 28;
-            this.SpotCheckbtn.Text = "سبوت شهري";
-            this.SpotCheckbtn.UseVisualStyleBackColor = false;
-            this.SpotCheckbtn.Click += new System.EventHandler(this.SpotCheckbtn_Click);
-            // 
             // UserLog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -343,7 +343,7 @@
             this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "SpotCheck";
+            this.Text = "Userlog";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.DailyReports_Load);
             this.panel1.ResumeLayout(false);

@@ -438,6 +438,7 @@
             this.paidamount.TabIndex = 32;
             this.paidamount.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.paidamount.TextChanged += new System.EventHandler(this.paidamount_TextChanged);
+            this.paidamount.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.paidamount_KeyPress);
             // 
             // reservationnumberlabel
             // 
@@ -557,7 +558,7 @@
             this.Cashradiobtn.AutoSize = true;
             this.Cashradiobtn.Location = new System.Drawing.Point(472, 533);
             this.Cashradiobtn.Name = "Cashradiobtn";
-            this.Cashradiobtn.Size = new System.Drawing.Size(52, 17);
+            this.Cashradiobtn.Size = new System.Drawing.Size(54, 17);
             this.Cashradiobtn.TabIndex = 49;
             this.Cashradiobtn.TabStop = true;
             this.Cashradiobtn.Text = "CASH";
@@ -569,7 +570,7 @@
             this.Visaradiobtn.AutoSize = true;
             this.Visaradiobtn.Location = new System.Drawing.Point(536, 534);
             this.Visaradiobtn.Name = "Visaradiobtn";
-            this.Visaradiobtn.Size = new System.Drawing.Size(48, 17);
+            this.Visaradiobtn.Size = new System.Drawing.Size(49, 17);
             this.Visaradiobtn.TabIndex = 48;
             this.Visaradiobtn.TabStop = true;
             this.Visaradiobtn.Text = "VISA";

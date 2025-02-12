@@ -109,13 +109,24 @@ namespace Reservation
             }
         }
 
+        private void NavigateToForm(int requiredRole, Form targetForm, string unauthorizedMessage = "غير مسموح بالضغط على هذا الزرار")
+        {
+            if (GlobalUser.Role != requiredRole)
+            {
+                this.Hide();
+                targetForm.ShowDialog();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show(unauthorizedMessage, "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+
         private void dashboard_btn_Click(object sender, EventArgs e)
         {
-            MonthlyReport home = new MonthlyReport(_username);
-            this.Hide();
-            home.ShowDialog();
-            this.Close();
-
+            NavigateToForm(2, new MonthlyReport(_username));
 
 
 
@@ -572,6 +583,7 @@ namespace Reservation
             // Manually define the column order you want for printing
             columnsToPrint = new List<DataGridViewColumn>
     {
+                  reservationsview.Columns["PaymentMethod"],
         reservationsview.Columns["Cashiername"],
 
         reservationsview.Columns["PaymentDate"],
@@ -579,6 +591,7 @@ namespace Reservation
         reservationsview.Columns["ReservationID"],
         reservationsview.Columns["Name"],
         reservationsview.Columns["PaymentID"]
+      
     };
 
             PrintDocument printDocument = new PrintDocument();
@@ -600,62 +613,59 @@ namespace Reservation
 
         private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
         {
-            // Calculate scale factor for fitting content to page width
             int totalWidth = columnsToPrint.Sum(col => col.Width);
             int printableWidth = e.MarginBounds.Width;
             float scaleFactor = (float)printableWidth / totalWidth;
 
-            // Calculate rows per page
-            rowsPerPage = (int)((e.MarginBounds.Height - e.MarginBounds.Top) / (reservationsview.RowTemplate.Height + 5)); // Adjust spacing as needed
+            rowsPerPage = (int)((e.MarginBounds.Height - e.MarginBounds.Top) / (reservationsview.RowTemplate.Height + 5));
 
-            // Print header with title and date on each page
             string headerText = "تقرير يومي";
             string reportDateText = $"التاريخ: {dateTimePicker1.Value.Date.ToShortDateString()}";
 
-            // Adjust the y position to decrease space above the header
-            float y = e.MarginBounds.Top - 30; // Start closer to the top of the page
+            float y = e.MarginBounds.Top - 30;
             float x = e.MarginBounds.Left;
 
-            // Define font sizes
             Font headerFont = new Font(reservationsview.Font.FontFamily, 14, FontStyle.Bold);
             Font dateFont = new Font(reservationsview.Font.FontFamily, 12, FontStyle.Regular);
+            Font cellFont = new Font(reservationsview.Font.FontFamily, 10, FontStyle.Regular);
 
-            // Measure the width of the header and date texts
             SizeF headerSize = e.Graphics.MeasureString(headerText, headerFont);
             SizeF dateSize = e.Graphics.MeasureString(reportDateText, dateFont);
 
-            // Set x positions for right-aligned text
             float headerX = e.MarginBounds.Right - headerSize.Width;
             float dateX = e.MarginBounds.Right - dateSize.Width;
 
-            // Print the header text and date
             e.Graphics.DrawString(headerText, headerFont, Brushes.Black, new PointF(headerX, y));
-            e.Graphics.DrawString(reportDateText, dateFont, Brushes.Black, new PointF(dateX, y + headerSize.Height + 5)); // Add space between header and date
+            e.Graphics.DrawString(reportDateText, dateFont, Brushes.Black, new PointF(dateX, y + headerSize.Height + 5));
 
-            // Add less additional space between date and content
-            y += (int)headerSize.Height + (int)dateSize.Height + 30; // Reduce the space as needed
+            y += (int)headerSize.Height + (int)dateSize.Height + 30;
 
-            // Print column headers in the manually defined order
+            // Print column headers
             x = e.MarginBounds.Left;
             foreach (var column in columnsToPrint)
             {
                 int columnWidth = (int)(column.Width * scaleFactor);
+
+                // Ensure Payment Date column has enough width
+                if (column.Name == "PaymentDate")
+                {
+                    columnWidth = Math.Max(columnWidth, 150); // Increase width if needed
+                }
+
                 RectangleF rect = new RectangleF(x, y, columnWidth, reservationsview.RowTemplate.Height);
                 string headerColumnText = columnHeaderMappings.ContainsKey(column.Name)
                     ? columnHeaderMappings[column.Name]
                     : column.HeaderText;
 
-                e.Graphics.DrawString(headerColumnText, reservationsview.Font, Brushes.Black, rect, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+                e.Graphics.DrawString(headerColumnText, reservationsview.Font, Brushes.Black, rect,
+                    new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+
                 x += columnWidth;
             }
 
-            // Move down for rows, adjust spacing as needed
-            y += reservationsview.RowTemplate.Height + 5; // Move down for the next row
+            y += reservationsview.RowTemplate.Height + 5;
 
-            // Track rows printed on current page
             int rowsPrinted = 0;
-
-            // Print rows
             for (int i = currentPage * rowsPerPage; i < reservationsview.Rows.Count; i++)
             {
                 if (reservationsview.Rows[i].IsNewRow) continue;
@@ -665,27 +675,41 @@ namespace Reservation
                 {
                     var cell = reservationsview.Rows[i].Cells[column.Name];
                     int cellWidth = (int)(column.Width * scaleFactor);
+
+                    if (column.Name == "PaymentDate")
+                    {
+                        cellWidth = Math.Max(cellWidth, 150); // Ensure Payment Date is not truncated
+                    }
+
                     RectangleF rect = new RectangleF(x, y, cellWidth, reservationsview.RowTemplate.Height);
-                    e.Graphics.DrawString(cell.Value?.ToString(), reservationsview.Font, Brushes.Black, rect, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+
+                    // Apply proper text formatting
+                    StringFormat cellFormat = new StringFormat
+                    {
+                        Alignment = StringAlignment.Center,
+                        LineAlignment = StringAlignment.Center,
+                        FormatFlags = StringFormatFlags.LineLimit // Ensures text wraps if needed
+                    };
+
+                    e.Graphics.DrawString(cell.Value?.ToString(), cellFont, Brushes.Black, rect, cellFormat);
                     x += cellWidth;
                 }
 
-                y += reservationsview.RowTemplate.Height + 5; // Move down for the next row
+                y += reservationsview.RowTemplate.Height + 5;
                 rowsPrinted++;
 
-                // Check if we need to create a new page
                 if (rowsPrinted >= rowsPerPage)
                 {
-                    currentPage++; // Increment page number
+                    currentPage++;
                     e.HasMorePages = true;
-                    return; // Exit method to trigger the next page
+                    return;
                 }
             }
 
-            // If we've finished printing all rows, reset for the next print job
             e.HasMorePages = false;
-            currentPage = 0; // Reset page number for the next print job
+            currentPage = 0;
         }
+
 
         private void backkbtn_Click(object sender, EventArgs e)
         {
@@ -705,10 +729,7 @@ namespace Reservation
 
         private void button1_Click(object sender, EventArgs e)
         {
-            DailyReports home = new DailyReports(_username);
-            this.Hide();
-            home.ShowDialog();
-            this.Close();
+            NavigateToForm(2, new DailyReports(_username));
         }
 
 

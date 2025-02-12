@@ -157,14 +157,14 @@ namespace Reservation
                     break;
 
                 case 2: // Role 2: Home
-                    Home homeForm = new Home(GlobalUser.FullName);
+                    Navigation homeForm = new Navigation(GlobalUser.FullName);
                     this.Hide();
                     homeForm.ShowDialog();
                     this.Close();
                     break;
 
                 case 3: // Role 3: Navigation
-                    Navigation navigationForm3 = new Navigation(GlobalUser.FullName);
+                    Home navigationForm3 = new Home(GlobalUser.FullName);
                     this.Hide();
                     navigationForm3.ShowDialog();
                     this.Close();
