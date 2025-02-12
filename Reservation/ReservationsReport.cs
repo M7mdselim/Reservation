@@ -186,6 +186,10 @@ namespace Reservation
 
         private void Home_Load(object sender, EventArgs e)
         {
+
+
+            LoadRestaurantNames();
+
             cashiernamelabel.Text = _username;
         }
 
@@ -1195,32 +1199,48 @@ WHERE ReservationDate = @ReservationDate;
        
 
         private string currentFilterText = ""; // To store the current filter text
+                                               // Method to Load Restaurant Names into ComboBox
+        private void LoadRestaurantNames()
+        {
+            using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                connection.Open();
+                string query = "SELECT Name FROM Restaurant";
 
+                using (SqlCommand command = new SqlCommand(query, connection))
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    filterselectioncombo.Items.Clear(); // Clear existing items
+
+                    while (reader.Read())
+                    {
+                        filterselectioncombo.Items.Add(reader["Name"].ToString());
+                    }
+                }
+            }
+        }
+
+        // Call this method in Form Load or Constructor
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            LoadRestaurantNames();
+        }
+
+        // Method to Apply Filter Dynamically
         private void ApplyFilter()
         {
             string restaurantFilter = "";
 
-            // Ensure the filtering logic is correct based on the selected index
-            if (filterselectioncombo.SelectedIndex == 0) // "اسم المبلغ" selected
+            // Get selected restaurant name
+            if (filterselectioncombo.SelectedIndex >= 0)
             {
-                restaurantFilter = "عزايم"; // If needed, ensure this value is valid in your context
+                restaurantFilter = filterselectioncombo.SelectedItem.ToString();
                 currentFilterText = restaurantFilter;
             }
-            else if (filterselectioncombo.SelectedIndex == 1) // "المكان" selected
+            else
             {
-                restaurantFilter = "انترناشونال";
-                currentFilterText = restaurantFilter;
-
-            }
-            else if (filterselectioncombo.SelectedIndex == 2) // "المكان" selected
-            {
-                restaurantFilter = "ايطالي";
-                currentFilterText = restaurantFilter;
-            }
-            else if (filterselectioncombo.SelectedIndex == 3) // "المكان" selected
-            {
-                restaurantFilter = "بونكا";
-                currentFilterText = restaurantFilter;
+                MessageBox.Show("Please select a restaurant before applying the filter.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return; // Exit if no filter is selected
             }
 
             // Ensure that the filter is applied correctly
@@ -1230,8 +1250,7 @@ WHERE ReservationDate = @ReservationDate;
             }
             else
             {
-                // Handle the case where no filter is applied
-                MessageBox.Show("Please select a filter before applying.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("No filter applied. Please select a valid option.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 

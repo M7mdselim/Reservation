@@ -293,11 +293,6 @@
             // filterselectioncombo
             // 
             this.filterselectioncombo.FormattingEnabled = true;
-            this.filterselectioncombo.Items.AddRange(new object[] {
-            "عزايم",
-            "انترناشونال",
-            "ايطالي",
-            "بونكا"});
             this.filterselectioncombo.Location = new System.Drawing.Point(358, 537);
             this.filterselectioncombo.Name = "filterselectioncombo";
             this.filterselectioncombo.Size = new System.Drawing.Size(175, 21);
