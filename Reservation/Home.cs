@@ -278,9 +278,158 @@ namespace Reservation
 
         private void reservationdateandtime_ValueChanged(object sender, EventArgs e)
         {
-            LoadAvailableRestaurants();
-            Resturantnamecombo.Text = "";   
+
+            if (GlobalUser.Role == 1 || GlobalUser.Role == 5)
+            {
+                LoadAvailableRestaurants();
+                Resturantnamecombo.Text = "";
+
+            }
+            else {
+                LoadAvailableRestaurantss();
+
+                Resturantnamecombo.Text = "";
+            }
         }
+
+
+        private void LoadAvailableRestaurantss()
+        {
+
+            if (GlobalUser.Role != 1)
+            {
+                // Clear existing items
+                Resturantnamecombo.Items.Clear();
+
+                // Variable to hold the restaurant list to show in the label
+                string restaurantInfo = "";
+
+                // Load data from the database
+                DateTime selectedDate = reservationdateandtime.Value.Date;
+
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                    {
+                        connection.Open();
+                        string query = @"
+            SELECT r.RestaurantID, r.Name, rd.RemainingCapacity
+            FROM Restaurant r
+            INNER JOIN RestaurantDailyCapacity rd ON r.RestaurantID = rd.RestaurantID
+            WHERE rd.Date = @SelectedDate AND RemainingCapacity > 0 ";
+
+                        using (SqlCommand command = new SqlCommand(query, connection))
+                        {
+                            command.Parameters.AddWithValue("@SelectedDate", selectedDate);
+
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                // Loop through all available restaurants and add to ComboBox
+                                while (reader.Read())
+                                {
+                                    ComboboxItem item = new ComboboxItem
+                                    {
+                                        Text = reader["Name"].ToString(),  // Restaurant Name
+                                        Value = Convert.ToInt32(reader["RestaurantID"]),  // Restaurant ID
+                                        RemainingCapacity = Convert.ToInt32(reader["RemainingCapacity"])  // Remaining Capacity
+                                    };
+                                    Resturantnamecombo.Items.Add(item);  // Add the item to ComboBox
+
+                                    // Append the restaurant name and remaining capacity to the label string
+                                    restaurantInfo += $"{item.Text}: {item.RemainingCapacity} capacity available\n";
+                                }
+                            }
+                        }
+                    }
+
+                    // Enable the ComboBox if we have any restaurants
+                    Resturantnamecombo.Enabled = Resturantnamecombo.Items.Count > 0;
+
+                    if (Resturantnamecombo.Items.Count == 0)
+                    {
+                        MessageBox.Show("No restaurants with sufficient capacity available for the selected date.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        // Update the label with the restaurant info
+                        RemainingCapacitylabel.Text = restaurantInfo;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            else
+            {
+
+
+                // Clear existing items
+                Resturantnamecombo.Items.Clear();
+
+                // Variable to hold the restaurant list to show in the label
+                string restaurantInfo = "";
+
+                // Load data from the database
+                DateTime selectedDate = reservationdateandtime.Value.Date;
+
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+                    {
+                        connection.Open();
+                        string query = @"
+            SELECT r.RestaurantID, r.Name, rd.RemainingCapacity
+            FROM Restaurant r
+            INNER JOIN RestaurantDailyCapacity rd ON r.RestaurantID = rd.RestaurantID
+            WHERE rd.Date = @SelectedDate";
+
+                        using (SqlCommand command = new SqlCommand(query, connection))
+                        {
+                            command.Parameters.AddWithValue("@SelectedDate", selectedDate);
+
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                // Loop through all available restaurants and add to ComboBox
+                                while (reader.Read())
+                                {
+                                    ComboboxItem item = new ComboboxItem
+                                    {
+                                        Text = reader["Name"].ToString(),  // Restaurant Name
+                                        Value = Convert.ToInt32(reader["RestaurantID"]),  // Restaurant ID
+                                        RemainingCapacity = Convert.ToInt32(reader["RemainingCapacity"])  // Remaining Capacity
+                                    };
+                                    Resturantnamecombo.Items.Add(item);  // Add the item to ComboBox
+
+                                    // Append the restaurant name and remaining capacity to the label string
+                                    restaurantInfo += $"{item.Text}: {item.RemainingCapacity} capacity available\n";
+                                }
+                            }
+                        }
+                    }
+
+                    // Enable the ComboBox if we have any restaurants
+                    Resturantnamecombo.Enabled = Resturantnamecombo.Items.Count > 0;
+
+                    if (Resturantnamecombo.Items.Count == 0)
+                    {
+                        MessageBox.Show("No restaurants with sufficient capacity available for the selected date.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        // Update the label with the restaurant info
+                        RemainingCapacitylabel.Text = restaurantInfo;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+
 
         private void Resturantnamecombo_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -410,12 +559,15 @@ namespace Reservation
                             return;
                         }
                     }
+                    if (GlobalUser.Role != 1 && GlobalUser.Role != 5) {
 
-                    if (remainingCapacity < requestedCapacity)
-                    {
-                        MessageBox.Show($"Insufficient capacity. Only {remainingCapacity} seats are available.", "Capacity Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        if (remainingCapacity < requestedCapacity)
+                        {
+                            MessageBox.Show($"Insufficient capacity. Only {remainingCapacity} seats are available.", "Capacity Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
                     }
+                    
 
                     // Insert reservation and get the ReservationID
                     string insertReservationQuery = @"
@@ -441,8 +593,17 @@ namespace Reservation
                             // Update the reservation number label
                             reservationnumberlabel.Text = $"Reservation number is = {reservationId}";
                             reservationnumberlabel.ForeColor = Color.Red;
-                            reservationidtxt.Text = reservationId.ToString(); // Update TextBox
-                            LoadAvailableRestaurants();
+                            reservationidtxt.Text = reservationId.ToString();
+
+                            if (GlobalUser.Role != 1 && GlobalUser.Role != 5)
+                            {
+
+                                LoadAvailableRestaurantss();
+                            }// Update TextBox
+                            else
+                            {
+                                LoadAvailableRestaurants();
+                            }
                             LockReservationFields();
                             LockCustomerFields();
 
@@ -496,7 +657,7 @@ namespace Reservation
             SELECT r.RestaurantID, r.Name, rd.RemainingCapacity
             FROM Restaurant r
             INNER JOIN RestaurantDailyCapacity rd ON r.RestaurantID = rd.RestaurantID
-            WHERE rd.Date = @SelectedDate AND rd.RemainingCapacity > 10";
+            WHERE rd.Date = @SelectedDate";
 
                         using (SqlCommand command = new SqlCommand(query, connection))
                         {
@@ -562,7 +723,7 @@ namespace Reservation
             SELECT r.RestaurantID, r.Name, rd.RemainingCapacity
             FROM Restaurant r
             INNER JOIN RestaurantDailyCapacity rd ON r.RestaurantID = rd.RestaurantID
-            WHERE rd.Date = @SelectedDate AND rd.RemainingCapacity > 0";
+            WHERE rd.Date = @SelectedDate";
 
                         using (SqlCommand command = new SqlCommand(query, connection))
                         {
@@ -774,7 +935,7 @@ namespace Reservation
             int padding = 5;
             int columnWidthItemName = 100;  // Width for the item name column
             int columnWidthQuantity = 70;   // Width for the quantity column
-            int columnWidthPrice = 80;      // Width for the price column
+            int columnWidthPrice = 100;      // Width for the price column
             int rowHeight = 40;             // Fixed height for each row
 
             // Add headers if this is the first row
@@ -885,10 +1046,10 @@ namespace Reservation
         private void AdjustRowPositions()
         {
             int rowHeight = 40; // Height of each row
-            int padding = 10; // Padding between columns
+            int padding = 20; // Padding between columns
             int columnWidthItemName = 100;
             int columnWidthQuantity = 70;
-            int columnWidthPrice = 80;
+            int columnWidthPrice = 100;
 
             // Start positioning after headers
             int yPosition = rowHeight;
@@ -1357,6 +1518,10 @@ namespace Reservation
                     MessageBox.Show("Order details and payment saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     ClearMenuItems();
                     ResetForm();
+                    Home home = new Home(_username);
+                    this.Hide();
+                    home.ShowDialog();
+                    this.Close();
                 }
             }
             catch (Exception ex)
@@ -1435,6 +1600,7 @@ namespace Reservation
                 float lineHeight = 25; // Line height for spacing
                 Font font = new Font("Arial", 10);
                 Font boldFont = new Font("Arial", 10, FontStyle.Bold);
+               
                 Font titleFont = new Font("Arial", 12, FontStyle.Bold);
                 StringFormat rtlFormat = new StringFormat { Alignment = StringAlignment.Far }; // Right-to-left alignment
                 StringFormat leftFormat = new StringFormat { Alignment = StringAlignment.Near }; // Left alignment
@@ -1522,7 +1688,7 @@ namespace Reservation
                 // Now print each added item and its total quantity
                 foreach (var item in addedItemTotals)
                 {
-                    string itemDetails = $"{item.Key} - {item.Value.TotalQuantity} x {item.Value.ItemPrice:0.##}";
+                    string itemDetails = $"{item.Value.ItemPrice:0.##}         -  {item.Key} X {item.Value.TotalQuantity}  ";
                     e.Graphics.DrawString(itemDetails, font, Brushes.Black, rightMargin, yPosition, rtlFormat);
                     yPosition += lineHeight;
                 }
@@ -1569,6 +1735,16 @@ namespace Reservation
 
 
 
+                // Display paid amount and remaining total on the same line
+                e.Graphics.DrawString($"الاسعار شامله قيمة الضريبه المضافه",
+                 boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += lineHeight;
+
+
+                // Draw another separator
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
+                yPosition += 10;
+
                 // Add total amount (without currency symbol)
 
 
@@ -1577,9 +1753,7 @@ namespace Reservation
                 e.Graphics.DrawString(footerMessage, boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
                 yPosition += 20;
 
-                string selim = "Selim's For Software \n 01155003537";
-                e.Graphics.DrawString(selim, new Font("Arial", 6, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
-                yPosition += 5;
+               
 
                 // Ensure the footer does not overflow the page height
                 if (yPosition + lineHeight > e.PageBounds.Height)
@@ -1689,11 +1863,7 @@ namespace Reservation
 
         private void paidamount_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Allow only numeric characters and control keys (e.g., backspace)
-            if (!char.IsDigit(e.KeyChar) && e.KeyChar != (char)Keys.Back)
-            {
-                e.Handled = true; // Prevent the key from being entered
-            }
+           
         }
 
 
@@ -2161,12 +2331,23 @@ namespace Reservation
             this.Close();
         }
 
+
+        private void NavigateToForm(int requiredRole, Form targetForm, string unauthorizedMessage = "غير مسموح بالضغط على هذا الزرار")
+        {
+            if (GlobalUser.Role != requiredRole)
+            {
+                this.Hide();
+                targetForm.ShowDialog();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show(unauthorizedMessage, "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
         private void backkbtn_Click(object sender, EventArgs e)
         {
-             Navigation navigation = new Navigation(_username);
-                this.Hide();
-                navigation.ShowDialog();
-                this.Close();
+            NavigateToForm(5, new Navigation(_username));
         }
 
         private void label4_Click(object sender, EventArgs e)
@@ -2206,6 +2387,20 @@ namespace Reservation
         private void nametxt_TextChanged_1(object sender, EventArgs e)
         {
 
+        }
+
+        private void panel3_Paint_1(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton1.Checked) // Check if the Visa radio button is selected
+            {
+                paymentMethod = "Online";
+
+            }
         }
     }
 

@@ -1137,7 +1137,7 @@ namespace Reservation
                 // Now print each item and its total quantity
                 foreach (var item in itemTotals)
                 {
-                    string itemDetails = $"{item.Key} - {item.Value.TotalQuantity} x {item.Value.ItemPrice:0.##}";
+                    string itemDetails = $"{item.Value.ItemPrice:0.##}         -  {item.Key} X {item.Value.TotalQuantity}  ";
                     e.Graphics.DrawString(itemDetails, font, Brushes.Black, rightMargin, yPosition, rtlFormat);
                     yPosition += lineHeight;
 
@@ -1162,7 +1162,7 @@ namespace Reservation
                         itemTotals.Add(newItem.ItemName, (newItem.ItemPrice, newItem.Quantity));
                     }
 
-                    string newItemDetails = $"{newItem.ItemName} - {newItem.Quantity} x {newItem.ItemPrice:0.##}";
+                    string newItemDetails = $"{newItem.ItemPrice:0.##}       - {newItem.ItemName} X  {newItem.Quantity}  ";
                     e.Graphics.DrawString(newItemDetails, font, Brushes.Black, rightMargin, yPosition, rtlFormat);
                     yPosition += lineHeight;
                 }
@@ -1211,6 +1211,12 @@ namespace Reservation
                 e.Graphics.DrawString($"اجمالي المتبقى: {totalAmountForItems - paidAmount:N2}", boldFont, Brushes.Black, leftMargin, yPosition);
                 yPosition += lineHeight;
 
+
+                // Display paid amount and remaining total on the same line
+                e.Graphics.DrawString($"الاسعار شامله قيمة الضريبه المضافه",
+                 boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += lineHeight;
+
                 // Draw another separator line before the footer
                 e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
                 yPosition += 10;
@@ -1220,9 +1226,7 @@ namespace Reservation
                 e.Graphics.DrawString(footerMessage, boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
                 yPosition += 20;
 
-                string selim = "Selim's For Software \n 01155003537";
-                e.Graphics.DrawString(selim, new Font("Arial", 6, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
-                yPosition += 5;
+             
             };
 
             printDocument.Print();
@@ -1961,14 +1965,23 @@ namespace Reservation
 
         }
 
+        private void NavigateToForm(int requiredRole, Form targetForm, string unauthorizedMessage = "غير مسموح بالضغط على هذا الزرار")
+        {
+            if (GlobalUser.Role != requiredRole)
+            {
+                this.Hide();
+                targetForm.ShowDialog();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show(unauthorizedMessage, "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
         private void backkbtn_Click(object sender, EventArgs e)
         {
-            Navigation navigation = new Navigation(_username);
-            this.Hide();
-            navigation.ShowDialog();
-            this.Close();
+            NavigateToForm(5, new Navigation(_username));
         }
-
         private void button6_Click(object sender, EventArgs e)
         {
             SingleOrderEdit singleOrderEdit = new SingleOrderEdit(_username);
@@ -2020,10 +2033,15 @@ namespace Reservation
         }
         private void paidamount_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Allow only numeric characters and control keys (e.g., backspace)
-            if (!char.IsDigit(e.KeyChar) && e.KeyChar != (char)Keys.Back)
+           
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton1.Checked) // Check if the Visa radio button is selected
             {
-                e.Handled = true; // Prevent the key from being entered
+                paymentMethod = "Online";
+
             }
         }
     }

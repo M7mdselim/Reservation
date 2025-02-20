@@ -848,7 +848,7 @@ namespace Reservation
                 // Now print each item and its total quantity
                 foreach (var item in itemTotals)
                 {
-                    string itemDetails = $"{item.Key} - {item.Value.TotalQuantity} x {item.Value.ItemPrice:0.##}";
+                    string itemDetails = $"{item.Value.ItemPrice:0.##}         -  {item.Key} X {item.Value.TotalQuantity}  ";
                     e.Graphics.DrawString(itemDetails, font, Brushes.Black, rightMargin, yPosition, rtlFormat);
                     yPosition += lineHeight;
 
@@ -895,26 +895,44 @@ namespace Reservation
 
 
                     // Display paid amount and remaining total on the same line
-                    e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:N2}  اجمالي المتبقى: {totalAmount - paidAmount:N2}",
-                        boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                    e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:N2}",
+                        boldFont, Brushes.Black, leftMargin, yPosition);
                     yPosition += lineHeight;
 
+
+                    e.Graphics.DrawString($"اجمالي المتبقى: {totalAmount - paidAmount:N2}", boldFont, Brushes.Black, leftMargin, yPosition);
+                    yPosition += lineHeight;
 
                     e.Graphics.DrawString($"المبلغ المسترد: {Math.Abs(paidAmountValue):0.##}",
                         boldFont, Brushes.Black, leftMargin, yPosition);
                 }
                 else
                 {
+                   
+
                     // Display paid amount and remaining total on the same line
-                    e.Graphics.DrawString($"اجمالي المتبقى: {totalAmount - paidAmount:N2}     المبلغ المفوغ: {paidAmount:N2}",
-       boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
-                    
+                    e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:N2}",
+                        boldFont, Brushes.Black, leftMargin, yPosition);
+                    yPosition += lineHeight;
+
+
+                    e.Graphics.DrawString($"اجمالي المتبقى: {totalAmount - paidAmount:N2}", boldFont, Brushes.Black, leftMargin, yPosition);
+                    yPosition += lineHeight;
+
 
 
 
                 }
 
                 yPosition += lineHeight;
+
+
+                // Display paid amount and remaining total on the same line
+                e.Graphics.DrawString($"الاسعار شامله قيمة الضريبه المضافه",
+                 boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += lineHeight;
+
+
                 // Draw another separator line before the footer
                 e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
                 yPosition += 10;
@@ -924,9 +942,7 @@ namespace Reservation
                 e.Graphics.DrawString(footerMessage, boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
                 yPosition += 20;
 
-                string selim = "Selim's For Software \n 01155003537";
-                e.Graphics.DrawString(selim, new Font("Arial", 6, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
-                yPosition += 5;
+              
 
             };
 
@@ -1668,14 +1684,23 @@ namespace Reservation
             this.Close();
         }
 
+        private void NavigateToForm(int requiredRole, Form targetForm, string unauthorizedMessage = "غير مسموح بالضغط على هذا الزرار")
+        {
+            if (GlobalUser.Role != requiredRole)
+            {
+                this.Hide();
+                targetForm.ShowDialog();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show(unauthorizedMessage, "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
         private void backkbtn_Click(object sender, EventArgs e)
         {
-            Navigation navigation = new Navigation(_username);
-            this.Hide();
-            navigation.ShowDialog();
-            this.Close();
+            NavigateToForm(5, new Navigation(_username));
         }
-
         private void label4_Click(object sender, EventArgs e)
         {
             Login login = new Login();
@@ -1700,6 +1725,15 @@ namespace Reservation
             if (Visaradiobtn.Checked) // Check if the Visa radio button is selected
             {
                 paymentMethod = "Visa";
+
+            }
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton1.Checked) // Check if the Visa radio button is selected
+            {
+                paymentMethod = "Online";
 
             }
         }

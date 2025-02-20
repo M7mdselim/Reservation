@@ -918,7 +918,7 @@ WHERE ReservationDate = @ReservationDate;
                 // Now print each item and its total quantity
                 foreach (var item in itemTotals)
                 {
-                    string itemDetails = $"{item.Key} - {item.Value.TotalQuantity} x {item.Value.ItemPrice:0.##}";
+                    string itemDetails = $"{item.Value.ItemPrice:0.##}         -  {item.Key} X {item.Value.TotalQuantity}  ";
                     e.Graphics.DrawString(itemDetails, font, Brushes.Black, rightMargin, yPosition, rtlFormat);
                     yPosition += lineHeight;
 
@@ -963,18 +963,25 @@ WHERE ReservationDate = @ReservationDate;
                 e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:0.##} ج.م", boldFont, Brushes.Black, leftMargin, yPosition);
                 yPosition += lineHeight;
 
+
+
+                // Display paid amount and remaining total on the same line
+                e.Graphics.DrawString($"الاسعار شامله قيمة الضريبه المضافه",
+                 boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += lineHeight;
                 // Draw another separator line before the footer
                 e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
                 yPosition += 10;
+
+
+
 
                 // Add the footer message
                 string footerMessage = "شكرا على اختيارك دار الضيافة";
                 e.Graphics.DrawString(footerMessage, boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
                 yPosition += 20;
 
-                string selim = "Selim's For Software \n 01155003537";
-                e.Graphics.DrawString(selim, new Font("Arial", 6, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
-                yPosition += 5;
+              
             };
 
             printDocument.Print();
@@ -1044,7 +1051,7 @@ WHERE ReservationDate = @ReservationDate;
         private void PrintGrandSummary()
         {
             // Exclude the 'total' row before printing
-            var filteredSummary = grandTotalSummary.Where(item => item.Key != "TOTAL").ToList();  // Filter out "TOTAL" row
+            var filteredSummary = grandTotalSummary.Where(item => item.Key != "TOTAL").ToList(); // Filter out "TOTAL" row
 
             PrintDocument printDocument = new PrintDocument();
             printDocument.PrintPage += (sender, e) =>
@@ -1054,13 +1061,15 @@ WHERE ReservationDate = @ReservationDate;
                 Font headerFont = new Font("Arial", 14, FontStyle.Bold);
                 Font columnFont = new Font("Arial", 12, FontStyle.Bold);
                 Font contentFont = new Font("Arial", 12);
-                StringFormat centerAlignFormat = new StringFormat { Alignment = StringAlignment.Center };
                 StringFormat leftAlignFormat = new StringFormat { Alignment = StringAlignment.Near };
+                StringFormat rightAlignFormat = new StringFormat { Alignment = StringAlignment.Far };
 
                 // Page width and column positions
                 float pageWidth = e.PageBounds.Width;
                 float leftMargin = 50;
-                float columnWidth = (pageWidth - 2 * leftMargin) / 2; // Divide space equally
+                float rightMargin = 50;
+                float columnWidth = (pageWidth - leftMargin - rightMargin) * 0.6f; // 60% width for Item
+                float quantityColumnX = leftMargin + columnWidth + 10; // Start of Quantity column
 
                 // Draw the header
                 string headerText = "ملخص جميع الطلبات\nSummary of All Orders";
@@ -1068,28 +1077,39 @@ WHERE ReservationDate = @ReservationDate;
                 {
                     headerText += $"\nمطعم : {currentFilterText}";
                 }
-                e.Graphics.DrawString(headerText, headerFont, Brushes.Black, pageWidth / 2, yPosition, centerAlignFormat);
+                e.Graphics.DrawString(headerText, headerFont, Brushes.Black, pageWidth / 2, yPosition, new StringFormat { Alignment = StringAlignment.Center });
                 yPosition += lineHeight * 3;
 
                 // Draw column headers
-                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition - 5, pageWidth - leftMargin, yPosition - 5);
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition - 5, pageWidth - rightMargin, yPosition - 5);
                 e.Graphics.DrawString("Item", columnFont, Brushes.Black, leftMargin, yPosition, leftAlignFormat); // Left column
-                e.Graphics.DrawString("Quantity", columnFont, Brushes.Black, leftMargin + columnWidth, yPosition, leftAlignFormat); // Right column
+                e.Graphics.DrawString("Quantity", columnFont, Brushes.Black, pageWidth - rightMargin, yPosition, rightAlignFormat); // Right column
                 yPosition += lineHeight;
 
                 // Draw a line below column headers
-                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition - 5, pageWidth - leftMargin, yPosition - 5);
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition - 5, pageWidth - rightMargin, yPosition - 5);
 
                 // Draw the item rows (after filtering out the "TOTAL" row)
                 foreach (var item in filteredSummary)
                 {
-                    e.Graphics.DrawString(item.Key, contentFont, Brushes.Black, leftMargin, yPosition, leftAlignFormat); // Menu item
-                    e.Graphics.DrawString(item.Value.TotalQuantity.ToString(), contentFont, Brushes.Black, leftMargin + columnWidth, yPosition, leftAlignFormat); // Total quantity
-                    yPosition += lineHeight;
+                    string itemName = item.Key;
+                    string quantity = item.Value.TotalQuantity.ToString();
+
+                    // Measure text size and wrap if necessary
+                    SizeF itemSize = e.Graphics.MeasureString(itemName, contentFont, (int)columnWidth);
+                    int requiredLines = (int)Math.Ceiling(itemSize.Height / lineHeight);
+
+                    // Print wrapped item text
+                    RectangleF itemRect = new RectangleF(leftMargin, yPosition, columnWidth, lineHeight * requiredLines);
+                    e.Graphics.DrawString(itemName, contentFont, Brushes.Black, itemRect);
+
+                    // Print quantity text (aligned properly)
+                    e.Graphics.DrawString(quantity, contentFont, Brushes.Black, pageWidth - rightMargin, yPosition, rightAlignFormat);
+
+                    yPosition += lineHeight * requiredLines;
                 }
 
-                // Final separator line
-                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, pageWidth - leftMargin, yPosition);
+              
             };
 
             printDocument.Print();
@@ -1386,9 +1406,19 @@ GROUP BY RestaurantName;
             }
         }
 
+        
         private void backkbtn_Click(object sender, EventArgs e)
         {
-            NavigateToForm(4, new Navigation(_username));
+
+            if (GlobalUser.Role == 4)
+            {
+                NavigateToForm(4, new Navigation(_username));
+
+            }
+            else {
+                NavigateToForm(5, new Navigation(_username));
+            }
+            
         }
 
         private void label4_Click(object sender, EventArgs e)

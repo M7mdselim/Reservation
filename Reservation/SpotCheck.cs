@@ -180,6 +180,9 @@ namespace Reservation
             cashiernamelabel.Text = _username;
            
             ConfigureNameAutoComplete();
+            if (GlobalUser.Role == 1) {
+                dateTimePicker1.Enabled = true;
+                    }
         }
 
 
@@ -623,31 +626,16 @@ namespace Reservation
                 e.Graphics.DrawString("Spot Check Receipt", titleFont, Brushes.Black, new PointF(e.PageBounds.Width / 2, yPosition), centerFormat);
                 yPosition += 40;
 
-                e.Graphics.DrawString($"Date: {date}", font, Brushes.Black, new PointF(rightMargin, yPosition), rtlFormat);
-                e.Graphics.DrawString($"Cashier: {cashier}", font, Brushes.Black, new PointF(leftMargin, yPosition), leftAlignFormat);
+                e.Graphics.DrawString($"Date: {date}", new Font("Arial", 8), Brushes.Black, new PointF(rightMargin, yPosition), rtlFormat);
+                e.Graphics.DrawString($"Cashier: {cashier}", new Font("Arial", 8), Brushes.Black, new PointF(leftMargin, yPosition), leftAlignFormat);
                 yPosition += lineHeight;
 
                 e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, rightMargin, yPosition);
                 yPosition += 10;
 
-                e.Graphics.DrawString("Res ID", boldFont, Brushes.Black, new PointF(leftMargin, yPosition), leftAlignFormat);
-                e.Graphics.DrawString("Pay ID", boldFont, Brushes.Black, new PointF(leftMargin + 80, yPosition), leftAlignFormat);
-                e.Graphics.DrawString("Amount Paid", boldFont, Brushes.Black, new PointF(rightMargin, yPosition), rtlFormat);
-                yPosition += lineHeight;
+                
 
-                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, rightMargin, yPosition);
-                yPosition += 10;
-
-                foreach (var payment in payments)
-                {
-                    e.Graphics.DrawString(payment.Item1, font, Brushes.Black, new PointF(leftMargin, yPosition), leftAlignFormat);
-                    e.Graphics.DrawString(payment.Item2, font, Brushes.Black, new PointF(leftMargin + 80, yPosition), leftAlignFormat);
-                    e.Graphics.DrawString(payment.Item3.ToString("N2"), font, Brushes.Black, new PointF(rightMargin, yPosition), rtlFormat);
-                    yPosition += lineHeight;
-                }
-
-                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, rightMargin, yPosition);
-                yPosition += 10;
+              
 
                 e.Graphics.DrawString($"Total Cash: {totalCash:N2}", boldFont, Brushes.Black, new PointF(leftMargin, yPosition), leftAlignFormat);
                 yPosition += lineHeight;
@@ -673,12 +661,22 @@ namespace Reservation
         }
 
 
+        private void NavigateToForm(int requiredRole, Form targetForm, string unauthorizedMessage = "غير مسموح بالضغط على هذا الزرار")
+        {
+            if (GlobalUser.Role != requiredRole)
+            {
+                this.Hide();
+                targetForm.ShowDialog();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show(unauthorizedMessage, "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
         private void backkbtn_Click(object sender, EventArgs e)
         {
-            Navigation navigation = new Navigation(_username);
-            this.Hide();
-            navigation.ShowDialog();
-            this.Close();
+            NavigateToForm(5, new Navigation(_username));
         }
 
         private void label4_Click(object sender, EventArgs e)
@@ -849,7 +847,7 @@ namespace Reservation
         {
             if (usertxt.AutoCompleteMode == AutoCompleteMode.None)
             {
-              await  SearchUserByNameAsync(usertxt.Text); 
+                await SearchUserByNameAsync(usertxt.Text);
             }
         }
     }

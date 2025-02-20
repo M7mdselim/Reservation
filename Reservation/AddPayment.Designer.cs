@@ -58,6 +58,7 @@
             this.nametxt = new System.Windows.Forms.TextBox();
             this.Cashradiobtn = new System.Windows.Forms.RadioButton();
             this.Visaradiobtn = new System.Windows.Forms.RadioButton();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -427,7 +428,7 @@
             // Cashradiobtn
             // 
             this.Cashradiobtn.AutoSize = true;
-            this.Cashradiobtn.Location = new System.Drawing.Point(226, 283);
+            this.Cashradiobtn.Location = new System.Drawing.Point(197, 276);
             this.Cashradiobtn.Name = "Cashradiobtn";
             this.Cashradiobtn.Size = new System.Drawing.Size(52, 17);
             this.Cashradiobtn.TabIndex = 49;
@@ -439,7 +440,7 @@
             // Visaradiobtn
             // 
             this.Visaradiobtn.AutoSize = true;
-            this.Visaradiobtn.Location = new System.Drawing.Point(290, 284);
+            this.Visaradiobtn.Location = new System.Drawing.Point(261, 277);
             this.Visaradiobtn.Name = "Visaradiobtn";
             this.Visaradiobtn.Size = new System.Drawing.Size(48, 17);
             this.Visaradiobtn.TabIndex = 48;
@@ -448,11 +449,24 @@
             this.Visaradiobtn.UseVisualStyleBackColor = true;
             this.Visaradiobtn.CheckedChanged += new System.EventHandler(this.Visaradiobtn_CheckedChanged);
             // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(317, 277);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(55, 17);
+            this.radioButton1.TabIndex = 52;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "Online";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            // 
             // AddPayment
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1099, 590);
+            this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.Cashradiobtn);
             this.Controls.Add(this.Visaradiobtn);
             this.Controls.Add(this.button3);
@@ -523,5 +537,6 @@
         private System.Windows.Forms.Button backkbtn;
         private System.Windows.Forms.RadioButton Cashradiobtn;
         private System.Windows.Forms.RadioButton Visaradiobtn;
+        private System.Windows.Forms.RadioButton radioButton1;
     }
 }

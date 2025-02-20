@@ -125,12 +125,14 @@ namespace Reservation
         private void button1_Click(object sender, EventArgs e)
         {
             NavigateToForm(3, new EditCustomerData(_username));
-           
+          
+
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            NavigateToForm(3, new MonthlySpotCheck(_username));
+            NavigateToForm(3, new UserLog(_username));
+           
         }
 
 
@@ -139,6 +141,20 @@ namespace Reservation
         private void Navigation_Load(object sender, EventArgs e)
         {
             cashiernamelabel.Text= _username;
+            if (GlobalUser.Role == 1)
+            {
+                button3.Visible = true;
+
+
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            SignUp sign = new SignUp(_username);
+            this.Hide();
+            sign.ShowDialog();
+            this.Close();
         }
     }
 }

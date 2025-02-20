@@ -567,5 +567,59 @@ ADD
 ADD [PaymentMethod] NVARCHAR(50) NOT NULL DEFAULT 'Cash';
 
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Create TRIGGER trg_RestrictReservations
+ON Reservations
+AFTER INSERT
+AS
+BEGIN
+    DECLARE @CashierRole INT;
+    DECLARE @RestaurantID INT;
+    DECLARE @NumberOfGuests INT;
+    DECLARE @CashierName NVARCHAR(255);
+    DECLARE @RemainingCapacity INT;
+    DECLARE @FullCapacity INT;
+
+    -- Get values from the inserted row
+    SELECT 
+        @CashierName = i.CashierName,
+        @RestaurantID = i.RestaurantID,
+        @NumberOfGuests = i.NumberOfGuests
+    FROM inserted i;
+
+    -- Get Cashier Role from Cashier table
+    SELECT @CashierRole = Role 
+    FROM Cashier 
+    WHERE Username = @CashierName;
+
+    -- Get Remaining Capacity and Full Capacity of the restaurant
+    SELECT @RemainingCapacity = RDC.RemainingCapacity, 
+           @FullCapacity = R.FullCapacity
+    FROM RestaurantDailyCapacity RDC
+    INNER JOIN Restaurant R ON RDC.RestaurantID = R.RestaurantID
+    WHERE RDC.RestaurantID = @RestaurantID AND RDC.Date = (SELECT ReservationDate FROM inserted);
+
+    -- If cashier role is NOT 1 or 2, apply restrictions
+    IF @CashierRole NOT IN (1, 2)
+    BEGIN
+        -- Restrict cashier from reserving at restaurants with ID 3 or 5
+        IF @RestaurantID IN (3, 5)
+        BEGIN
+            RAISERROR ('You are not authorized to reserve at this restaurant.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        -- Restrict cashier from reserving if remaining capacity is less than (Full Capacity - 100) at restaurants 1 or 2
+        IF @RestaurantID IN (1, 2) AND @RemainingCapacity < (@FullCapacity - 100)
+        BEGIN
+            RAISERROR ('You cannot reserve more than 100 seats at this restaurant.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+    END
+END;
+
 ..................................................................
 

@@ -176,6 +176,12 @@ namespace Reservation
                     reservationsReportForm.ShowDialog();
                     this.Close();
                     break;
+                case 5: // Role 2: Home
+                    Home homy = new Home(GlobalUser.FullName);
+                    this.Hide();
+                    homy.ShowDialog();
+                    this.Close();
+                    break;
 
                 default: // Unknown role
                     MessageBox.Show("Your role is not recognized. Please contact the administrator.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);

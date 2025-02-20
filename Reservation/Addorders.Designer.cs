@@ -68,6 +68,7 @@
             this.Cashradiobtn = new System.Windows.Forms.RadioButton();
             this.Visaradiobtn = new System.Windows.Forms.RadioButton();
             this.button7 = new System.Windows.Forms.Button();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -320,8 +321,12 @@
             // 
             // itemmenucombo
             // 
+            this.itemmenucombo.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.itemmenucombo.DropDownHeight = 180;
+            this.itemmenucombo.DropDownWidth = 220;
             this.itemmenucombo.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.itemmenucombo.FormattingEnabled = true;
+            this.itemmenucombo.IntegralHeight = false;
             this.itemmenucombo.Location = new System.Drawing.Point(487, 295);
             this.itemmenucombo.Name = "itemmenucombo";
             this.itemmenucombo.Size = new System.Drawing.Size(186, 27);
@@ -558,7 +563,7 @@
             this.Cashradiobtn.AutoSize = true;
             this.Cashradiobtn.Location = new System.Drawing.Point(472, 533);
             this.Cashradiobtn.Name = "Cashradiobtn";
-            this.Cashradiobtn.Size = new System.Drawing.Size(54, 17);
+            this.Cashradiobtn.Size = new System.Drawing.Size(52, 17);
             this.Cashradiobtn.TabIndex = 49;
             this.Cashradiobtn.TabStop = true;
             this.Cashradiobtn.Text = "CASH";
@@ -570,7 +575,7 @@
             this.Visaradiobtn.AutoSize = true;
             this.Visaradiobtn.Location = new System.Drawing.Point(536, 534);
             this.Visaradiobtn.Name = "Visaradiobtn";
-            this.Visaradiobtn.Size = new System.Drawing.Size(49, 17);
+            this.Visaradiobtn.Size = new System.Drawing.Size(48, 17);
             this.Visaradiobtn.TabIndex = 48;
             this.Visaradiobtn.TabStop = true;
             this.Visaradiobtn.Text = "VISA";
@@ -595,11 +600,24 @@
             this.button7.UseVisualStyleBackColor = false;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(593, 534);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(55, 17);
+            this.radioButton1.TabIndex = 51;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "Online";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            // 
             // Addorders
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1104, 596);
+            this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.Cashradiobtn);
             this.Controls.Add(this.Visaradiobtn);
@@ -690,5 +708,6 @@
         private System.Windows.Forms.RadioButton Cashradiobtn;
         private System.Windows.Forms.RadioButton Visaradiobtn;
         private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.RadioButton radioButton1;
     }
 }

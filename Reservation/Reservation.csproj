@@ -142,6 +142,12 @@
     <Compile Include="ReservationsReport.Designer.cs">
       <DependentUpon>ReservationsReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="SignUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SignUp.Designer.cs">
+      <DependentUpon>SignUp.cs</DependentUpon>
+    </Compile>
     <Compile Include="SingleOrderEdit.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -217,6 +223,9 @@
     </Compile>
     <EmbeddedResource Include="ReservationsReport.resx">
       <DependentUpon>ReservationsReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SignUp.resx">
+      <DependentUpon>SignUp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SingleOrderEdit.resx">
       <DependentUpon>SingleOrderEdit.cs</DependentUpon>

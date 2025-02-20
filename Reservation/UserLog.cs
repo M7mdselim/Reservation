@@ -444,10 +444,9 @@ namespace Reservation
 
         private void SpotCheckbtn_Click(object sender, EventArgs e)
         {
-            MonthlySpotCheck monthlySpotCheck = new MonthlySpotCheck(_username);
-            this.Hide();
-            monthlySpotCheck.ShowDialog();
-            this.Close();
+                NavigateToForm(2, new MonthlySpotCheck(_username));
+            
+
         }
     }
 }

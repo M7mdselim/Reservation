@@ -82,9 +82,12 @@
             this.label15 = new System.Windows.Forms.Label();
             this.Visaradiobtn = new System.Windows.Forms.RadioButton();
             this.Cashradiobtn = new System.Windows.Forms.RadioButton();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -433,8 +436,11 @@
             // 
             // itemmenucombo
             // 
+            this.itemmenucombo.DropDownHeight = 180;
+            this.itemmenucombo.DropDownWidth = 250;
             this.itemmenucombo.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.itemmenucombo.FormattingEnabled = true;
+            this.itemmenucombo.IntegralHeight = false;
             this.itemmenucombo.Location = new System.Drawing.Point(487, 299);
             this.itemmenucombo.Name = "itemmenucombo";
             this.itemmenucombo.Size = new System.Drawing.Size(186, 27);
@@ -665,7 +671,7 @@
             // RemainingCapacitylabel
             // 
             this.RemainingCapacitylabel.AutoSize = true;
-            this.RemainingCapacitylabel.Location = new System.Drawing.Point(771, 490);
+            this.RemainingCapacitylabel.Location = new System.Drawing.Point(3, 1);
             this.RemainingCapacitylabel.Name = "RemainingCapacitylabel";
             this.RemainingCapacitylabel.Size = new System.Drawing.Size(107, 13);
             this.RemainingCapacitylabel.TabIndex = 41;
@@ -718,7 +724,7 @@
             // Visaradiobtn
             // 
             this.Visaradiobtn.AutoSize = true;
-            this.Visaradiobtn.Location = new System.Drawing.Point(542, 585);
+            this.Visaradiobtn.Location = new System.Drawing.Point(515, 585);
             this.Visaradiobtn.Name = "Visaradiobtn";
             this.Visaradiobtn.Size = new System.Drawing.Size(48, 17);
             this.Visaradiobtn.TabIndex = 46;
@@ -730,7 +736,7 @@
             // Cashradiobtn
             // 
             this.Cashradiobtn.AutoSize = true;
-            this.Cashradiobtn.Location = new System.Drawing.Point(478, 584);
+            this.Cashradiobtn.Location = new System.Drawing.Point(451, 584);
             this.Cashradiobtn.Name = "Cashradiobtn";
             this.Cashradiobtn.Size = new System.Drawing.Size(52, 17);
             this.Cashradiobtn.TabIndex = 47;
@@ -739,11 +745,35 @@
             this.Cashradiobtn.UseVisualStyleBackColor = true;
             this.Cashradiobtn.CheckedChanged += new System.EventHandler(this.Cashradiobtn_CheckedChanged);
             // 
+            // panel3
+            // 
+            this.panel3.AutoScroll = true;
+            this.panel3.Controls.Add(this.RemainingCapacitylabel);
+            this.panel3.Location = new System.Drawing.Point(774, 484);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(217, 74);
+            this.panel3.TabIndex = 48;
+            this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.panel3_Paint_1);
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(572, 585);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(55, 17);
+            this.radioButton1.TabIndex = 49;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "Online";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            // 
             // Home
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1112, 625);
+            this.Controls.Add(this.radioButton1);
+            this.Controls.Add(this.panel3);
             this.Controls.Add(this.Cashradiobtn);
             this.Controls.Add(this.Visaradiobtn);
             this.Controls.Add(this.importanttxt);
@@ -753,7 +783,6 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label15);
             this.Controls.Add(this.label9);
-            this.Controls.Add(this.RemainingCapacitylabel);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.label1);
@@ -799,6 +828,8 @@
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -859,5 +890,7 @@
         private System.Windows.Forms.Button backkbtn;
         private System.Windows.Forms.RadioButton Visaradiobtn;
         private System.Windows.Forms.RadioButton Cashradiobtn;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.RadioButton radioButton1;
     }
 }
