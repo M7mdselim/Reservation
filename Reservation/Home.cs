@@ -1723,20 +1723,23 @@ namespace Reservation
                 yPosition += 10;
 
 
-
-                // Add total amount (without currency symbol)
-                e.Graphics.DrawString($"اجمالي المبلغ: {totalAmount:N2}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
-                yPosition += lineHeight;
-
-                // Display paid amount and remaining total on the same line
-                e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:N2}    اجمالي المتبقى: {totalAmount - paidAmount:N2}",
-                    boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                e.Graphics.DrawString($"اجمالي المبلغ: {totalAmount:0.##}", boldFont, Brushes.Black, leftMargin, yPosition);
                 yPosition += lineHeight;
 
 
+                    // Display paid amount and remaining total on the same line
+                    e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:N2}",
+                        boldFont, Brushes.Black, leftMargin, yPosition);
+                    yPosition += lineHeight;
 
-                // Display paid amount and remaining total on the same line
-                e.Graphics.DrawString($"الاسعار شامله قيمة الضريبه المضافه",
+
+                    e.Graphics.DrawString($"اجمالي المتبقى: {totalAmount - paidAmount:N2}", boldFont, Brushes.Black, leftMargin, yPosition);
+                    yPosition += lineHeight;
+
+
+
+                    // Display paid amount and remaining total on the same line
+                    e.Graphics.DrawString($"الاسعار شامله قيمة الضريبه المضافه",
                  boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
                 yPosition += lineHeight;
 
