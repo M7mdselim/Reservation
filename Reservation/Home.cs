@@ -856,6 +856,8 @@ namespace Reservation
 
         private void additembtn_Click(object sender, EventArgs e)
         {
+
+
             string selectedItem = itemmenucombo.SelectedItem.ToString();
             if (int.TryParse(quantitytxt.Text, out int quantity) && quantity > 0)
             {
@@ -1081,8 +1083,10 @@ namespace Reservation
 
 
 
-        private void deletebtn_Click(object sender, EventArgs e)
+        private async  void deletebtn_Click(object sender, EventArgs e)
         {
+
+            await Task.Delay(300); // Wait for 300ms before processing
             if (selectedItemLabel != null)
             {
                 int selectedIndex = menuitemspanel.Controls.IndexOf(selectedItemLabel);
@@ -1395,8 +1399,12 @@ namespace Reservation
 
 
 
-        private void printnpaybtn_Click_1(object sender, EventArgs e)
+        private async void printnpaybtn_Click_1(object sender, EventArgs e)
         {
+            // Prevent multiple clicks
+            printnpaybtn.Enabled = false;
+            await Task.Delay(2000); // Wait for 300ms before processing
+
             try
             {
                 string totalPriceText = totalPriceLabel.Text.Replace("Total Price:", "").Replace("£", "").Replace("$", "").Trim();
@@ -1418,7 +1426,7 @@ namespace Reservation
                     return;
                 }
 
-                // Fetch capacity from reservations table using reservationId
+                // Fetch capacity
                 string capacity = GetCapacityFromDatabase(reservationId);
                 if (string.IsNullOrEmpty(capacity))
                 {
@@ -1426,25 +1434,25 @@ namespace Reservation
                     return;
                 }
 
-                string paymentQuery = @"
-        IF EXISTS (SELECT 1 FROM Payments WHERE CustomerID = @CustomerID AND ReservationID = @ReservationID)
-        BEGIN
-            UPDATE Payments
-            SET TotalAmount = TotalAmount + @TotalAmount, 
-                PaidAmount = PaidAmount + @PaidAmount
-            WHERE CustomerID = @CustomerID AND ReservationID = @ReservationID
-        END
-        ELSE
-        BEGIN
-            INSERT INTO Payments (CustomerID, ReservationID, TotalAmount, PaidAmount)
-            VALUES (@CustomerID, @ReservationID, @TotalAmount, @PaidAmount)
-        END";
-
                 using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
                 {
                     connection.Open();
 
                     // Insert or update payment
+                    string paymentQuery = @"
+            IF EXISTS (SELECT 1 FROM Payments WHERE CustomerID = @CustomerID AND ReservationID = @ReservationID)
+            BEGIN
+                UPDATE Payments
+                SET TotalAmount = TotalAmount + @TotalAmount, 
+                    PaidAmount = PaidAmount + @PaidAmount
+                WHERE CustomerID = @CustomerID AND ReservationID = @ReservationID
+            END
+            ELSE
+            BEGIN
+                INSERT INTO Payments (CustomerID, ReservationID, TotalAmount, PaidAmount)
+                VALUES (@CustomerID, @ReservationID, @TotalAmount, @PaidAmount)
+            END";
+
                     using (SqlCommand paymentCommand = new SqlCommand(paymentQuery, connection))
                     {
                         paymentCommand.Parameters.AddWithValue("@CustomerID", GetCustomerId());
@@ -1453,7 +1461,6 @@ namespace Reservation
                         paymentCommand.Parameters.AddWithValue("@PaidAmount", paidAmount);
                         paymentCommand.ExecuteNonQuery();
                     }
-
 
                     // Update Notes in Reservation
                     string updateNotesQuery = "UPDATE Reservations SET Notes = @Notes WHERE ReservationID = @ReservationID";
@@ -1472,8 +1479,7 @@ namespace Reservation
                         dailyInsertCommand.Parameters.AddWithValue("@ReservationID", reservationId);
                         dailyInsertCommand.Parameters.AddWithValue("@CustomerID", GetCustomerId());
                         dailyInsertCommand.Parameters.AddWithValue("@CashierName", _username);
-                        dailyInsertCommand.Parameters.AddWithValue("@Paymentmethod", paymentMethod);    
-
+                        dailyInsertCommand.Parameters.AddWithValue("@Paymentmethod", paymentMethod);
                         dailyInsertCommand.ExecuteNonQuery();
                     }
 
@@ -1484,7 +1490,7 @@ namespace Reservation
                         decimal subtotal = item.ItemPrice * item.Quantity;
 
                         string orderDetailsQuery = "INSERT INTO OrderDetails (ReservationID, MenuItemID, Quantity, ItemPrice, CashierName) " +
-                                                   "VALUES (@ReservationID, @MenuItemID, @Quantity, @ItemPrice, @CashierName)";
+                                                    "VALUES (@ReservationID, @MenuItemID, @Quantity, @ItemPrice, @CashierName)";
                         using (SqlCommand orderDetailsCommand = new SqlCommand(orderDetailsQuery, connection))
                         {
                             orderDetailsCommand.Parameters.AddWithValue("@ReservationID", reservationId);
@@ -1506,17 +1512,12 @@ namespace Reservation
                         logCommand.ExecuteNonQuery();
                     }
 
-
-
-
-                   
-
-
-
                     // Print receipt with the fetched capacity
                     PrintReceipt(reservationId, totalAmount, paidAmount, _username, capacity);
-                    MessageBox.Show("Order details and payment saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    PrintCopyReceipt(reservationId, totalAmount, paidAmount, _username, capacity);
                     ClearMenuItems();
+                    MessageBox.Show("Order details and payment saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    
                     ResetForm();
                     Home home = new Home(_username);
                     this.Hide();
@@ -1528,7 +1529,13 @@ namespace Reservation
             {
                 MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                // Re-enable button after operation
+                printnpaybtn.Enabled = true;
+            }
         }
+
 
         private string GetCapacityFromDatabase(int reservationId)
         {
@@ -1661,8 +1668,37 @@ namespace Reservation
                 yPosition += 10;
 
                 // Add the order details
-                e.Graphics.DrawString(":تفاصيل الاوردر", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                e.Graphics.DrawString(": تفاصيل الاوردر", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
                 yPosition += lineHeight;
+
+                // Define column widths (adjust as needed)
+                float columnWidthItem = 150; // Width for the item name column
+                float columnWidthQuantity = 70; // Width for the quantity column
+                float columnWidthPrice = 70; // Width for the price column
+                float columnWidthSubtotal = 80; // Width for the subtotal column
+
+                // Draw table headers (RTL alignment)
+                string headerItem = "العنصر";
+                string headerQuantity = "الكمية";
+                string headerPrice = "السعر";
+                string headerSubtotal = "الإجمالي";
+
+                // Calculate starting X positions for each column (RTL)
+                float xPositionItem = rightMargin;
+                float xPositionQuantity = xPositionItem - columnWidthItem;
+                float xPositionPrice = xPositionQuantity - columnWidthQuantity;
+                float xPositionSubtotal = xPositionPrice - columnWidthPrice;
+
+                // Draw headers
+                e.Graphics.DrawString(headerItem, boldFont, Brushes.Black, xPositionItem, yPosition, rtlFormat);
+                e.Graphics.DrawString(headerQuantity, boldFont, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
+                e.Graphics.DrawString(headerPrice, boldFont, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
+                e.Graphics.DrawString(headerSubtotal, boldFont, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
+                yPosition += lineHeight;
+
+                // Draw a separator line under headers
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
+                yPosition += 10;
 
                 // Dictionary to store the total quantities for each added item
                 Dictionary<string, (decimal ItemPrice, int TotalQuantity)> addedItemTotals = new Dictionary<string, (decimal, int)>();
@@ -1688,12 +1724,28 @@ namespace Reservation
                 // Now print each added item and its total quantity
                 foreach (var item in addedItemTotals)
                 {
-                    string itemDetails = $"{item.Value.ItemPrice:0.##}         -  {item.Key} X {item.Value.TotalQuantity}  ";
-                    e.Graphics.DrawString(itemDetails, font, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                    string itemName = item.Key;
+                    decimal itemPrice = item.Value.ItemPrice;
+                    int totalQuantity = item.Value.TotalQuantity;
+                    decimal subtotal = itemPrice * totalQuantity;
+
+                    // Draw item name (right-aligned under "العنصر")
+                    e.Graphics.DrawString(itemName, font, Brushes.Black, xPositionItem, yPosition, rtlFormat);
+
+                    // Draw quantity (right-aligned under "الكمية")
+                    e.Graphics.DrawString(totalQuantity.ToString(), font, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
+
+                    // Draw price (right-aligned under "السعر")
+                    e.Graphics.DrawString(itemPrice.ToString("0.##"), font, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
+
+                    // Draw subtotal (right-aligned under "الإجمالي")
+                    e.Graphics.DrawString(subtotal.ToString("0.##"), font, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
+
+                    // Move to the next line
                     yPosition += lineHeight;
                 }
 
-
+              
 
                 if (!string.IsNullOrEmpty(notes))
                 {
@@ -1774,6 +1826,279 @@ namespace Reservation
                 MessageBox.Show($"An error occurred while printing: {ex.Message}", "Print Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+
+
+
+
+
+
+        private void PrintCopyReceipt(int reservationId, decimal totalAmount, decimal paidAmount, string cashierName, string numberOfGuests)
+        {
+            DateTime reservationDateAndTime = reservationdateandtime.Value;
+            string formattedReservationDateAndTime = reservationDateAndTime.ToString("dd/MM/yyyy");
+
+            // Retrieve the restaurant name from the database based on reservationId
+            string restaurantName = GetRestaurantNameByReservationId(reservationId);
+
+
+            string notes = string.Empty;
+
+            // Fetch notes from the Reservations table
+            using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
+            {
+                connection.Open();
+                string notesQuery = "SELECT Notes FROM Reservations WHERE ReservationID = @ReservationID";
+                using (SqlCommand notesCommand = new SqlCommand(notesQuery, connection))
+                {
+                    notesCommand.Parameters.AddWithValue("@ReservationID", reservationId);
+                    var result = notesCommand.ExecuteScalar();
+                    if (result != null)
+                    {
+                        notes = result.ToString();
+                    }
+                }
+            }
+
+            PrintDocument printDocument = new PrintDocument();
+            printDocument.PrintPage += (sender, e) =>
+            {
+                float yPosition = 10; // Starting Y position
+                float rightMargin = e.PageBounds.Width - 10; // Right margin
+                float leftMargin = 10; // Left margin
+                float header = 50;
+                float lineHeight = 25; // Line height for spacing
+                Font font = new Font("Arial", 10);
+                Font boldFont = new Font("Arial", 10, FontStyle.Bold);
+
+                Font titleFont = new Font("Arial", 12, FontStyle.Bold);
+                StringFormat rtlFormat = new StringFormat { Alignment = StringAlignment.Far }; // Right-to-left alignment
+                StringFormat leftFormat = new StringFormat { Alignment = StringAlignment.Near }; // Left alignment
+                StringFormat centerFormat = new StringFormat { Alignment = StringAlignment.Center }; // Center alignment
+
+                // Draw the company logo
+
+
+                // Draw the receipt type
+                e.Graphics.DrawString("Copy", new Font("Arial", 16, FontStyle.Bold), Brushes.Black, e.PageBounds.Width / 2, 5, centerFormat);
+                yPosition += 40; // Adjust for logo height
+
+
+                string logoPath = Path.Combine(Application.StartupPath, "logo.png"); // Replace with the actual path to the logo
+                if (System.IO.File.Exists(logoPath))
+                {
+                    Image logo = Image.FromFile(logoPath);
+                    e.Graphics.DrawImage(logo, (e.PageBounds.Width - 100) / 2, yPosition, 100, 100); // Center the logo
+                    yPosition += 110; // Adjust for logo height
+                }
+
+                // Draw the company name in the center
+                string companyName = "Royal Resort";
+                e.Graphics.DrawString(companyName, titleFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += header;
+
+                // Add the date and time
+                e.Graphics.DrawString($"تاريخ: {DateTime.Now:dd/MM/yyyy HH:mm:ss}", font, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                yPosition += lineHeight;
+
+                // Add reservation ID on the right and reservation date on the left (same line)
+                e.Graphics.DrawString($"رقم الحجز: {reservationId}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
+                e.Graphics.DrawString($"تاريخ الحجز: {formattedReservationDateAndTime}", boldFont, Brushes.Black, leftMargin, yPosition, leftFormat); // Left aligned
+                yPosition += lineHeight;
+
+
+                // Set the maximum number of characters allowed
+                int maxNameLength = 14;
+                int maxCashierNameLength = 13; // Ensure both are within limits
+
+                // Truncate the name if it exceeds the max length
+                string truncatedName = nametxt.Text.Length > maxNameLength
+                    ? nametxt.Text.Substring(0, maxNameLength)
+                    : nametxt.Text;
+
+                string truncatedCashierName = cashierName.Length > maxCashierNameLength
+                    ? cashierName.Substring(0, maxCashierNameLength)
+                    : cashierName;
+
+                // Draw the text with proper alignment
+                e.Graphics.DrawString($"حجز باسم: {truncatedName}", boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat); // Right aligned
+                e.Graphics.DrawString($"القائم بالحجز: {truncatedCashierName}", boldFont, Brushes.Black, leftMargin, yPosition, leftFormat); // Left aligned
+                yPosition += lineHeight; // Move to next line
+
+
+                string resturantname = $" مطعم:  {restaurantName}";
+                // Add the restaurant name under the customer name and number of guests
+                e.Graphics.DrawString(resturantname, boldFont, Brushes.Black, leftMargin, yPosition, leftFormat);
+                string numberOfGuestsText = $"عدد اشخاص: {numberOfGuests}";
+                e.Graphics.DrawString(numberOfGuestsText, boldFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                yPosition += lineHeight;
+
+                // Draw a separator
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
+                yPosition += 10;
+
+             // Add the order details
+                e.Graphics.DrawString(": تفاصيل الاوردر", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                yPosition += lineHeight;
+
+                // Define column widths (adjust as needed)
+                float columnWidthItem = 150; // Width for the item name column
+                float columnWidthQuantity = 70; // Width for the quantity column
+                float columnWidthPrice = 70; // Width for the price column
+                float columnWidthSubtotal = 80; // Width for the subtotal column
+
+                // Draw table headers (RTL alignment)
+                string headerItem = "العنصر";
+                string headerQuantity = "الكمية";
+                string headerPrice = "السعر";
+                string headerSubtotal = "الإجمالي";
+
+                // Calculate starting X positions for each column (RTL)
+                float xPositionItem = rightMargin;
+                float xPositionQuantity = xPositionItem - columnWidthItem;
+                float xPositionPrice = xPositionQuantity - columnWidthQuantity;
+                float xPositionSubtotal = xPositionPrice - columnWidthPrice;
+
+                // Draw headers
+                e.Graphics.DrawString(headerItem, boldFont, Brushes.Black, xPositionItem, yPosition, rtlFormat);
+                e.Graphics.DrawString(headerQuantity, boldFont, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
+                e.Graphics.DrawString(headerPrice, boldFont, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
+                e.Graphics.DrawString(headerSubtotal, boldFont, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
+                yPosition += lineHeight;
+
+                // Draw a separator line under headers
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
+                yPosition += 10;
+
+                // Dictionary to store the total quantities for each added item
+                Dictionary<string, (decimal ItemPrice, int TotalQuantity)> addedItemTotals = new Dictionary<string, (decimal, int)>();
+
+                // Loop through added items and sum the quantities for the same item
+                foreach (var item in addedItems)
+                {
+                    string itemName = item.ItemName;
+                    decimal itemPrice = item.ItemPrice;
+                    int quantity = item.Quantity;
+
+                    // Check if the item already exists in the dictionary, if so, update the quantity
+                    if (addedItemTotals.ContainsKey(itemName))
+                    {
+                        addedItemTotals[itemName] = (itemPrice, addedItemTotals[itemName].TotalQuantity + quantity);
+                    }
+                    else
+                    {
+                        addedItemTotals.Add(itemName, (itemPrice, quantity));
+                    }
+                }
+
+                // Now print each added item and its total quantity
+                foreach (var item in addedItemTotals)
+                {
+                    string itemName = item.Key;
+                    decimal itemPrice = item.Value.ItemPrice;
+                    int totalQuantity = item.Value.TotalQuantity;
+                    decimal subtotal = itemPrice * totalQuantity;
+
+                    // Draw item name (right-aligned under "العنصر")
+                    e.Graphics.DrawString(itemName, font, Brushes.Black, xPositionItem, yPosition, rtlFormat);
+
+                    // Draw quantity (right-aligned under "الكمية")
+                    e.Graphics.DrawString(totalQuantity.ToString(), font, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
+
+                    // Draw price (right-aligned under "السعر")
+                    e.Graphics.DrawString(itemPrice.ToString("0.##"), font, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
+
+                    // Draw subtotal (right-aligned under "الإجمالي")
+                    e.Graphics.DrawString(subtotal.ToString("0.##"), font, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
+
+                    // Move to the next line
+                    yPosition += lineHeight;
+                }
+
+
+
+                if (!string.IsNullOrEmpty(notes))
+                {
+                    // Draw another separator
+                    e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
+                    yPosition += 10;
+
+                    e.Graphics.DrawString(":ملحوظات", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                    yPosition += lineHeight;
+
+                    // Calculate the size of the notes string
+                    float availableWidth = e.PageBounds.Width - leftMargin - rightMargin;
+                    SizeF notesSize = e.Graphics.MeasureString(notes, font, (int)availableWidth);
+
+                    // Define a rectangle for multi-line text rendering
+                    RectangleF notesRect = new RectangleF(rightMargin, yPosition, availableWidth, notesSize.Height);
+
+                    // Render the notes text inside the rectangle
+                    e.Graphics.DrawString(notes, font, Brushes.Black, notesRect, rtlFormat);
+
+                    // Update yPosition to account for the height of the rendered text
+                    yPosition += (int)notesSize.Height;
+                }
+
+                // Draw another separator
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
+                yPosition += 10;
+
+
+                e.Graphics.DrawString($"اجمالي المبلغ: {totalAmount:0.##}", boldFont, Brushes.Black, leftMargin, yPosition);
+                yPosition += lineHeight;
+
+
+                // Display paid amount and remaining total on the same line
+                e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:N2}",
+                    boldFont, Brushes.Black, leftMargin, yPosition);
+                yPosition += lineHeight;
+
+
+                e.Graphics.DrawString($"اجمالي المتبقى: {totalAmount - paidAmount:N2}", boldFont, Brushes.Black, leftMargin, yPosition);
+                yPosition += lineHeight;
+
+
+
+                // Display paid amount and remaining total on the same line
+                e.Graphics.DrawString($"الاسعار شامله قيمة الضريبه المضافه",
+             boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += lineHeight;
+
+
+                // Draw another separator
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
+                yPosition += 10;
+
+                // Add total amount (without currency symbol)
+
+
+                // Add the footer message
+                string footerMessage = "شكرا على اختيارك دار الضيافة";
+                e.Graphics.DrawString(footerMessage, boldFont, Brushes.Black, e.PageBounds.Width / 2, yPosition, centerFormat);
+                yPosition += 20;
+
+
+
+                // Ensure the footer does not overflow the page height
+                if (yPosition + lineHeight > e.PageBounds.Height)
+                {
+                    MessageBox.Show("The receipt content exceeds the page height. Please adjust margins or content.", "Print Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+
+            try
+            {
+                printDocument.Print();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while printing: {ex.Message}", "Print Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+
 
         // Method to fetch the restaurant name based on reservationId
         private string GetRestaurantNameByReservationId(int reservationId)

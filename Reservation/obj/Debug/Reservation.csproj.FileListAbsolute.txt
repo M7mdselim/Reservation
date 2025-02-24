@@ -150,3 +150,4 @@ E:\Reservation-main\Reservation\obj\Debug\Reservat.F9C48C63.Up2Date
 E:\Reservation-main\Reservation\obj\Debug\Reservation.exe
 E:\Reservation-main\Reservation\obj\Debug\Reservation.pdb
 E:\Reservation-main\Reservation\obj\Debug\Reservation.SignUp.resources
+D:\Github\Reservation\Reservation\obj\Debug\Reservation.SignUp.resources

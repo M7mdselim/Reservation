@@ -365,7 +365,7 @@ namespace Reservation
                             cmd.ExecuteNonQuery();
                         }
 
-                    LoadReservations();
+                  
 
                     MessageBox.Show("Reservation updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -513,7 +513,7 @@ namespace Reservation
                                 reservationidtxt.Clear();
 
                                 // Refresh any related UI or data grid to reflect changes
-                                LoadReservations();
+
                             }
                             else
                             {

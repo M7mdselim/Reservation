@@ -219,7 +219,7 @@ namespace Reservation
                     }
                     editedRows.Clear();
                     MessageBox.Show("Customer records updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadReservations();  // Reload the reservations to reflect the updates
+                   
                 }
                 catch (Exception ex)
                 {

@@ -872,9 +872,38 @@ WHERE ReservationDate = @ReservationDate;
                 // Draw a separator
                 e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
                 yPosition += 10;
+                // Define column widths (adjust as needed)
+                float columnWidthItem = 150; // Width for the item name column
+                float columnWidthQuantity = 70; // Width for the quantity column
+                float columnWidthPrice = 70; // Width for the price column
+                float columnWidthSubtotal = 80; // Width for the subtotal column
 
-                e.Graphics.DrawString(":تفاصيل الاوردر", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                // Calculate starting X positions for each column (RTL)
+                float xPositionItem = rightMargin;
+                float xPositionQuantity = xPositionItem - columnWidthItem;
+                float xPositionPrice = xPositionQuantity - columnWidthQuantity;
+                float xPositionSubtotal = xPositionPrice - columnWidthPrice;
+
+                // Add the order details (old items) under "تفاصيل الاوردر"
+                e.Graphics.DrawString("تفاصيل الاوردر", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
                 yPosition += lineHeight;
+
+                // Draw table headers (RTL alignment)
+                string headerItem = "العنصر";
+                string headerQuantity = "الكمية";
+                string headerPrice = "السعر";
+                string headerSubtotal = "الإجمالي";
+
+                // Draw headers
+                e.Graphics.DrawString(headerItem, boldFont, Brushes.Black, xPositionItem, yPosition, rtlFormat);
+                e.Graphics.DrawString(headerQuantity, boldFont, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
+                e.Graphics.DrawString(headerPrice, boldFont, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
+                e.Graphics.DrawString(headerSubtotal, boldFont, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
+                yPosition += lineHeight;
+
+                // Draw a separator line under headers
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
+                yPosition += 10;
 
                 // Dictionary to store the total quantities for each item type
                 Dictionary<string, (decimal ItemPrice, int TotalQuantity)> itemTotals = new Dictionary<string, (decimal, int)>();
@@ -918,16 +947,31 @@ WHERE ReservationDate = @ReservationDate;
                 // Now print each item and its total quantity
                 foreach (var item in itemTotals)
                 {
-                    string itemDetails = $"{item.Value.ItemPrice:0.##}         -  {item.Key} X {item.Value.TotalQuantity}  ";
-                    e.Graphics.DrawString(itemDetails, font, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                    string itemName = item.Key;
+                    decimal itemPrice = item.Value.ItemPrice;
+                    int totalQuantity = item.Value.TotalQuantity;
+                    decimal subtotal = itemPrice * totalQuantity;
+
+                    // Draw item name (right-aligned under "العنصر")
+                    e.Graphics.DrawString(itemName, font, Brushes.Black, xPositionItem, yPosition, rtlFormat);
+
+                    // Draw quantity (right-aligned under "الكمية")
+                    e.Graphics.DrawString(totalQuantity.ToString(), font, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
+
+                    // Draw price (right-aligned under "السعر")
+                    e.Graphics.DrawString(itemPrice.ToString("0.##"), font, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
+
+                    // Draw subtotal (right-aligned under "الإجمالي")
+                    e.Graphics.DrawString(subtotal.ToString("0.##"), font, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
+
+                    // Move to the next line
                     yPosition += lineHeight;
 
                     // Calculate total for the item and add it to overall total
-                    decimal itemTotal = item.Value.ItemPrice * item.Value.TotalQuantity;
-                    oldTotalAmount += itemTotal;
+                    oldTotalAmount += subtotal;
                 }
 
-
+              
 
                 // Add notes (ملحوظات) if present
                 if (!string.IsNullOrEmpty(notes))
@@ -1050,8 +1094,12 @@ WHERE ReservationDate = @ReservationDate;
 
         private void PrintGrandSummary()
         {
-            // Exclude the 'total' row before printing
-            var filteredSummary = grandTotalSummary.Where(item => item.Key != "TOTAL").ToList(); // Filter out "TOTAL" row
+            // Exclude the 'TOTAL' row and remove items with 0 TotalQuantity
+            var filteredSummary = grandTotalSummary
+                .Where(item => item.Key != "TOTAL" && item.Value.TotalQuantity > 0) // Skip 0 quantities
+                .ToList();
+
+            if (filteredSummary.Count == 0) return; // If no valid items, exit early
 
             PrintDocument printDocument = new PrintDocument();
             printDocument.PrintPage += (sender, e) =>
@@ -1089,11 +1137,11 @@ WHERE ReservationDate = @ReservationDate;
                 // Draw a line below column headers
                 e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition - 5, pageWidth - rightMargin, yPosition - 5);
 
-                // Draw the item rows (after filtering out the "TOTAL" row)
+                // Draw the item rows (excluding zero quantities)
                 foreach (var item in filteredSummary)
                 {
                     string itemName = item.Key;
-                    string quantity = item.Value.TotalQuantity.ToString();
+                    string quantity = item.Value.TotalQuantity.ToString(); // Directly use ToString() without .Value
 
                     // Measure text size and wrap if necessary
                     SizeF itemSize = e.Graphics.MeasureString(itemName, contentFont, (int)columnWidth);
@@ -1108,16 +1156,11 @@ WHERE ReservationDate = @ReservationDate;
 
                     yPosition += lineHeight * requiredLines;
                 }
-
-              
             };
 
             printDocument.Print();
             grandTotalSummary.Clear();
         }
-
-
-
 
 
 

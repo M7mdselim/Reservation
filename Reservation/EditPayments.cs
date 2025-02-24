@@ -222,7 +222,7 @@ ORDER BY p.PaymentID DESC"; // Order by PaymentID in descending order
                     }
                     editedRows.Clear();
                     MessageBox.Show("Paid amounts updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadReservations(); // Reload the payments to reflect the updates
+                   
                 }
                 catch (Exception ex)
                 {

@@ -423,7 +423,7 @@ namespace Reservation
                         }
                     }
 
-                    LoadReservations();
+                  
 
                     MessageBox.Show("Records updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -638,7 +638,7 @@ namespace Reservation
                         }
 
                         MessageBox.Show("Record deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        LoadReservations(); // Refresh the data after deletion
+                        
                     }
                     else
                     {

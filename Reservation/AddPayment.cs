@@ -429,10 +429,11 @@ namespace Reservation
             return Cashiername;
         }
 
-        private void printnpaybtn_Click_1(object sender, EventArgs e)
+        private async void printnpaybtn_Click_1(object sender, EventArgs e)
         {
 
 
+           
 
             try
             {
@@ -805,9 +806,38 @@ namespace Reservation
                 yPosition += 10;
 
 
+                // Define column widths (adjust as needed)
+                float columnWidthItem = 150; // Width for the item name column
+                float columnWidthQuantity = 70; // Width for the quantity column
+                float columnWidthPrice = 70; // Width for the price column
+                float columnWidthSubtotal = 80; // Width for the subtotal column
 
-                e.Graphics.DrawString(":تفاصيل الاوردر", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                // Calculate starting X positions for each column (RTL)
+                float xPositionItem = rightMargin;
+                float xPositionQuantity = xPositionItem - columnWidthItem;
+                float xPositionPrice = xPositionQuantity - columnWidthQuantity;
+                float xPositionSubtotal = xPositionPrice - columnWidthPrice;
+
+                // Add the order details (old items) under "تفاصيل الاوردر"
+                e.Graphics.DrawString("تفاصيل الاوردر", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
                 yPosition += lineHeight;
+
+                // Draw table headers (RTL alignment)
+                string headerItem = "العنصر";
+                string headerQuantity = "الكمية";
+                string headerPrice = "السعر";
+                string headerSubtotal = "الإجمالي";
+
+                // Draw headers
+                e.Graphics.DrawString(headerItem, boldFont, Brushes.Black, xPositionItem, yPosition, rtlFormat);
+                e.Graphics.DrawString(headerQuantity, boldFont, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
+                e.Graphics.DrawString(headerPrice, boldFont, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
+                e.Graphics.DrawString(headerSubtotal, boldFont, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
+                yPosition += lineHeight;
+
+                // Draw a separator line under headers
+                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
+                yPosition += 10;
 
                 // Dictionary to store the total quantities for each item type
                 Dictionary<string, (decimal ItemPrice, int TotalQuantity)> itemTotals = new Dictionary<string, (decimal, int)>();
@@ -848,16 +878,31 @@ namespace Reservation
                 // Now print each item and its total quantity
                 foreach (var item in itemTotals)
                 {
-                    string itemDetails = $"{item.Value.ItemPrice:0.##}         -  {item.Key} X {item.Value.TotalQuantity}  ";
-                    e.Graphics.DrawString(itemDetails, font, Brushes.Black, rightMargin, yPosition, rtlFormat);
+                    string itemName = item.Key;
+                    decimal itemPrice = item.Value.ItemPrice;
+                    int totalQuantity = item.Value.TotalQuantity;
+                    decimal subtotal = itemPrice * totalQuantity;
+
+                    // Draw item name (right-aligned under "العنصر")
+                    e.Graphics.DrawString(itemName, font, Brushes.Black, xPositionItem, yPosition, rtlFormat);
+
+                    // Draw quantity (right-aligned under "الكمية")
+                    e.Graphics.DrawString(totalQuantity.ToString(), font, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
+
+                    // Draw price (right-aligned under "السعر")
+                    e.Graphics.DrawString(itemPrice.ToString("0.##"), font, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
+
+                    // Draw subtotal (right-aligned under "الإجمالي")
+                    e.Graphics.DrawString(subtotal.ToString("0.##"), font, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
+
+                    // Move to the next line
                     yPosition += lineHeight;
 
                     // Calculate total for the item and add it to overall total
-                    decimal itemTotal = item.Value.ItemPrice * item.Value.TotalQuantity;
-                    oldTotalAmount += itemTotal;
+                    oldTotalAmount += subtotal;
                 }
 
-
+               
                 // Add notes (ملحوظات) if present
                 if (!string.IsNullOrEmpty(notes))
                 {
