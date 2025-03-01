@@ -790,7 +790,7 @@ WHERE ReservationDate = @ReservationDate;
             using (SqlConnection connection = new SqlConnection(DatabaseConfig.connectionString))
             {
                 connection.Open();
-                string notesQuery = "SELECT ISNULL(MenuItemName, ''), ISNULL(Quantity, 0), ISNULL(ItemPrice, 0) FROM View_ManageReservationsDetails WHERE ReservationID = @ReservationID";
+                string notesQuery = "SELECT Notes FROM Reservations WHERE ReservationID = @ReservationID";
                 using (SqlCommand notesCommand = new SqlCommand(notesQuery, connection))
                 {
                     notesCommand.Parameters.AddWithValue("@ReservationID", reservationId);
@@ -881,8 +881,8 @@ WHERE ReservationDate = @ReservationDate;
                 // Calculate starting X positions for each column (RTL)
                 float xPositionItem = rightMargin;
                 float xPositionQuantity = xPositionItem - columnWidthItem;
-                float xPositionPrice = xPositionQuantity - columnWidthQuantity;
-                float xPositionSubtotal = xPositionPrice - columnWidthPrice;
+               
+                float xPositionSubtotal = xPositionQuantity - columnWidthPrice;
 
                 // Add the order details (old items) under "تفاصيل الاوردر"
                 e.Graphics.DrawString("تفاصيل الاوردر", titleFont, Brushes.Black, rightMargin, yPosition, rtlFormat);
@@ -897,7 +897,7 @@ WHERE ReservationDate = @ReservationDate;
                 // Draw headers
                 e.Graphics.DrawString(headerItem, boldFont, Brushes.Black, xPositionItem, yPosition, rtlFormat);
                 e.Graphics.DrawString(headerQuantity, boldFont, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
-                e.Graphics.DrawString(headerPrice, boldFont, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
+                
                 e.Graphics.DrawString(headerSubtotal, boldFont, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
                 yPosition += lineHeight;
 
@@ -958,9 +958,7 @@ WHERE ReservationDate = @ReservationDate;
                     // Draw quantity (right-aligned under "الكمية")
                     e.Graphics.DrawString(totalQuantity.ToString(), font, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
 
-                    // Draw price (right-aligned under "السعر")
-                    e.Graphics.DrawString(itemPrice.ToString("0.##"), font, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
-
+                   
                     // Draw subtotal (right-aligned under "الإجمالي")
                     e.Graphics.DrawString(subtotal.ToString("0.##"), font, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
 
@@ -1005,6 +1003,10 @@ WHERE ReservationDate = @ReservationDate;
                 yPosition += lineHeight;
 
                 e.Graphics.DrawString($"المبلغ المدفوع: {paidAmount:0.##} ج.م", boldFont, Brushes.Black, leftMargin, yPosition);
+                yPosition += lineHeight;
+
+
+                e.Graphics.DrawString($"اجمالي المتبقى: {totalAmount - paidAmount:N2}", boldFont, Brushes.Black, leftMargin, yPosition);
                 yPosition += lineHeight;
 
 
@@ -1094,73 +1096,65 @@ WHERE ReservationDate = @ReservationDate;
 
         private void PrintGrandSummary()
         {
-            // Exclude the 'TOTAL' row and remove items with 0 TotalQuantity
             var filteredSummary = grandTotalSummary
-                .Where(item => item.Key != "TOTAL" && item.Value.TotalQuantity > 0) // Skip 0 quantities
+                .Where(item => item.Key != "TOTAL" && item.Value.TotalQuantity > 0)
                 .ToList();
 
-            if (filteredSummary.Count == 0) return; // If no valid items, exit early
+            if (filteredSummary.Count == 0) return; // No valid items, exit early.
 
             PrintDocument printDocument = new PrintDocument();
+
             printDocument.PrintPage += (sender, e) =>
             {
-                float yPosition = 10; // Starting Y position
-                float lineHeight = 30; // Line height for spacing
+                float yPosition = 10;
+                float lineHeight = 30;
                 Font headerFont = new Font("Arial", 14, FontStyle.Bold);
                 Font columnFont = new Font("Arial", 12, FontStyle.Bold);
                 Font contentFont = new Font("Arial", 12);
                 StringFormat leftAlignFormat = new StringFormat { Alignment = StringAlignment.Near };
                 StringFormat rightAlignFormat = new StringFormat { Alignment = StringAlignment.Far };
 
-                // Page width and column positions
                 float pageWidth = e.PageBounds.Width;
-                float leftMargin = 50;
-                float rightMargin = 50;
-                float columnWidth = (pageWidth - leftMargin - rightMargin) * 0.6f; // 60% width for Item
-                float quantityColumnX = leftMargin + columnWidth + 10; // Start of Quantity column
+                float leftMargin = 10;
+                float rightMargin = 10;
+                float columnWidth = (pageWidth - leftMargin - rightMargin) * 0.6f;
 
-                // Draw the header
+                // 🔹 Print Header
                 string headerText = "ملخص جميع الطلبات\nSummary of All Orders";
-                if (!string.IsNullOrEmpty(currentFilterText)) // Add restaurant name if filtered
+                if (!string.IsNullOrEmpty(currentFilterText))
                 {
                     headerText += $"\nمطعم : {currentFilterText}";
                 }
                 e.Graphics.DrawString(headerText, headerFont, Brushes.Black, pageWidth / 2, yPosition, new StringFormat { Alignment = StringAlignment.Center });
                 yPosition += lineHeight * 3;
 
-                // Draw column headers
-                e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition - 5, pageWidth - rightMargin, yPosition - 5);
-                e.Graphics.DrawString("Item", columnFont, Brushes.Black, leftMargin, yPosition, leftAlignFormat); // Left column
-                e.Graphics.DrawString("Quantity", columnFont, Brushes.Black, pageWidth - rightMargin, yPosition, rightAlignFormat); // Right column
+                // 🔹 Column Headers
+                e.Graphics.DrawString("Item", columnFont, Brushes.Black, leftMargin, yPosition, leftAlignFormat);
+                e.Graphics.DrawString("Quantity", columnFont, Brushes.Black, pageWidth - rightMargin, yPosition, rightAlignFormat);
                 yPosition += lineHeight;
-
-                // Draw a line below column headers
                 e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition - 5, pageWidth - rightMargin, yPosition - 5);
 
-                // Draw the item rows (excluding zero quantities)
+                // 🔹 Print Items (Thermal printers print continuously, so no need for page breaks)
                 foreach (var item in filteredSummary)
                 {
                     string itemName = item.Key;
-                    string quantity = item.Value.TotalQuantity.ToString(); // Directly use ToString() without .Value
+                    string quantity = item.Value.TotalQuantity.ToString();
 
-                    // Measure text size and wrap if necessary
-                    SizeF itemSize = e.Graphics.MeasureString(itemName, contentFont, (int)columnWidth);
-                    int requiredLines = (int)Math.Ceiling(itemSize.Height / lineHeight);
-
-                    // Print wrapped item text
-                    RectangleF itemRect = new RectangleF(leftMargin, yPosition, columnWidth, lineHeight * requiredLines);
+                    RectangleF itemRect = new RectangleF(leftMargin, yPosition, columnWidth, lineHeight);
                     e.Graphics.DrawString(itemName, contentFont, Brushes.Black, itemRect);
-
-                    // Print quantity text (aligned properly)
                     e.Graphics.DrawString(quantity, contentFont, Brushes.Black, pageWidth - rightMargin, yPosition, rightAlignFormat);
 
-                    yPosition += lineHeight * requiredLines;
+                    yPosition += lineHeight;
                 }
+
+                // 🔹 No more pages, print continuously
+                e.HasMorePages = false;
             };
 
             printDocument.Print();
             grandTotalSummary.Clear();
         }
+
 
 
 

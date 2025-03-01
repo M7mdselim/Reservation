@@ -1501,6 +1501,7 @@ namespace Reservation
                             orderDetailsCommand.ExecuteNonQuery();
                         }
                     }
+                    
 
                     // Insert into UserLog
                     string logQuery = "INSERT INTO UserLog (CashierName, Action, DateAndTime) VALUES (@CashierName, @Action, GETDATE())";
@@ -1512,9 +1513,14 @@ namespace Reservation
                         logCommand.ExecuteNonQuery();
                     }
 
+
+                   
+
                     // Print receipt with the fetched capacity
                     PrintReceipt(reservationId, totalAmount, paidAmount, _username, capacity);
+                    
                     PrintCopyReceipt(reservationId, totalAmount, paidAmount, _username, capacity);
+
                     ClearMenuItems();
                     MessageBox.Show("Order details and payment saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     
@@ -1680,19 +1686,19 @@ namespace Reservation
                 // Draw table headers (RTL alignment)
                 string headerItem = "العنصر";
                 string headerQuantity = "الكمية";
-                string headerPrice = "السعر";
+             
                 string headerSubtotal = "الإجمالي";
 
                 // Calculate starting X positions for each column (RTL)
                 float xPositionItem = rightMargin;
                 float xPositionQuantity = xPositionItem - columnWidthItem;
-                float xPositionPrice = xPositionQuantity - columnWidthQuantity;
-                float xPositionSubtotal = xPositionPrice - columnWidthPrice;
+               
+                float xPositionSubtotal = xPositionQuantity - columnWidthPrice;
 
                 // Draw headers
                 e.Graphics.DrawString(headerItem, boldFont, Brushes.Black, xPositionItem, yPosition, rtlFormat);
                 e.Graphics.DrawString(headerQuantity, boldFont, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
-                e.Graphics.DrawString(headerPrice, boldFont, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
+               
                 e.Graphics.DrawString(headerSubtotal, boldFont, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
                 yPosition += lineHeight;
 
@@ -1735,8 +1741,7 @@ namespace Reservation
                     // Draw quantity (right-aligned under "الكمية")
                     e.Graphics.DrawString(totalQuantity.ToString(), font, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
 
-                    // Draw price (right-aligned under "السعر")
-                    e.Graphics.DrawString(itemPrice.ToString("0.##"), font, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
+                  
 
                     // Draw subtotal (right-aligned under "الإجمالي")
                     e.Graphics.DrawString(subtotal.ToString("0.##"), font, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
@@ -1769,6 +1774,8 @@ namespace Reservation
                     // Update yPosition to account for the height of the rendered text
                     yPosition += (int)notesSize.Height;
                 }
+
+               
 
                 // Draw another separator
                 e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
@@ -1956,13 +1963,13 @@ namespace Reservation
                 // Calculate starting X positions for each column (RTL)
                 float xPositionItem = rightMargin;
                 float xPositionQuantity = xPositionItem - columnWidthItem;
-                float xPositionPrice = xPositionQuantity - columnWidthQuantity;
-                float xPositionSubtotal = xPositionPrice - columnWidthPrice;
+              
+                float xPositionSubtotal = xPositionQuantity - columnWidthPrice;
 
                 // Draw headers
                 e.Graphics.DrawString(headerItem, boldFont, Brushes.Black, xPositionItem, yPosition, rtlFormat);
                 e.Graphics.DrawString(headerQuantity, boldFont, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
-                e.Graphics.DrawString(headerPrice, boldFont, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
+             
                 e.Graphics.DrawString(headerSubtotal, boldFont, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
                 yPosition += lineHeight;
 
@@ -2005,9 +2012,7 @@ namespace Reservation
                     // Draw quantity (right-aligned under "الكمية")
                     e.Graphics.DrawString(totalQuantity.ToString(), font, Brushes.Black, xPositionQuantity, yPosition, rtlFormat);
 
-                    // Draw price (right-aligned under "السعر")
-                    e.Graphics.DrawString(itemPrice.ToString("0.##"), font, Brushes.Black, xPositionPrice, yPosition, rtlFormat);
-
+                  
                     // Draw subtotal (right-aligned under "الإجمالي")
                     e.Graphics.DrawString(subtotal.ToString("0.##"), font, Brushes.Black, xPositionSubtotal, yPosition, rtlFormat);
 
@@ -2043,6 +2048,8 @@ namespace Reservation
                 // Draw another separator
                 e.Graphics.DrawLine(Pens.Black, leftMargin, yPosition, e.PageBounds.Width - leftMargin, yPosition);
                 yPosition += 10;
+
+                ClearMenuItems();
 
 
                 e.Graphics.DrawString($"اجمالي المبلغ: {totalAmount:0.##}", boldFont, Brushes.Black, leftMargin, yPosition);
@@ -2574,6 +2581,7 @@ namespace Reservation
 
         private void button3_Click(object sender, EventArgs e)
         {
+
            ResetForm();
         }
 
@@ -2604,6 +2612,7 @@ namespace Reservation
             totalPriceLabel.Text = "";
             notestxt.Text = "";
             importanttxt.Text = "";
+            ClearMenuItems();
 
 
 

@@ -3,36 +3,40 @@
   "WorkspaceRootPath": "D:\\Github\\Reservation\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|d:\\github\\reservation\\reservation\\databaseconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\databaseconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|D:\\Github\\Reservation\\reservation\\reservationsreport.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\reservationsreport.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|D:\\Github\\Reservation\\reservation\\home.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\home.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|D:\\Github\\Reservation\\reservation\\addpayment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\addpayment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|D:\\Github\\Reservation\\reservation\\reservationsreport.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\reservationsreport.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|D:\\Github\\Reservation\\reservation\\home.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\home.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|d:\\github\\reservation\\reservation\\databaseconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\databaseconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|D:\\Github\\Reservation\\reservation\\addpayment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\addpayment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|D:\\Github\\Reservation\\reservation\\addpayment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\addpayment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|D:\\Github\\Reservation\\reservation\\addorders.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\addorders.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|D:\\Github\\Reservation\\reservation\\addpayment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\addpayment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|D:\\Github\\Reservation\\reservation\\addorders.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\addorders.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|D:\\Github\\Reservation\\reservation\\home.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\home.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|D:\\Github\\Reservation\\reservation\\home.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|solutionrelative:reservation\\home.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4D4668B2-8E22-4CDC-AA3A-92EE302269F3}|Reservation\\Reservation.csproj|D:\\Github\\Reservation\\reservation\\editreservation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -177,7 +181,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 9,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Bookmark",
@@ -193,45 +197,55 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Home.cs [Design]",
-              "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Home.cs",
-              "RelativeDocumentMoniker": "Reservation\\Home.cs",
-              "ToolTip": "D:\\Github\\Reservation\\Reservation\\Home.cs [Design]",
-              "RelativeToolTip": "Reservation\\Home.cs [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-26T19:52:40.858Z",
-              "EditorCaption": " [Design]"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "Home.cs",
-              "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Home.cs",
-              "RelativeDocumentMoniker": "Reservation\\Home.cs",
-              "ToolTip": "D:\\Github\\Reservation\\Reservation\\Home.cs",
-              "RelativeToolTip": "Reservation\\Home.cs",
-              "ViewState": "AgIAANcHAAAAAAAAAAAuwOAHAAAAAAAAAAAAAA==",
+              "Title": "DatabaseConfig.cs",
+              "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\DatabaseConfig.cs",
+              "RelativeDocumentMoniker": "Reservation\\DatabaseConfig.cs",
+              "ToolTip": "D:\\Github\\Reservation\\Reservation\\DatabaseConfig.cs",
+              "RelativeToolTip": "Reservation\\DatabaseConfig.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAiwBQAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-27T11:08:11.424Z",
+              "WhenOpened": "2025-01-26T19:56:23.436Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 5,
               "Title": "Addorders.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Addorders.cs",
               "RelativeDocumentMoniker": "Reservation\\Addorders.cs",
               "ToolTip": "D:\\Github\\Reservation\\Reservation\\Addorders.cs",
               "RelativeToolTip": "Reservation\\Addorders.cs",
-              "ViewState": "AgIAABYEAAAAAAAAAAAuwCUEAAA6AAAAAAAAAA==",
+              "ViewState": "AgIAAPQFAAAAAAAAAAAwwAIGAABgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-27T10:39:32.107Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-27T10:39:32.107Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
+              "Title": "AddPayment.cs [Design]",
+              "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\AddPayment.cs",
+              "RelativeDocumentMoniker": "Reservation\\AddPayment.cs",
+              "ToolTip": "D:\\Github\\Reservation\\Reservation\\AddPayment.cs [Design]",
+              "RelativeToolTip": "Reservation\\AddPayment.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-27T10:53:10.349Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AddPayment.cs",
+              "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\AddPayment.cs",
+              "RelativeDocumentMoniker": "Reservation\\AddPayment.cs",
+              "ToolTip": "D:\\Github\\Reservation\\Reservation\\AddPayment.cs",
+              "RelativeToolTip": "Reservation\\AddPayment.cs",
+              "ViewState": "AgIAALcCAAAAAAAAAAAwwM4CAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-27T10:53:13.431Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "ReservationsReport.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\ReservationsReport.cs",
               "RelativeDocumentMoniker": "Reservation\\ReservationsReport.cs",
@@ -243,42 +257,50 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "ReservationsReport.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\ReservationsReport.cs",
               "RelativeDocumentMoniker": "Reservation\\ReservationsReport.cs",
               "ToolTip": "D:\\Github\\Reservation\\Reservation\\ReservationsReport.cs",
               "RelativeToolTip": "Reservation\\ReservationsReport.cs",
-              "ViewState": "AgIAAHMEAAAAAAAAAAAkwIsEAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAG8EAAAAAAAAAAAuwH0EAAA3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-27T11:08:40.495Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "AddPayment.cs",
-              "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\AddPayment.cs",
-              "RelativeDocumentMoniker": "Reservation\\AddPayment.cs",
-              "ToolTip": "D:\\Github\\Reservation\\Reservation\\AddPayment.cs",
-              "RelativeToolTip": "Reservation\\AddPayment.cs",
-              "ViewState": "AgIAAIEDAAAAAAAAAAAuwIgDAAAPAAAAAAAAAA==",
+              "DocumentIndex": 6,
+              "Title": "Addorders.cs [Design]",
+              "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Addorders.cs",
+              "RelativeDocumentMoniker": "Reservation\\Addorders.cs",
+              "ToolTip": "D:\\Github\\Reservation\\Reservation\\Addorders.cs [Design]",
+              "RelativeToolTip": "Reservation\\Addorders.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-27T10:53:13.431Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-26T17:51:42.737Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "DatabaseConfig.cs",
-              "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\DatabaseConfig.cs",
-              "RelativeDocumentMoniker": "Reservation\\DatabaseConfig.cs",
-              "ToolTip": "D:\\Github\\Reservation\\Reservation\\DatabaseConfig.cs*",
-              "RelativeToolTip": "Reservation\\DatabaseConfig.cs*",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAqwBQAAAAFAAAAAAAAAA==",
+              "DocumentIndex": 7,
+              "Title": "Home.cs",
+              "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Home.cs",
+              "RelativeDocumentMoniker": "Reservation\\Home.cs",
+              "ToolTip": "D:\\Github\\Reservation\\Reservation\\Home.cs",
+              "RelativeToolTip": "Reservation\\Home.cs",
+              "ViewState": "AgIAANgHAAAAAAAAAAAewN4HAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-26T19:56:23.436Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-27T11:08:11.424Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Home.cs [Design]",
+              "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Home.cs",
+              "RelativeDocumentMoniker": "Reservation\\Home.cs",
+              "ToolTip": "D:\\Github\\Reservation\\Reservation\\Home.cs [Design]",
+              "RelativeToolTip": "Reservation\\Home.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-26T19:52:40.858Z"
             },
             {
               "$type": "Bookmark",
@@ -286,19 +308,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "AddPayment.cs [Design]",
-              "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\AddPayment.cs",
-              "RelativeDocumentMoniker": "Reservation\\AddPayment.cs",
-              "ToolTip": "D:\\Github\\Reservation\\Reservation\\AddPayment.cs [Design]",
-              "RelativeToolTip": "Reservation\\AddPayment.cs [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-27T10:53:10.349Z",
-              "EditorCaption": " [Design]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "EditReservation.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\EditReservation.cs",
               "RelativeDocumentMoniker": "Reservation\\EditReservation.cs",
@@ -309,7 +319,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "Editorder.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Editorder.cs",
               "RelativeDocumentMoniker": "Reservation\\Editorder.cs",
@@ -321,7 +331,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "EditPayments.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\EditPayments.cs",
               "RelativeDocumentMoniker": "Reservation\\EditPayments.cs",
@@ -333,7 +343,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "EditCustomerData.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\EditCustomerData.cs",
               "RelativeDocumentMoniker": "Reservation\\EditCustomerData.cs",
@@ -345,7 +355,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "EditReservation.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\EditReservation.cs",
               "RelativeDocumentMoniker": "Reservation\\EditReservation.cs",
@@ -357,7 +367,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "Editorder.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Editorder.cs",
               "RelativeDocumentMoniker": "Reservation\\Editorder.cs",
@@ -368,7 +378,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "EditCustomerData.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\EditCustomerData.cs",
               "RelativeDocumentMoniker": "Reservation\\EditCustomerData.cs",
@@ -379,7 +389,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "EditPayments.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\EditPayments.cs",
               "RelativeDocumentMoniker": "Reservation\\EditPayments.cs",
@@ -390,7 +400,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 17,
               "Title": "Reservation",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Reservation.csproj",
               "RelativeDocumentMoniker": "Reservation\\Reservation.csproj",
@@ -401,7 +411,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 21,
               "Title": "Navigation.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Navigation.cs",
               "RelativeDocumentMoniker": "Reservation\\Navigation.cs",
@@ -412,7 +422,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 20,
               "Title": "Navigation.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Navigation.cs",
               "RelativeDocumentMoniker": "Reservation\\Navigation.cs",
@@ -424,7 +434,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 19,
               "Title": "SignUp.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\SignUp.cs",
               "RelativeDocumentMoniker": "Reservation\\SignUp.cs",
@@ -436,7 +446,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 18,
               "Title": "SignUp.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\SignUp.cs",
               "RelativeDocumentMoniker": "Reservation\\SignUp.cs",
@@ -447,7 +457,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 22,
               "Title": "SignUp.Designer.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\SignUp.Designer.cs",
               "RelativeDocumentMoniker": "Reservation\\SignUp.Designer.cs",
@@ -459,7 +469,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 24,
               "Title": "SpotCheck.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\SpotCheck.cs",
               "RelativeDocumentMoniker": "Reservation\\SpotCheck.cs",
@@ -471,7 +481,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 23,
               "Title": "SpotCheck.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\SpotCheck.cs",
               "RelativeDocumentMoniker": "Reservation\\SpotCheck.cs",
@@ -482,7 +492,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 26,
               "Title": "Login.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Login.cs",
               "RelativeDocumentMoniker": "Reservation\\Login.cs",
@@ -493,7 +503,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 28,
               "Title": "DeletedReservations.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\DeletedReservations.cs",
               "RelativeDocumentMoniker": "Reservation\\DeletedReservations.cs",
@@ -505,7 +515,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 25,
               "Title": "Login.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Login.cs",
               "RelativeDocumentMoniker": "Reservation\\Login.cs",
@@ -517,7 +527,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 29,
               "Title": "DeletedReservations.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\DeletedReservations.cs",
               "RelativeDocumentMoniker": "Reservation\\DeletedReservations.cs",
@@ -528,7 +538,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 30,
               "Title": "UserLog.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\UserLog.cs",
               "RelativeDocumentMoniker": "Reservation\\UserLog.cs",
@@ -540,7 +550,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 27,
               "Title": "Home.Designer.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Home.Designer.cs",
               "RelativeDocumentMoniker": "Reservation\\Home.Designer.cs",
@@ -548,12 +558,11 @@
               "RelativeToolTip": "Reservation\\Home.Designer.cs",
               "ViewState": "AgIAAGYDAAAAAAAAAAAgwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-17T11:12:31.688Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-17T11:12:31.688Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 31,
               "Title": "UserLog.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\UserLog.cs",
               "RelativeDocumentMoniker": "Reservation\\UserLog.cs",
@@ -564,7 +573,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 32,
               "Title": "MonthlySpotCheck.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\MonthlySpotCheck.cs",
               "RelativeDocumentMoniker": "Reservation\\MonthlySpotCheck.cs",
@@ -575,7 +584,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 36,
               "Title": "SingleOrderEdit.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\SingleOrderEdit.cs",
               "RelativeDocumentMoniker": "Reservation\\SingleOrderEdit.cs",
@@ -586,7 +595,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 33,
               "Title": "MonthlySpotCheck.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\MonthlySpotCheck.cs",
               "RelativeDocumentMoniker": "Reservation\\MonthlySpotCheck.cs",
@@ -598,7 +607,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 34,
               "Title": "GlobalUser.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\GlobalUser.cs",
               "RelativeDocumentMoniker": "Reservation\\GlobalUser.cs",
@@ -610,7 +619,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 35,
               "Title": "DailyReports.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\DailyReports.cs",
               "RelativeDocumentMoniker": "Reservation\\DailyReports.cs",
@@ -621,7 +630,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 37,
               "Title": "MonthlyReport.cs [Design]",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\MonthlyReport.cs",
               "RelativeDocumentMoniker": "Reservation\\MonthlyReport.cs",
@@ -632,7 +641,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 38,
               "Title": "SingleOrderEdit.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\SingleOrderEdit.cs",
               "RelativeDocumentMoniker": "Reservation\\SingleOrderEdit.cs",
@@ -644,7 +653,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 39,
               "Title": "MonthlyReport.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\MonthlyReport.cs",
               "RelativeDocumentMoniker": "Reservation\\MonthlyReport.cs",
@@ -656,7 +665,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 40,
               "Title": "DailyReports.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\DailyReports.cs",
               "RelativeDocumentMoniker": "Reservation\\DailyReports.cs",
@@ -668,7 +677,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 41,
               "Title": "MonthlySpotCheck.Designer.cs",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\MonthlySpotCheck.Designer.cs",
               "RelativeDocumentMoniker": "Reservation\\MonthlySpotCheck.Designer.cs",
@@ -680,7 +689,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 42,
               "Title": "Resources.resx",
               "DocumentMoniker": "D:\\Github\\Reservation\\Reservation\\Properties\\Resources.resx",
               "RelativeDocumentMoniker": "Reservation\\Properties\\Resources.resx",
