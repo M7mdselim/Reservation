@@ -17,8 +17,8 @@ public static class DatabaseConfig
 
        //    connectionString = $"Data Source=Selim-PC;Initial Catalog=ReservationsDB;Integrated Security=True;Encrypt=False";
 
-        //   connectionString = $"Data Source=Dell;Initial Catalog=ReservationsDB;Integrated Security=True;Encrypt=False";
-         connectionString = $"Data Source=192.168.50.5;Initial Catalog=ReserervationnDB;User Id=sa;Password=comsys@123;Encrypt=False";
+           connectionString = $"Data Source=DESKTOP-Q5L24ON;Initial Catalog=ReservationnDB;Integrated Security=True;Encrypt=False";
+       // connectionString = $"Data Source=192.168.50.5;Initial Catalog=ReserervationnDB;User Id=sa;Password=comsys@123;Encrypt=False";
 
     }
 

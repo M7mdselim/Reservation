@@ -1546,6 +1546,27 @@ GROUP BY RestaurantName;
             // After all receipts, print the summary of total orders
             PrintGrandSummary();
         }
+
+        private void ApplyFilters()
+        {
+            if (reservationsview.DataSource is DataTable dataTable)
+            {
+                string filter = "";
+
+                if (!string.IsNullOrWhiteSpace(textBox1.Text) && int.TryParse(textBox1.Text, out int reservationId))
+                {
+                    filter = $"ReservationID = {reservationId}"; // Use '=' for integer comparison
+                }
+
+                // Apply the filter to the DataTable
+                dataTable.DefaultView.RowFilter = filter;
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            ApplyFilters();
+        }
     }
 
 }

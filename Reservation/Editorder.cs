@@ -92,7 +92,10 @@ namespace Reservation
 
         private void LoadReservations()
         {
-            string reservationsQuery = "SELECT * FROM View_ManageReservationsDetails  ORDER BY Reservationid DESC ";
+            string reservationsQuery = "SELECT TOP (300) [ReservationID],[CustomerID],[CustomerName],[CustomerPhoneNumber]" +
+                "  ,[RestaurantID]     ,[RestaurantName]     ,[NumberOfGuests]     ,[ReservationDate]     ,[DateSubmitted]     ,[OrderDetailID] " +
+                "    ,[MenuItemID]     ,[MenuItemName]     ,[Quantity]     ,[ItemPrice]     ,[SubTotal]     ,[PaymentID]     ,[TotalAmount]    " +
+                " ,[PaidAmount]     ,[RemainingAmount]     ,[CashierName] FROM [ReservationnDB].[dbo].[View_ManageReservationsDetails] ORDER BY Reservationid DESC ";
             string menuItemsQuery = "SELECT ItemName FROM Menu";
 
             using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))

@@ -109,7 +109,7 @@ namespace Reservation
         {
             // Query the Payments table
             string paymentsQuery = @"
-SELECT 
+SELECT TOP 200 
     p.PaymentID, 
     c.Name AS CustomerName, 
     p.ReservationID, 
@@ -277,6 +277,12 @@ ORDER BY p.PaymentID DESC"; // Order by PaymentID in descending order
             this.Hide();
             login.ShowDialog();
             this.Close();
+        }
+
+      
+        private void label3_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

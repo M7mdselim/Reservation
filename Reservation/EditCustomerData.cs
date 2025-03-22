@@ -96,7 +96,7 @@ namespace Reservation
 
         private void LoadReservations()
         {
-            string customersQuery = "SELECT CustomerID, Name, PhoneNumber FROM Customer  ORDER BY CustomerID DESC"; // Adjusted to query the Customers table
+            string customersQuery = "SELECT TOP 1000 CustomerID, Name, PhoneNumber FROM Customer  ORDER BY CustomerID DESC"; // Adjusted to query the Customers table
 
             using (SqlConnection conn = new SqlConnection(DatabaseConfig.connectionString))
             {

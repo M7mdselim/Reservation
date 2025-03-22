@@ -435,10 +435,52 @@ namespace Reservation
                     }
 
                     int restaurantID = Convert.ToInt32(row.Cells["RestaurantColumn"].Value);
-                    int numberOfGuests = Convert.ToInt32(row.Cells["NumberOfGuests"].Value);
+                    int newNumberOfGuests = Convert.ToInt32(row.Cells["NumberOfGuests"].Value);
                     DateTime reservationDate = Convert.ToDateTime(row.Cells["ReservationDatePicker"].Value);
                     string notes = row.Cells["Notes"].Value.ToString();
                     string important = row.Cells["important"].Value.ToString();
+
+                    // Check if the user's role is not 1 or 5
+                    if (GlobalUser.Role != 1 && GlobalUser.Role != 5)
+                    {
+                        // Query to get the current number of guests in the reservation
+                        string currentGuestsQuery = @"
+                SELECT NumberOfGuests
+                FROM Reservations
+                WHERE ReservationID = @ReservationID";
+
+                        int currentNumberOfGuests = 0;
+                        using (SqlCommand currentGuestsCmd = new SqlCommand(currentGuestsQuery, conn))
+                        {
+                            currentGuestsCmd.Parameters.AddWithValue("@ReservationID", reservationID);
+                            currentNumberOfGuests = Convert.ToInt32(currentGuestsCmd.ExecuteScalar());
+                        }
+
+                        // Calculate the difference between the new and current number of guests
+                        int guestDifference = newNumberOfGuests - currentNumberOfGuests;
+
+                        // Query to check remaining capacity
+                        string capacityQuery = @"
+                SELECT RemainingCapacity
+                FROM RestaurantDailyCapacity
+                WHERE RestaurantID = @RestaurantID
+                  AND Date = @ReservationDate";
+
+                        using (SqlCommand capacityCmd = new SqlCommand(capacityQuery, conn))
+                        {
+                            capacityCmd.Parameters.AddWithValue("@RestaurantID", restaurantID);
+                            capacityCmd.Parameters.AddWithValue("@ReservationDate", reservationDate);
+
+                            int remainingCapacity = Convert.ToInt32(capacityCmd.ExecuteScalar());
+
+                            // Check if the remaining capacity can accommodate the guest difference
+                            if (remainingCapacity - guestDifference < 0)
+                            {
+                                MessageBox.Show($"Cannot update reservation. The remaining capacity would be negative. You can add up to {remainingCapacity + currentNumberOfGuests} guests.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                        }
+                    }
 
                     // Update query
                     string updateQuery = @"
@@ -457,30 +499,22 @@ namespace Reservation
                         // Add parameters
                         cmd.Parameters.AddWithValue("@ReservationID", reservationID);
                         cmd.Parameters.AddWithValue("@RestaurantID", restaurantID);
-                        cmd.Parameters.AddWithValue("@NumberOfGuests", numberOfGuests);
+                        cmd.Parameters.AddWithValue("@NumberOfGuests", newNumberOfGuests);
                         cmd.Parameters.AddWithValue("@ReservationDate", reservationDate);
                         cmd.Parameters.AddWithValue("@Notes", notes);
                         cmd.Parameters.AddWithValue("@Important", important);
 
                         // Execute the update
                         cmd.ExecuteNonQuery();
-
-
-
-
-
                     }
-
 
                     string Resturantname = row.Cells["RestaurantColumn"].FormattedValue?.ToString() ?? "N/A"; // Get the display name of the restaurant
 
-                    // Only log if a row was actually updated
-
                     // Build the descriptive action message
                     string action = $"Edited ReservationID: {reservationID}, " +
-                                         $" Resturant: {Resturantname}, " +
-                                        $" Quantity: {numberOfGuests}, " +
-                                        $"ReservationDate: {reservationDate} , Edited Reservation";
+                                          $" Resturant: {Resturantname}, " +
+                                         $" Quantity: {newNumberOfGuests}, " +
+                                         $"ReservationDate: {reservationDate} , Edited Reservation";
 
                     // Log the action into UserLog
                     string logQuery = "INSERT INTO UserLog (CashierName, Action) VALUES (@CashierName, @Action)";
@@ -496,9 +530,6 @@ namespace Reservation
                     LoadReservations();
 
                     MessageBox.Show("Reservation updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                    // Reload reservations to reflect updates
-
                 }
                 catch (Exception ex)
                 {
@@ -506,8 +537,6 @@ namespace Reservation
                 }
             }
         }
-
-
 
 
         // Helper method to get MenuItemName based on MenuItemID
